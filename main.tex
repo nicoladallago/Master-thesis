@@ -128,12 +128,18 @@
 	\section{Mechanical design}
 	\label{mechanicalDesign}
 
+	The overall objective of the Prometheus project is navigate and mapping, for these we mean to obtain a 3D reconstruction of a indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a standard UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
+
+	\begin{SCfigure}[\sidecaptionrelwidth][h!]
+		\includegraphics[scale=0.21]{images/lidar_laser.jpg}
+		\caption{Lidar laser scanner, able to perform a 360 degrees mapping.}
+		\label{fig:lidar}
+	\end{SCfigure}
+
+	\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications. The specific Lidar laser scanner used in this project is report in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attach in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attach to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can 3D map, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus where the sensors are also rotating around the UAV. In such a way, the Lidar has three degrees of fredom in the movement and 3D mapping can be perform.
+
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DESIGN AND MODEL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
 
 
 
