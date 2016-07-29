@@ -1,0 +1,652 @@
+\chapter{Design and model}
+\label{designModel}
+
+In this chapter we will focus in the description of the mechanical model of the UAV and the sensor system and, from these, a mathematical model will derive, necessary for build and simulate a control law, and to perform system identification.
+
+\section{Mechanical design}
+\label{mechanicalDesign}
+
+The overall objective of the Prometheus project is navigate and mapping, for these we mean to obtain a 3D reconstruction of a indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a standard UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
+
+\begin{SCfigure}[\sidecaptionrelwidth][h!]
+	\includegraphics[scale=0.21]{images/lidar_laser.jpg}
+	\caption{Lidar laser scanner, able to perform a 360 degrees mapping.}
+	\label{fig:lidar}
+\end{SCfigure}
+
+\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is report in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attach in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attach to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can 3D map, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus where the sensors are also rotating around the UAV. In such a way, the Lidar has three degrees of fredom in the movement and 3D mapping can be perform. This solution comport, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
+
+Figure here RENDER
+
+\noindent In figure [] is possible to see clearly the platform, made of two lighweight rings, and the cart that provide the circular movement of the sensor. An important choice was also the selection of the UAV, that has to garantee to flight also with the weight of the mechanical structure, sensor and all the eletronics needed to fly and control the movement of the cart.
+
+\section{Mathematical model}
+\label{mathematicalModel}
+
+Is pretty much clear from the previous section that this UAV is different from allmost every other vheicle that is possible to buy, this of course require a complete and detailed study to characterized the mathematical model. To characterized the model, is before necessary to provide some definitions, that are also valid for standars commercial quadrotors.
+\newline A quadrotor helicopter is made of a central frame and foor propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrate in figure \ref{fig:quadrtotor}.
+
+\begin{figure}[h!]
+	\centering
+	\tdplotsetmaincoords{50}{-60} % 50 -60
+		
+	\def \semiaxis  {0.8}					% from center to propeller (diag)
+	\def \centers {\semiaxis}		        % x and y of centers
+	\def \body {\semiaxis / 5}				% half diagonal of body
+	\def \height {0.05}						% half height of body
+	\def \propeller {0.3}					% radius of propeller
+	\def \innerpropeller {0.05}				% radius inner circle propeller
+	\def \heightpropeller {0.05}			% height propeller plane
+		
+	\begin{tikzpicture}[scale=4,tdplot_main_coords]
+		
+		% axis
+		\draw[line width=3pt] (-\centers, 0, 0) -- (\centers, 0, 0);	
+		\draw[line width=3pt] (0, \centers, 0) -- (0, -\centers, 0);
+
+		% propellers
+		\tdplotdrawarc[thick, fill=gray] {(0, \centers, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(\centers, 0, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(0, -\centers, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(-\centers, 0, \heightpropeller)}{\propeller}{0}{360}{}{}
+
+		% center propellers
+		\tdplotdrawarc[fill] {(0, \centers, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(\centers, 0, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(0, -\centers, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(-\centers, 0, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+
+		% body
+		\fill (\body,\body,\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- cycle;
+		\fill (\body,\body,-\height) -- (\body,-\body,-\height) -- (-\body,-\body,-\height) -- (-\body,\body,-\height) -- cycle; % down
+		\fill (-\body,-\body,-\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % back
+		\fill (\body,\body,-\height) -- (\body,\body,\height) -- (\body,-\body,\height) -- (\body,-\body,-\height) -- cycle; % front
+		\fill (\body,-\body,-\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,-\body,-\height) -- cycle; % left
+		\fill (\body,\body,-\height) -- (\body,\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % right
+		
+		% Coordinate frame
+		\coordinate (O) at (0,0,0) node[red, anchor = north]{$O_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,-1.1,0) node[anchor=north west]{$x_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (1.1,0,0) node[anchor=south west]{$y_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,0,1.1) node[anchor=south]{$z_B$};
+
+		% Rotors arrows
+		\draw [->, ultra thick] (\centers+0.2, 0, \heightpropeller) arc (0:300:0.2);
+		\draw [->, ultra thick] (-\centers+0.2, 0, \heightpropeller) arc (0:300:0.2);
+		\draw [<-, ultra thick] (0.2, \centers, \heightpropeller) arc (0:300:0.2);
+		\draw [<-, ultra thick] (0.2, -\centers, \heightpropeller) arc (0:300:0.2);				
+	\end{tikzpicture}
+	\caption{Sketch of a standard quadrotor with its body frame attach.}
+	\label{fig:quadrtotor}
+\end{figure}
+
+\noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attach to the vehicle.
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}[]
+
+		\def \length {2}
+		\def \xbody {5}
+		\def \ybody {0}
+
+		% World frame
+		\draw[rotate=30] (0, 0, 0) -- (0, 0, 0) node[anchor=north west]{$O_W$};
+		\draw[->, ultra thick] (0, 0, 0) -- (\length, 0, 0) node[anchor=north west]{$x_W$};
+		\draw[->, ultra thick] (0, 0, 0) -- (0, \length, 0) node[anchor=north west]{$z_W$};
+		\draw[->, ultra thick] (0, 0, 0) -- (0, 0, \length) node[anchor=north west]{$y_W$};
+
+		% Body frame
+		\draw[rotate=30] (\xbody, \ybody, 0) -- (\xbody, \ybody, 0) node[anchor=north west, blue]{$O_B$};
+		\draw[->, ultra thick, blue, rotate=30] (\xbody, \ybody, 0) -- (\xbody+\length, \ybody, 0) node[anchor=north west]{$x_B$};
+		\draw[->, ultra thick, blue, rotate=30] (\xbody, \ybody, 0) -- (\xbody, \ybody+\length, 0) node[anchor=north east]{$z_B$};
+		\draw[->, ultra thick, blue, rotate=30] (\xbody, \ybody, 0) -- (\xbody, \ybody, \length) node[anchor=north west]{$y_B$};
+
+		\draw[-, dashed, rotate=30] (0, 0, 0) -- (\xbody, \ybody, 0);
+
+	\end{tikzpicture}
+	\caption{Illustration of the world and body frames.}
+	\label{fig:frames}
+\end{figure}
+
+\noindent In figure \ref{fig:frames} is possible to see the two frames, the word frame, in black, is fixed to a point and can't be move, the body frame, in blue, instead is attach to the quadrotor and can move with three degrees of freedom. In this, we are interesting in know the translation and rotation of the body frame in respect to the world frame. For rappresent the translation, a three dimension vector $\mathbf{x}$ is enough, that actualy indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduce in the following section.
+
+	
+\subsection{Quaternion math}
+\label{quaternion}
+
+A quaternion is a hyper complex number of rank 4, wich can be represented as follow
+
+\begin{equation}
+	\mathbf{q} = 
+	\begin{bmatrix}
+		q_0 & q_1 & q_2 & q_3
+	\end{bmatrix}^T
+	\label{eq:quatDef}
+\end{equation}
+
+\noindent The quaternion units from $q_1$ to $q_3$ are called the vector part of the quaternion, while $q_0$ is the scalar part \cite{EmilQuaternion}. Multiplication of two quaternions $\mathbf{p}$ and $\mathbf{q}$, is benig performed by the Kronecker product, denoted as $\otimes$. If $\mathbf{p}$ represents one rotation and $\mathbf{q}$ represents another rotation, then $\mathbf{p} \otimes \mathbf{q}$ represents the combined rotation.
+
+\begin{align}
+	\mathbf{p} \otimes \mathbf{q} &=
+	\begin{bmatrix}
+		p_0q_0 - p_1q_1 - p_2q_2 - p_3q_3 \\
+		p_0q_1 + p_1q_0 + p_2q_3 - p_3q_2 \\
+		p_0q_2 - p_1q_3 + p_2q_0 + p_3q_1 \\
+		p_0q_3 + p_1q_2 - p_2q_1 + p_3q_0
+	\end{bmatrix} \\
+	&= Q(\mathbf{p})\mathbf{q} =
+	\begin{bmatrix}
+		p_0 & -p_1 & -p_2 & -p_3 \\
+		p_1 & p_0  & -p_3 & p_2 \\
+		p_2 & p_3  & p_0  & -p_1 \\
+		p_3 & -p2  & p_1  & p_0
+	\end{bmatrix}
+	\begin{bmatrix}
+		q_0 \\
+		q_1 \\
+		q_2 \\
+		q_3
+	\end{bmatrix} \\
+	&= \bar{Q}(\mathbf{q})\mathbf{p} = 
+	\begin{bmatrix}
+		q_0 & -q_1 & -q_2 & -q_3 \\
+		q_1 & q_0  & q_3  & -q_2 \\
+		q_2 & -q_3 & q_0  & q_1 \\
+		q_3 & q_2  & -q_1 & q_0  
+	\end{bmatrix}
+	\begin{bmatrix}
+		p_0 \\
+		p_1 \\
+		p_2 \\
+		p_3
+	\end{bmatrix}
+	\label{eq:quatKronecker}
+\end{align}
+
+\noindent The norm of a quaternion is define as
+
+\begin{equation}
+	||\mathbf{q}|| = \sqrt{q_0^2 + q_1^2 + q_2^2 + q_3^2} 
+	\label{eq:quatNorm}
+\end{equation}
+
+\noindent If the norm of the quaternion is equal to $1$, then the quaternion is called unit quaternion. The complex conjugate of a quaternion has the same definition as normal complex numbers.
+
+\begin{equation}
+	\mathbf{q}^* = 
+	\begin{bmatrix}
+		q_0 & -q_1 & -q_2 & -q_3
+	\end{bmatrix}^T
+	\label{eq:quatConj}
+\end{equation}
+
+\noindent The inverse of a quaternion is define as a normal inverse of a complex number.
+
+\begin{equation}
+	\mathbf{q}^{-1} = \frac{\mathbf{q}^*}{||\mathbf{q}||^2}
+	\label{eq:quatInverse}
+\end{equation}
+
+\noindent The time derivative of the unit quaternion is the vector of quaternion rates \cite{quaternion2}. It requires some alebraic manipulation but is important to notice that the quaternion rates, $\dot{\mathbf{q}}$, are related to the angular velocity $\boldsymbol{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$. It can be represented in two way:
+
+\begin{itemize}
+		
+	\item as in equation \eqref{eq:quatDerivative1} in case that the angular velocity is in the world frame
+	\begin{equation}
+		\dot{\mathbf{q}}_{\boldsymbol{w}}(\mathbf{q}, \boldsymbol{w}) = \frac{1}{2}\mathbf{q}\otimes
+		\begin{bmatrix}
+			0 \\
+			\boldsymbol{\omega}
+		\end{bmatrix}
+		= \frac{1}{2}Q(\mathbf{q})
+		\begin{bmatrix}
+			0 \\
+			\boldsymbol{\omega}
+		\end{bmatrix}
+		\label{eq:quatDerivative1}
+	\end{equation}
+
+	\item as in equation \eqref{eq:quatDerivative2} if the angular velocity vector is in the body frame of reference.
+
+	\begin{equation}
+		\dot{\mathbf{q}}_{\boldsymbol{w}'}(\mathbf{q}, \boldsymbol{w}') = \frac{1}{2}
+		\begin{bmatrix}
+			0 \\
+			\boldsymbol{\omega}'
+		\end{bmatrix}
+		\otimes \mathbf{q} = \frac{1}{2}\bar{Q}(\mathbf{q})
+		\begin{bmatrix}
+			0 \\
+			\boldsymbol{\omega}'
+		\end{bmatrix}
+		\label{eq:quatDerivative2}
+	\end{equation}
+\end{itemize}
+
+\noindent A unit quaternion can be used also as a rotation operator, however the transformation requires both the quaternion and its conjugate, as show in equation \eqref{eq:quatRotateVector}. This rotates the vector $\mathbf{v}$ from the world frame to the body frame represented by $\mathbf{q}$.
+
+\begin{equation}
+	\boldsymbol{\omega} = \mathbf{q} \otimes 
+	\begin{bmatrix}
+		0 \\
+		\mathbf{v}
+	\end{bmatrix}
+	\otimes \mathbf{q}^*
+	\label{eq:quatRotateVector}
+\end{equation}
+
+\noindent Unit quaternion can be use also to represents rotation matrixes. Consider a vector $\mathbf{z}$ in the world frame. If $\mathbf{v}'$ is the same vector in the body coordinates, the the following relations hold
+
+\begin{align}
+	\begin{bmatrix}
+		0 \\
+		\mathbf{v}'
+	\end{bmatrix}
+	&= \mathbf{q} \cdot
+	\begin{bmatrix}
+		0 \\
+		\mathbf{v}
+	\end{bmatrix}
+	\cdot \mathbf{q}^* \\
+	&= \bar{Q}(\mathbf{q})^T Q(\mathbf{q})
+	\begin{bmatrix}
+		0 \\
+		\mathbf{v}
+	\end{bmatrix} \\
+	&=
+	\begin{bmatrix}
+		1          & \mathbf{0}^T \\
+		\mathbf{0} & R_{\mathbf{q}}(\mathbf{q})
+	\end{bmatrix}
+	\begin{bmatrix}
+		0 \\
+		\mathbf{v}
+	\end{bmatrix}
+	\label{eq:quatRotationMatrix1}
+\end{align}
+
+\noindent where
+
+\begin{equation}
+	R_{\mathbf{q}}(\mathbf{q}) =
+	\begin{bmatrix}
+		q_0^2+q_1^2-q_2^2-q_3^2 & 2q_1q_2+2q_0q_3         & 2q_1q_3-2q_0q_2 \\
+		2q_1q_2-2q_0q_3         & q_0^2-q_1^2+q_2^2-q_3^2 & 2q_2q_3+2q_0q_1 \\
+		2q_1q_2+2q_0q_3         & 2q_2q_3-2q_0q_1         & q_0^2-q_1^2-q_2^2-q_3^2
+	\end{bmatrix}
+	\label{eq:quatRotationMatrix2}
+\end{equation}
+
+\noindent That is,
+
+\begin{align}
+	\mathbf{v}' &= R_{\mathbf{q}}(\mathbf{q})\mathbf{v} \\
+	\mathbf{v} &= R_{\mathbf{q}}(\mathbf{q})^T\mathbf{v}'
+	\label{eq:quatRotationMatrix3}
+\end{align}
+
+\noindent Just as with rotation matrices, sequences of rotations are represented by products of quaternions. That is, for unit quaternions $\mathbf{q}$ and $\mathbf{p}$, it holds that
+
+\begin{equation}
+	R_{\mathbf{q}}(\mathbf{q} \cdot \mathbf{p}) = R_{\mathbf{q}}(\mathbf{q})R_{\mathbf{q}}(\mathbf{p})
+	\label{eq:quatRotationMatrix4}
+\end{equation}
+
+\noindent Finally, for representing quaternion rotations in a more intuitive manner, the conversion from Euler angles (roll $\phi$, pith $\theta$ and yaw $\psi$) to quaternion and viceversa can be performed by utilizing the following two equations respectively.
+
+\begin{gather}
+	q = 
+	\begin{bmatrix}
+		\cos{(\phi/2)}\cos{(\theta/2)}\cos{(\psi/2)} + \sin{(\phi/2)}\sin{(\theta/2)}\sin{(\psi/2)} \\
+		\sin{(\phi/2)}\cos{(\theta/2)}\cos{(\psi/2)} - \cos{(\phi/2)}\sin{(\theta/2)}\sin{(\psi/2)} \\
+		\cos{(\phi/2)}\sin{(\theta/2)}\cos{(\psi/2)} + \sin{(\phi/2)}\cos{(\theta/2)}\sin{(\psi/2)} \\
+		\cos{(\phi/2)}\cos{(\theta/2)}\sin{(\psi/2)} - \sin{(\phi/2)}\sin{(\theta/2)}\cos{(\psi/2)} 
+	\end{bmatrix} \\
+	\begin{bmatrix}
+		\phi \\
+		\theta \\
+		\psi
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\atan2(2(q_0q_1+q_2q_3), q_0^2-q_1^2-q_2^2+q_3^2) \\
+		\asin(2(q_0q_2-q_3q_1)) \\
+		\atan2(2(q_0q_3+q_1q_2), q_0^2+q_1^2-q_2^2-q_3^2)
+	\end{bmatrix}
+	\label{eq:quatEuler}
+\end{gather}
+
+
+\subsection{Quadrotor modelling}
+\label{quadModel}
+
+We consider first a standard quadrotor, without a rotating platform, like in figure \ref{fig:quadrtotorVectors}.
+
+\begin{figure}[h!]
+	\centering
+	\tdplotsetmaincoords{60}{-135} % 60 -135
+		
+	\def \semiaxis  {0.8}			    	% from center to propeller (diag)
+	\def \centers {\semiaxis}		        % x and y of centers
+	\def \body {\semiaxis / 5}				% half diagonal of body
+	\def \height {0.05}						% half height of body
+	\def \propeller {0.3}					% radius of propeller
+	\def \innerpropeller {0.05}				% radius inner circle propeller
+	\def \heightpropeller {0.05}			% height propeller plane
+		
+	\begin{tikzpicture}[scale=4,tdplot_main_coords]
+		
+		% axis
+		\draw[line width=3pt] (-\centers, 0, 0) -- (\centers, 0, 0);	
+		\draw[line width=3pt] (0, \centers, 0) -- (0, -\centers, 0);
+
+		% propellers
+		\tdplotdrawarc[thick, fill=gray] {(0, \centers, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(\centers, 0, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(0, -\centers, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(-\centers, 0, \heightpropeller)}{\propeller}{0}{360}{}{}
+
+		% center propellers
+		\tdplotdrawarc[fill] {(0, \centers, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(\centers, 0, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(0, -\centers, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(-\centers, 0, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+
+		% body
+		\fill (\body,\body,\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- cycle;
+		\fill (\body,\body,-\height) -- (\body,-\body,-\height) -- (-\body,-\body,-\height) -- (-\body,\body,-\height) -- cycle; % down
+		\fill (-\body,-\body,-\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % back
+		\fill (\body,\body,-\height) -- (\body,\body,\height) -- (\body,-\body,\height) -- (\body,-\body,-\height) -- cycle; % front
+		\fill (\body,-\body,-\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,-\body,-\height) -- cycle; % left
+		\fill (\body,\body,-\height) -- (\body,\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % right
+		
+		% Coordinate frame
+		\coordinate (O) at (0,0,0) node[red, anchor=east]{$O_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,-1.6,0) node[anchor=south west]{$x_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (1.6,0,0) node[anchor=east]{$y_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,0,1.4) node[anchor=south]{$z_B$};
+
+		% Rotors arrows
+		\draw [->, ultra thick] (\centers+0.2, 0, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_4$};
+		\draw [->, ultra thick] (-\centers+0.2, 0, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_2$};
+		\draw [<-, ultra thick] (0.2, \centers, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_3$};
+		\draw [<-, ultra thick] (0.2, -\centers, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_1$};
+
+		% Force arrows
+		\draw[ultra thick,->,blue] (0, \centers, \heightpropeller) -- (0, \centers, \heightpropeller+0.4) node[anchor=east]{$F_3$};
+		\draw[ultra thick,->,blue] (\centers, 0, \heightpropeller) -- (\centers, 0, \heightpropeller+0.4) node[anchor=east]{$F_4$};
+		\draw[ultra thick,->,blue] (0, -\centers, \heightpropeller) -- (0, -\centers, \heightpropeller+0.4) node[anchor=east]{$F_1$};
+		\draw[ultra thick,->,blue] (-\centers, 0, \heightpropeller) -- (-\centers, 0, \heightpropeller+0.4) node[anchor=east]{$F_2$};
+
+		% Torque arrows
+        \draw[->, ultra thick, canvas is zy plane at x=\centers+0.6, orange] (0.15, 0, 0) arc (0:360:0.15) node[anchor=south east]{$\tau_y$};
+        \draw[->, ultra thick, canvas is zx plane at y=-\centers-0.6, orange] (0.15, 0, 0) arc (0:360:0.15) node[anchor=south east]{$\tau_x$};
+        \draw[->, ultra thick, orange] (0.15, 0, 0.6) arc (0:360:0.15) node[anchor=south east]{$\tau_z$};
+
+	\end{tikzpicture}
+	\caption{Sketch of a standard quadrotor.}
+	\label{fig:quadrtotorVectors}
+\end{figure}
+
+\noindent In fiure \ref{fig:quadrtotorVectors} are also impres the force vectors $F_i$ generate from each motor-propeller, the torques vectors $\tau_x$, $\tau_y$ and $\tau_z$ about the three axis and the propeller's speed $\Omega_i$. Now, for modeling the rigid body of a multirotor, the standard Newton-Euler kinematics equations can be utilized \cite{Bresciani}.
+
+\begin{equation}
+	\begin{bmatrix}
+		\mathbf{F} \\
+		\boldsymbol{\tau}
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		m \cdot I_{3\times 3} & \mathbf{0} \\
+		\mathbf{0}^T & I_{cm}
+	\end{bmatrix}
+	\begin{bmatrix}
+		\mathbf{\ddot{x}_B} \\
+		\boldsymbol{\dot{\omega}_B}
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+		\mathbf{0} \\
+		\boldsymbol{\omega_B} \times I_{cm} \cdot \boldsymbol{\omega_B}
+	\end{bmatrix}
+	\label{eq:NewtonEuler}
+\end{equation}
+
+\noindent Where $\mathbf{F} = \begin{bmatrix} F_x & F_y & F_z \end{bmatrix}^T$ is the vector of the total force, $\boldsymbol{\tau} = \begin{bmatrix} \tau_x & \tau_y & \tau_z \end{bmatrix}^T$ is the total torque, $m$ is the mass of the quadrtotor, $I_{cm}$ is the matrix of inertia related to the center of mass, $\mathbf{\ddot{x}_B}$ is the acceleration of the quadrotor center of mass related to the body frame and $\boldsymbol{\omega_B} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$ is the rotational rates in the body frame.
+
+\noindent Before deriving the torque relationship, the motor models from the input signal to the thrust force are needed. In specific, the four input signals are the speed of the propellers $u_i$, map between $0$ (zero speed) and $1$ (full speed). Then, the thrust for each propeller can be simply derive as follow
+
+\begin{equation}
+	F_i(t) = A_{F,i} \Omega_i^2 = A_{F,i}\Omega_{max, i}^2 u_i(t)^2
+	\label{eq:motorThrust}
+\end{equation}
+
+\noindent where $A_{F,i} \in \rm I\!R_+$ are the thrust constants of the motor-propeller cobination, $\Omega_{max, i} \in \rm I\!R_+$ are the maximum rotational soeed of the motors and $u_i(t)$ are the motor signals. What is missing in equation \eqref{eq:motorThrust} is the model of the DC motors and in particular, a map between the input signal $u_i(t)$ and the control signal $u_{in,i}(t)$. To keep the model simple but still accurate \footnote{\url{http://pi19404.github.io/pyVision/2015/04/10/25/}}, the motor has been modeled like a delay, like in equation \eqref{eq:motorDelay}.
+
+\begin{equation}
+	u_i(t) \approx \frac{1}{\tau_i s+1}u_{in.i}(t)
+	\label{eq:motorDelay}
+\end{equation}
+
+\noindent This approach is very common \cite{motor}, since all the parameters of a motor are not provide from datasheet, especially from cheap motors that is possible to find quiet often in a commercial quadrotor. Furthermore, to represent the direction of the thrust from a motor it should be considered that 
+
+\begin{align}
+	\mathbf{F}_i(t) &= A_{F,i} \Omega_{max,i}^2u_i(t)\mathbf{n}_i \label{eq:propellerDirection1} \\
+	\mathbf{n}_i &= R_i \cdot 
+	\begin{bmatrix} 
+		0 & 0 & 1 
+	\end{bmatrix}^T 
+	\label{eq:propellerDirection2}
+\end{align} 
+
+\noindent Where, in this case, $\mathbf{F}_i(t)$ is the force vector for each propeller and $R_i$ is the rotational matrix encoding the direction of the thrust and torque vector. Then the torque rappresentation is given by
+
+\begin{equation}
+	\boldsymbol{\tau}_i(t) = -\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2u_i(t)^2\mathbf{n}_i
+	\label{eq:motorTorque}
+\end{equation}
+
+\noindent where $B_{F,i} \in \rm I\!R_+$ is the torque constant.
+
+\noindent Now, by defing the vector $\mathbf{l}_i = \begin{bmatrix} l_{x,i} & l_{y,i} & l_{z,i} \end{bmatrix}^T$ the distance between the center of mass and the position where the propeller $i$ is attach, combining equations \eqref{eq:propellerDirection1}, \eqref{eq:propellerDirection2} and \eqref{eq:motorTorque} is possible to obtain equation \eqref{eq:forceTorque} as in the work \cite{modelIdentification}.
+
+\begin{equation}
+	\begin{bmatrix}
+		\mathbf{F}_{total} \\
+		\boldsymbol{\tau}_{total}
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\sum\limits_{i=1}^{4} \mathbf{F}_i(u_i^2) \\
+		\sum\limits_{i=1}^{4} \mathbf{l}_i \times \mathbf{F}_i(u_i^2) + \boldsymbol{\tau}_i(u_i^2)
+	\end{bmatrix}
+	\label{eq:forceTorque}
+\end{equation}
+
+\noindent This combined with the Newton-Euler kinematics of equation \eqref{eq:NewtonEuler} gives the final model, from control signal to accelerationa and angular acceleration, as depicted in equations \eqref{eq:finalModel1} and \eqref{eq:finalModel2}.
+
+\begin{equation}
+	\begin{split}
+		\begin{bmatrix}
+			\ddot{\mathbf{x}}_B \\
+			\dot{\boldsymbol{\omega}}_B
+		\end{bmatrix}
+		&=
+		\begin{bmatrix}
+			\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
+			\dots & I_{cm}^{-1}\Big[ \mathbf{l}_i\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+		\end{bmatrix}
+		\begin{bmatrix}
+			\vdots \\
+			u_i^2 \\
+			\vdots
+		\end{bmatrix}
+		+ \\
+		&+
+		\begin{bmatrix}
+			\mathbf{0} \\
+			I_{cm}^{-1}\bigl(\boldsymbol{\omega}_B \times I_{cm} \boldsymbol{\omega}_B \bigl)
+		\end{bmatrix} \\
+	\end{split}
+	\label{eq:finalModel1}
+\end{equation}
+
+\begin{equation}
+	u_i = \frac{1}{\tau_is+1}u_{in,1}
+	\label{eq:finalModel2}
+\end{equation}
+
+\noindent From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those to the world frame and integrate to obtain the position and orientation of the quadrotor with the respect to the world frame.
+......
+
+
+
+
+\subsection{Adding the rotating platform}
+\label{addPlatform}
+
+Till now, all the model was design for a standard quadrotor vehicle, what we want to do in this section ids to add the model of the rotating platform, necessary to deduce a controller and simulate this.
+
+\noindent The movement of the platform, introduce a time variant center of mass gravity, that is simply modelled by time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller wit the respect of the CoG. If we know preciselly the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be compute. 
+
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\tdplotsetmaincoords{0}{45} % 70 280
+		\tdplotsetrotatedcoords{0}{0}{-45}
+		
+		\def \semiaxis  {0.8}					% from center to propeller (diag)
+		\def \centers {\semiaxis}		        % x and y of centers
+		\def \body {\semiaxis / 5}				% half diagonal of body
+		\def \height {0.05}						% half height of body
+		\def \propeller {0.3}					% radius of propeller
+		\def \innerpropeller {0.05}				% radius inner circle propeller
+		\def \heightpropeller {0.05}			% height propeller plane
+		\def \ring {0.8}                        % ring radious	
+
+		\begin{tikzpicture}[scale=4,tdplot_main_coords]
+			
+			% axis
+			\draw[line width=2pt] (-\centers, 0, 0) -- (\centers, 0, 0);	
+			\draw[line width=2pt] (0, \centers, 0) -- (0, -\centers, 0);
+
+			% propellers
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(0, \centers, 0)}{\propeller}{0}{360}{}{}
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(\centers, 0, 0)}{\propeller}{0}{360}{}{}
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(0, -\centers, 0)}{\propeller}{0}{360}{}{}
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(-\centers, 0, 0)}{\propeller}{0}{360}{}{}
+
+			% center propellers
+			\tdplotdrawarc[fill] {(0, \centers, 0)}{\innerpropeller}{0}{360}{}{}
+			\tdplotdrawarc[fill] {(\centers, 0, 0)}{\innerpropeller}{0}{360}{}{}
+			\tdplotdrawarc[fill] {(0, -\centers, 0)}{\innerpropeller}{0}{360}{}{}
+			\tdplotdrawarc[fill] {(-\centers, 0, 0)}{\innerpropeller}{0}{360}{}{}
+
+			% body
+			\fill[opacity=0.2] (\body,\body,\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- cycle;
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,-\body,-\height) -- (-\body,-\body,-\height) -- (-\body,\body,-\height) -- cycle; % down
+			\fill[opacity=0.2] (-\body,-\body,-\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % back
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,\body,\height) -- (\body,-\body,\height) -- (\body,-\body,-\height) -- cycle; % front
+			\fill[opacity=0.2] (\body,-\body,-\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,-\body,-\height) -- cycle; % left
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % right
+
+			% ring
+			\draw[tdplot_rotated_coords, -, line width=3pt, canvas is zy plane at x=0, blue] (\ring, 0, 0) arc (0:360:\ring);
+
+			% cart
+			\shade[tdplot_rotated_coords, ball color=black] (0, \ring*0.866, \ring*0.5) circle (.08);
+
+			% dashed lines
+			\draw[dashed] (0, \centers, 0) -- node[below]{$\mathbf{l}_1$} (0.112, 0.112, 0.112);
+			\draw[dashed] (\centers, 0, 0) -- node[above]{$\mathbf{l}_2$} (0.112, 0.112, 0.112);
+			\draw[dashed] (-\centers, 0, 0) -- node[above]{$\mathbf{l}_4$} (0.112, 0.112, 0.112);
+			\draw[dashed] (0, -\centers, 0) -- node[below]{$\mathbf{l}_3$} (0.112, 0.112, 0.112);
+
+			\shade[tdplot_rotated_coords, ball color=orange] (0, 0.2*0.866, 0.2*0.5) circle (.04cm) node[anchor=south west]{\thinspace \thinspace \thinspace CoG};
+
+			\shade[ball color=red] (0, 0, 0) circle (0.04cm);
+		
+		\end{tikzpicture}
+		\label{fig:quadrtotorRingTop}
+		\caption{Top view.}
+	\end{subfigure}
+	\qquad
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering	
+		\tdplotsetmaincoords{90}{45} % 70 280
+		\tdplotsetrotatedcoords{0}{0}{-45}
+		
+		\def \semiaxis  {0.8}					% from center to propeller (diag)
+		\def \centers {\semiaxis}		        % x and y of centers
+		\def \body {\semiaxis / 5}				% half diagonal of body
+		\def \height {0.05}						% half height of body
+		\def \propeller {0.3}					% radius of propeller
+		\def \innerpropeller {0.05}				% radius inner circle propeller
+		\def \heightpropeller {0.05}			% height propeller plane
+		\def \ring {0.8}                        % ring radious	
+
+		\begin{tikzpicture}[scale=4,tdplot_main_coords]
+			
+			% axis
+			\draw[line width=2pt] (-\centers, 0, 0) -- (\centers, 0, 0);	
+			\draw[line width=2pt] (0, \centers, 0) -- (0, -\centers, 0);
+
+			% propellers
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(0, \centers, 0)}{\propeller}{0}{360}{}{}
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(\centers, 0, 0)}{\propeller}{0}{360}{}{}
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(0, -\centers, 0)}{\propeller}{0}{360}{}{}
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(-\centers, 0, 0)}{\propeller}{0}{360}{}{}
+
+			% center propellers
+			\tdplotdrawarc[fill] {(0, \centers, 0)}{\innerpropeller}{0}{360}{}{}
+			\tdplotdrawarc[fill] {(\centers, 0, 0)}{\innerpropeller}{0}{360}{}{}
+			\tdplotdrawarc[fill] {(0, -\centers, 0)}{\innerpropeller}{0}{360}{}{}
+			\tdplotdrawarc[fill] {(-\centers, 0, 0)}{\innerpropeller}{0}{360}{}{}
+
+			% body
+			\fill[opacity=0.2] (\body,\body,\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- cycle;
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,-\body,-\height) -- (-\body,-\body,-\height) -- (-\body,\body,-\height) -- cycle; % down
+			\fill[opacity=0.2] (-\body,-\body,-\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % back
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,\body,\height) -- (\body,-\body,\height) -- (\body,-\body,-\height) -- cycle; % front
+			\fill[opacity=0.2] (\body,-\body,-\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,-\body,-\height) -- cycle; % left
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % right
+
+			% ring
+			\draw[tdplot_rotated_coords, -, line width=3pt, canvas is zy plane at x=0, blue] (\ring, 0, 0) arc (0:360:\ring);
+
+			\draw[tdplot_rotated_coords, <-, line width=2pt, canvas is zy plane at x=0, rotate=60] (0.6, 0, 0) node[anchor=south]{$\gamma$} arc (0:30:0.6);
+
+			% cart
+			\shade[tdplot_rotated_coords, ball color=black] (0, \ring*0.866, \ring*0.5) circle (.08cm);
+
+			% dashed lines
+			\draw[tdplot_rotated_coords, dashed] (0, 0, 0) -- (0, \ring*0.866, \ring*0.5);
+			\draw[dashed] (0, \centers, 0) -- (0.112, 0.112, 0.112);
+			\draw[dashed] (\centers, 0, 0) -- (0.112, 0.112, 0.112);
+			\draw[dashed] (-\centers, 0, 0) -- (0.112, 0.112, 0.112);
+			\draw[dashed] (0, -\centers, 0) -- (0.112, 0.112, 0.112);
+
+			\shade[tdplot_rotated_coords, ball color=orange] (0, 0.2*0.866, 0.2*0.5) circle (.04cm) node[anchor=south east]{CoG};
+
+			\shade[ball color=red] (0, 0, 0) circle (0.04cm);
+		\end{tikzpicture}
+		\caption{Side view.}
+		\label{fig:quadrotorRingSide}
+	\end{subfigure}
+	\caption{Quadrotor with the rotating platform in blue, in red the CoG of the quadrotor and in orange the resulting CoG.}
+	\label{fig:quadrotorRing}
+\end{figure}
+
+\noindent In figure \ref{fig:quadrotorRing} is illustrate how the resulting CoG change with the position of the cart, is possible to see also the four $\mathbf{l}_i(t)$ vectors in black dashed line. Then the position of the CoG is
+
+\begin{equation}
+	\mathbf{p} = \frac{1}{m}\cdot \bigl(m_{quad}\mathbf{p}_{quad} + m_{cart}\mathbf{p}_{cart}\bigl)	
+	\label{eq:CoG}
+\end{equation}
+
+\noindent where $m=m_{quad}+m_{cart}$ is the sum of the mass of the quadrotor plus the mass of the moving cart, then the total mass, $\mathbf{p}_{quad}$ is the position of the center of gravity of the quadrotor without the cart with the resect to the origin of the body frame (we assume that the quadrotor frame is not symmetrical) and $\mathbf{p}_{cart}$ is the position of the CoG of the cart with the respect to the body frame. Then the vectors $\mathbf{l}_i$ are just the distance between the center of the propeller $i$ and $\mathbf{p}$.
+
+\noindent Another different in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the dettailed CAD model of the entire vehicle, provide in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple picewise model.

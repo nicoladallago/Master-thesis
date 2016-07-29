@@ -8,10 +8,17 @@
 \usepackage[bitstream-charter]{mathdesign}
 \usepackage[sc]{mathpazo}
 \usepackage{tocbibind}
+\usepackage{amsthm}
+\usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{sidecap}
 \usepackage{fancyhdr}
 \usepackage[grey, charter]{quotchap}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tikz-3dplot}
 \usepackage[colorlinks=true,
  			a4paper=true,
  			linktocpage=true,
@@ -24,10 +31,29 @@
  			pdffitwindow=true,
  			citecolor=blue,
  			urlcolor=blue]{hyperref}
+\setcitestyle{square} 			
 
+% Include other chapters
+\includeonly{                 
+	./chapter_1/chapter_1,
+	./chapter_2/chapter_2,
+	./chapter_3/chapter_3
+}
+
+% Font
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+% New operators
+\DeclareMathOperator*{\atan2}{atan2}            % Atan2 
+\DeclareMathOperator*{\asin}{asin}              % Asin
+\DeclareMathOperator*{\sgn}{sgn}                % Sgn
 
 
 \begin{document}
+
+	\renewcommand{\thepage}{\roman{page}} 		% romain enumeration
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\thispagestyle{empty}
@@ -80,68 +106,19 @@
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\chapter{Introduction}
-	\label{introduction}
-
-	In these last years, a growing interest has been shown in robotics, In fact, several industries (automotive, medical, manufacturing, space, etc.), require robots to replace men in dangerous, repetitive or onerous situations. A wide area of this research is dedicated to Unmaned Aerial Vehicle (UAV) and especially the one of having the capability of Vertical TakeOff and Landing (VTOL) \cite{modelIdentification}. This kind of vehicle can be use in a variety of different scenario, do to the reasonable price, small dimensions and large sensors capability. In particular, nowdays intensive research as been accomplish in the area of enviroment monitoring and exploration, accomplish with different strategies and sensors.
-
-	\begin{SCfigure}[\sidecaptionrelwidth][h!]
-		\includegraphics[scale=0.4]{images/fukushima.jpg}
-		\caption{T-Hawk, a US-made UAV, commonly used to search for roadside bombs in Iraq, made its debut when it photographed the Fukushima nuclear plant from above, providing a detailed look at the interior damage.}
-		\label{fig:application}
-	\end{SCfigure}  
-
-	\noindent Many typse of UAVs have been developed over the last years, in particular the quadrotor type \cite{LeeController}, a quadrotor type UAV consists of two pairs of counter rotating rotors and propellers. The aim of this thesis is to contribute to the develop of the so called \textit{Prometheus project}, a fully autonomus vertical tekeoff and landing vehicle, able to perform indoor enviroment exploration and mapping. To do this, we inspired from the film Prometheus, where drones are able to map an indoor cave. Of course, do to technology and budjet limitations, the vehicle will not have the same performance, but will have in theory the same capabilities. As previously said, this thesis is only a part of the project, that has been diveded in three main parts:
-
-	\begin{itemize}
-		\item mechanical design and building of the UAV;
-		\item mathematical model, system identification and control;
-		\item usage of the sensors, mapping and navigation alghoritms.
-	\end{itemize}
-
-	\noindent This thesis will focus on the second point, but brefly introductions will give also in the other two points, in particular in the mechanical design, necessary for develop a mathematical model. 
-
-	\begin{SCfigure}[\sidecaptionrelwidth][h!]
-		\includegraphics[scale=0.6]{images/prometheus_film.jpg}
-		\caption{Frame of the prometheus movie, where the drone perform the exploration and mapping of the cave.}
-		\label{fig:prometheusFILM}
-	\end{SCfigure}
-
-	\noindent Description of the varius chapters........
+	\include{./chapter_1/chapter_1}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-
-
-
-
-
-
-
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DESIGN AND MODEL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\chapter{Design and model}
-	\label{designModel}
-
-	In this chapter we will focus in the description of the mechanical model of the UAV and the sensor system and, from these, a mathematical model will derive, necessary for build and simulate a control law, and to perform system identification.
-
-	\section{Mechanical design}
-	\label{mechanicalDesign}
-
-	The overall objective of the Prometheus project is navigate and mapping, for these we mean to obtain a 3D reconstruction of a indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a standard UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
-
-	\begin{SCfigure}[\sidecaptionrelwidth][h!]
-		\includegraphics[scale=0.21]{images/lidar_laser.jpg}
-		\caption{Lidar laser scanner, able to perform a 360 degrees mapping.}
-		\label{fig:lidar}
-	\end{SCfigure}
-
-	\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications. The specific Lidar laser scanner used in this project is report in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attach in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attach to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can 3D map, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus where the sensors are also rotating around the UAV. In such a way, the Lidar has three degrees of fredom in the movement and 3D mapping can be perform.
-
-
+	\include{./chapter_2/chapter_2}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DESIGN AND MODEL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%% SYSTEM IDENTIFICATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\include{./chapter_3/chapter_3}
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%% SYSTEM IDENTIFICATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -151,15 +128,57 @@
 	\begin{thebibliography}{1}
 	\label{bibliography}
 
+		\bibitem{largeQuadrotor}
+		\textbf{P. Pounds, R. Mahony and P.Corke}.
+		Modelling and control of a large quadrotor robot.
+		\textit{Control EngineeringPractice18, 2010}.
+
+		\bibitem{Aalborg}
+		\textbf{Claudia Mary, Luminita Cristiana Totu and Simon Konge Koldbæk}.
+		Modelling and Control of Autonomous Quad-Rotor.	
+		\textit{Aalborg Universitet, June 2010}.
+
+		\bibitem{Carlos}
+		\textbf{Carlos Navarro Leoncio}.
+		Design of the Prometheus UAV.
+		\textit{Master thesis project, Lule\r{a} university of technology, 2016}.
+
+		\bibitem{quaternion}
+		\textbf{Joan Solà}.
+		Quaternion kinematics for the error-state KF.
+		\textit{February 2, 2016}.
+
+		\bibitem{EmilQuaternion}
+		\textbf{Emil Fresk and George Nikolakopoulos}.
+		Full Quaternion Based Attitude Control for a Quadrotor.
+		\textit{2013 European Control Conference (ECC), July}.
+
+		\bibitem{quaternion2}
+		\textbf{James Diebel}.
+		Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors.
+		\textit{Stanford University, 2006}.
+
+		\bibitem{Bresciani}
+		\textbf{Tommaso Bresciani}.
+		Modelling, Identification and Control of a Quadrotor Helicopter.
+		\textit{Department of Automatic Control, Lund University, October 2008}.
+
+		\bibitem{motor}
+		\textbf{Emil Fresk and George Nikolakopoulos}.
+		Experimental Model Derivation and Control of a Variable Pitch Propeller Quadrotor.
+		\textit{IEEE Multi-Conference on System and Control, 2014}.
+
 		\bibitem{modelIdentification}
-		\textbf{Emil Fresk, R. James Cotton and George Nikolakopoulos}
+		\textbf{Emil Fresk, R. James Cotton and George Nikolakopoulos}.
 		Generalized Model Identification for Multirotors: Towards applications in Auto Tunning.
-		\textit{2016}.
+		\textit{2016}.		
+
+
 
 		\bibitem{LeeController}
-		\textbf{Taeyoung Lee, Melvin Leok and N. Harris McClamroch}
+		\textbf{Taeyoung Lee, Melvin Leok and N. Harris McClamroch}.
 		Nonlinear Robust Tracking Control of a Quadrotor UAV on $SE(3)$.
-		\textit{2012 American Control Conference, Fairmont Queen Elizabeth, Montréal, Canada, June 27 - June 29, 2012}.
+		\textit{2012 American Control Conference, Fairmont Queen Elizabeth, Montréal, Canada, June 27 - June 29, 2012}.		
 
 	\end{thebibliography}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
