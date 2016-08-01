@@ -273,7 +273,7 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 	\begin{bmatrix}
 		q_0^2+q_1^2-q_2^2-q_3^2 & 2q_1q_2+2q_0q_3         & 2q_1q_3-2q_0q_2 \\
 		2q_1q_2-2q_0q_3         & q_0^2-q_1^2+q_2^2-q_3^2 & 2q_2q_3+2q_0q_1 \\
-		2q_1q_2+2q_0q_3         & 2q_2q_3-2q_0q_1         & q_0^2-q_1^2-q_2^2-q_3^2
+		2q_1q_3+2q_0q_2         & 2q_2q_3-2q_0q_1         & q_0^2-q_1^2-q_2^2+q_3^2
 	\end{bmatrix}
 	\label{eq:quatRotationMatrix2}
 \end{equation}
@@ -475,7 +475,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		&=
 		\begin{bmatrix}
 			\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
-			\dots & I_{cm}^{-1}\Big[ \mathbf{l}_i\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
 		\end{bmatrix}
 		\begin{bmatrix}
 			\vdots \\
@@ -497,9 +497,33 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:finalModel2}
 \end{equation}
 
-\noindent From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those to the world frame and integrate to obtain the position and orientation of the quadrotor with the respect to the world frame.
-......
+\noindent Where $\boldsymbol{\Delta l}$ is the offset vector of the CoG in the body frame of reference. From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those to the world frame and integrate to obtain the position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ of the quadrotor with the respect to the world frame. Then, by adding the gravity term we have
 
+\begin{equation}
+	\ddot{\mathbf{x}}_{B, g} = R_{\mathbf{q}_W}(\mathbf{q}_W)^T \cdot
+	\begin{bmatrix}
+		0 \\
+		0 \\
+		-g 
+	\end{bmatrix}
+	+ \ddot{\mathbf{x}}_B
+\end{equation}
+
+\noindent where $g$ is equal to $9.81$ and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix build from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, again by using the rotation matrix we obtain
+
+\begin{equation}
+	\dot{\mathbf{x}}_W = R_{\mathbf{q}_W}(\mathbf{q}_W)\cdot\dot{\mathbf{x}}_B
+	\label{eq:velocityWorld}
+\end{equation}
+
+\noindent Instead, for the orientation, we use the results from the paragraph \ref{quaternion} and we get
+
+\begin{equation}
+	\dot{\mathbf{q}} = \frac{1}{2}\cdot Q(\boldsymbol{\omega})\cdot\mathbf{q}
+	\label{eq:orientation}
+\end{equation}
+
+ BLOCK DIAGRAM HERE.
 
 
 

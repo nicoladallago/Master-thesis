@@ -1,4 +1,116 @@
-\chapter{System Identification}
+\chapter{System identification}
 \label{systemIdentification}
 
 In this chapter, is going to be address an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
+
+\section{System simplification and linear approxmation}
+
+Starting from the model deduce in section \ref{quadModel}
+
+\begin{equation}
+	\begin{split}
+		\begin{bmatrix}
+			\ddot{\mathbf{x}}_B \\
+			\dot{\boldsymbol{\omega}}_B
+		\end{bmatrix}
+		&=
+		\begin{bmatrix}
+			\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
+			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+		\end{bmatrix}
+		\begin{bmatrix}
+			\vdots \\
+			u_i^2 \\
+			\vdots
+		\end{bmatrix}
+		+ \\
+		&+
+		\begin{bmatrix}
+			\mathbf{0} \\
+			I_{cm}^{-1}\bigl(\boldsymbol{\omega}_B \times I_{cm} \boldsymbol{\omega}_B \bigl)
+		\end{bmatrix} \\
+	\end{split}
+	\label{eq:finalModel1a}
+\end{equation}
+
+\begin{equation}
+	u_i = \frac{1}{\tau_is+1}u_{in,1}
+	\label{eq:finalModel2a}
+\end{equation}
+
+\noindent we need to do some simplification. In particular, by assuming that all engines have the same parameters, is possible to rewrite these parameters as follows
+
+\begin{align}
+	A_{F,i}\Omega_{max,i}^2 &\approx A_F \\
+	B_{F,i}\Omega_{max,i}^2 &\approx B_F \\
+	\tau_i &\approx \tau
+	\label{eq:simplification}
+\end{align}
+
+\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily just by simulating the mathematical model with and without the term, the differences are very small.
+
+\noindent Another simplification, is that the inertia matrix $I_{cm}$ is adiagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is general true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we allign the $x$ axis with the orinetation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is require.
+
+\noindent Another non linearization is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equattion \eqref{eq:finalModel2a} with the suare of the control inputs. This effectively moves the squared control signal from the force and torque equatoins to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics.
+
+\noindent In conclusion, the approximated linear model is
+
+\begin{gather}
+	\begin{bmatrix}
+		\ddot{\mathbf{x}}_B \\
+		\dot{\boldsymbol{\omega}}_B
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\dots & \frac{A_F \mathbf{e}_3}{m} & \dots \\
+		\dots & I_{cm}^{-1}\Big[(\mathbf{l}_i+\boldsymbol{\Delta l})\times A_F\mathbf{e}_3-\sgn(\Omega_i)B_F\mathbf{e}_3\Big] & \dots 
+	\end{bmatrix}
+	\begin{bmatrix}
+		\vdots \\
+		u_i \\
+		\vdots
+	\end{bmatrix} 
+	\label{eq:linearModel1}\\
+	u_i = \frac{1}{\tau s+1}u_{in,i}^2
+	\label{eq:linearModel2}
+\end{gather}
+
+\noindent where instead of $\mathbf{n}_i$ there is $\mathbf{e}_3$ because in the structure of this particular vehicle, the propellers are mounted parallel to the ground and then with a force vector equal to $\mathbf{e}_3=\begin{bmatrix}0 & 0 & 1\end{bmatrix}^T$.
+
+\section{Quadrotor parameter}
+
+From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linearModel2}, the identifiable parameters are 
+
+\begin{equation}
+	\boldsymbol{\beta} =
+	\begin{bmatrix}
+		\frac{A_F}{m} & \frac{A_F}{I_{xx}} & \frac{A_F}{I_{yy}} & \frac{A_F}{I_{zz}} & \frac{B_F}{I_{zz}} & \Delta l_x & \Delta l_y 
+	\end{bmatrix}^T, \hspace{10pt} \tau
+	\label{eq:parameters}
+\end{equation}
+
+\noindent Then, is possible to rewrite the linear model in a more compact form:
+
+\begin{equation}
+	\begin{bmatrix}
+		\ddot{\mathbf{x}}_B \\
+		\dot{\boldsymbol{\omega}}_B
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		L(\beta_1) \\
+		A(\boldsymbol{\beta})
+	\end{bmatrix}
+	\label{eq:linearCompact}
+\end{equation}
+
+\noindent From that is possible to draw down the prediction equations
+
+\begin{align}
+	\boldsymbol{\omega}_{k} &= \boldsymbol{\omega}_{k-1}+\Delta t A(\boldsymbol{\beta}_{k-1})\mathbf{u}_{k-1} \\
+    \mathbf{u}_k &= \frac{\tau_{k-1}}{\Delta t+\tau_{k-1}}\mathbf{u}_{k-1}+\frac{\Delta t}{\Delta t+\tau_{k-1}}\mathbf{u}_{in,k}^2 \\
+    \boldsymbol{\beta}_k &= \boldsymbol{\beta}_{k-1} \\
+    \tau_k &= \tau_{k-1}
+\end{align}
+
+\noindent bla bla .....
