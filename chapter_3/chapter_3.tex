@@ -4,6 +4,7 @@
 In this chapter, is going to be address an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
 
 \section{System simplification and linear approxmation}
+\label{linearization}
 
 Starting from the model deduce in section \ref{quadModel}
 
@@ -47,11 +48,11 @@ Starting from the model deduce in section \ref{quadModel}
 	\label{eq:simplification}
 \end{align}
 
-\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily just by simulating the mathematical model with and without the term, the differences are very small.
+\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily see just by simulating the mathematical model with and without the term, the differences are very small.
 
 \noindent Another simplification, is that the inertia matrix $I_{cm}$ is adiagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is general true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we allign the $x$ axis with the orinetation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is require.
 
-\noindent Another non linearization is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equattion \eqref{eq:finalModel2a} with the suare of the control inputs. This effectively moves the squared control signal from the force and torque equatoins to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics.
+\noindent Another non linearization is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the suare of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics.
 
 \noindent In conclusion, the approximated linear model is
 
@@ -75,9 +76,11 @@ Starting from the model deduce in section \ref{quadModel}
 	\label{eq:linearModel2}
 \end{gather}
 
-\noindent where instead of $\mathbf{n}_i$ there is $\mathbf{e}_3$ because in the structure of this particular vehicle, the propellers are mounted parallel to the ground and then with a force vector equal to $\mathbf{e}_3=\begin{bmatrix}0 & 0 & 1\end{bmatrix}^T$.
+\noindent where instead of $\mathbf{n}_i$ there is $\mathbf{e}_3$ because in the structure of this particular vehicle, the propellers are mounted parallel to the ground and then with a force vector align to $\mathbf{e}_3=\begin{bmatrix}0 & 0 & 1\end{bmatrix}^T$.
 
-\section{Quadrotor parameter}
+
+\section{Quadrotor parameters}
+\label{quadParameters}
 
 From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linearModel2}, the identifiable parameters are 
 
@@ -101,10 +104,11 @@ From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linea
 		L(\beta_1) \\
 		A(\boldsymbol{\beta})
 	\end{bmatrix}
+	\mathbf{u}
 	\label{eq:linearCompact}
 \end{equation}
 
-\noindent From that is possible to draw down the prediction equations
+\noindent Under the assumption of the sampling rate to be much faster than the dynamics \footnote{in this case, thanks to the performance of the onboard electronics, the sampling rate is equal to $222$ Herz.}, equation \eqref{eq:linearModel2} is implemented as discrete-time first order system, and the parameters are modeled as integrated white noise, which gives the following prediction equations
 
 \begin{align}
 	\boldsymbol{\omega}_{k} &= \boldsymbol{\omega}_{k-1}+\Delta t A(\boldsymbol{\beta}_{k-1})\mathbf{u}_{k-1} \\
@@ -113,4 +117,96 @@ From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linea
     \tau_k &= \tau_{k-1}
 \end{align}
 
-\noindent bla bla .....
+\noindent where $\mathbf{u}_k$ and $\mathbf{u}_{in,k}$ are the inputs at time instant $k$ expres in a vectorial way, $\Delta t$ is the sampling period and $\bullet^2$ is the element-wise square of a vector.
+
+
+\section{Kalman filter}
+\label{KalmanFilter}
+
+A Kalman filter approach is chose for this project since it has good result in this kind of application. Of course, better performance can be optain with specific strategies for non linear systems \cite{parameterIdentification}, but these methods are in general much more complicated and require much more computational effort, especially if is necessary to estimate the parameters online.  
+
+\noindent Now, is possible to use the standard Kalman filter equations \cite{KalmanFilter} to develop an online identification alghoritm as follow:
+
+\begin{itemize}
+	\item the augmented state $\mathbf{x}_{est}$ is
+	\begin{equation}
+		\mathbf{x}_{est}=
+		\begin{bmatrix}
+			\boldsymbol{\omega}_B & \mathbf{u}_{in} & \boldsymbol{\beta} & \tau
+		\end{bmatrix}^T
+		\in \rm I\!R^{15}
+		\label{eq:augmentedState}
+	\end{equation} 
+	The initial values of $\boldsymbol{\omega}_B$ and $\mathbf{u}_{in}$ are know, so the state is initialize with these. Moreover, due to the parameters $\boldsymbol{\beta}$ and $\tau$ having a constraint to being positive, they are implemented as $\exp(\boldsymbol{\beta})$ and $\exp(\tau)$ to force positive results from the estimation, while the $\boldsymbol{\Delta l}$ are constrained to be within the propellers (the legnth of the arms is suppose to be equal to one, since the correct length is not necessary for the identification) wich is implemented using a zero centered logistic function
+	\begin{equation}
+		\frac{2}{1-\exp(-\Delta l)} -1
+		\label{eq:logisticFunction}
+	\end{equation}
+
+	\item With the augmented state is possible to write a new state space system in discrete time with matrix $A_{est}$
+	\begin{align*}
+		A_{\boldsymbol{\omega}, \mathbf{u}_{in}} &= 
+		\begin{bmatrix}
+			2\Delta te^{\beta_2}(\Delta l_y-1)\cdot\mathbf{u}^T \\
+			-2\Delta te^{\beta_3}(\Delta l_x+1)\cdot\mathbf{u}^T \\
+			-\sgn(\Omega_i)2\Delta te^{\beta_4}\cdot\mathbf{u}^T
+		\end{bmatrix} 
+		&\in \rm I\!R^{3\times 4} \\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_1} &= \mathbf{0}_{3\times 1} &\in \rm I\!R^{3\times 1}\\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{2}} &=
+		\begin{bmatrix}
+			\Delta te^{\beta_2}\bigg(\Delta l_y\sum\limits_{i=1}^{4}u_i^2-u_1^2-u_2^2+u_3^2+u_4^2\bigg) & 0 & 0
+		\end{bmatrix}^T 
+		&\in \rm I\!R^{3\times 1}\\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{3}} &=
+		\begin{bmatrix}
+			0 & -\Delta te^{\beta_3}\bigg(\Delta l_y\sum\limits_{i=1}^{4}u_i^2+u_1^2-u_2^2-u_3^2+u_4^2\bigg) & 0
+		\end{bmatrix}^T 
+		&\in \rm I\!R^{3\times 1}\\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{4}} &=
+		\begin{bmatrix}
+			0 & 0 & -\Delta te^{\beta_4}\sum\limits_{i=1}^{4}\sgn(\Omega_i)u_i^2
+		\end{bmatrix}^T 
+		&\in \rm I\!R^{3\times 1}\\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{5}} &=
+		\begin{bmatrix}
+			0 & 0 & \Delta t
+		\end{bmatrix}^T 
+		&\in \rm I\!R^{3\times 1}\\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{6:7}} &=
+		\begin{bmatrix}
+			0 & \Delta te^{\beta_2}\sum\limits_{i=1}^{4}u_i^2 \\ 
+			-\Delta te^{\beta_3}\sum\limits_{i=1}^{4}u_i^2	& 0 \\
+			0 & 0 
+		\end{bmatrix} 
+		&\in \rm I\!R^{3\times 2}\\
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}} &=
+		\left[
+		\begin{array}{c|c|c|c|c|c}
+			A_{\boldsymbol{\omega}, \boldsymbol{\beta}_1} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_2} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_3} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_4} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_5} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{6:7}}
+		\end{array}
+		\right]
+		&\in \rm I\!R^{3\times 7}\\
+		A_{\boldsymbol{\omega}} &= 
+		\left[
+		\begin{array}{c|c|c|c}
+			I_{3} & A_{\boldsymbol{\omega}, \mathbf{u}_{in}} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}} & \mathbf{0}_{3\times 1}
+		\end{array}
+		\right] &\in \rm I\!R^{3\times 15}\\
+		A_{\mathbf{u}_{in}} &= \Big(1-\frac{\Delta t}{\Delta t+e^{\tau}}\Big)\cdot I_4 &\in \rm I\!R^{4\times 4} \\
+		A_{est} &= 
+		\begin{bmatrix}
+			A_{\boldsymbol{\omega}} \\
+			\begin{array}{c|c|c}
+				\mathbf{0}_{4\times 3} & A_{\mathbf{u}_{in}} & \mathbf{0}_{4\times 8}
+			\end{array} \\
+			\begin{array}{c|c} 
+				\mathbf{0}_{8\times7} & I_8
+			\end{array}
+		\end{bmatrix}
+		&\in \rm I\!R^{15\times 15}
+	\end{align*}
+
+	and then use the Kalman filter equations
+
+\end{itemize}
