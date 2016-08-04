@@ -1,0 +1,37 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+    	group style={
+        	group name = left,
+        	group size = 1 by 4,
+        	xlabels at = edge bottom,
+        	xticklabels at = edge bottom,
+        	ylabels at = edge left, 
+        	yticklabels at = edge left,    
+        	vertical sep = 30pt},
+      	xmin = 0,
+      	xmax = 33,         
+      	xlabel = {$t \hspace{10pt} [s]$},
+		width = 7.5cm,
+		height = 4cm] 
+			\nextgroupplot[title = {$\frac{A_F}{I_{xx}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
+			\addplot[blue] table {../data/beta_2.dat};
+			\nextgroupplot[title = {$\frac{A_F}{I_{zz}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
+			\addplot[blue] table {../data/beta_4.dat};
+      \nextgroupplot[title = {$\tau \hspace{10pt} [s]$}, grid=major]
+      \addplot[blue] table {../data/tau.dat};
+      \nextgroupplot[title = {$\Delta l_y \hspace{10pt} [m]$}, grid=major, ytick={-0.1,-0.05,0}, yticklabels={$-0.1$, $-0.05$, $0$}]
+      \addplot[blue] table {../data/beta_7.dat};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}

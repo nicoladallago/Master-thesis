@@ -1,2 +1,45 @@
 \chapter{Trajectories generator}
 \label{trajectoriesGenerator}
+
+An important aspect of this project is the path plannig, because the aim is to map and navigate in a enviroment without a priori information and in complete autonomous. The study of path planning alghoritms and the sensor fusion to obtain the pose of the vehicle is not part of this thesis, however is part of this thesis to generate a trajectory for the UAV based on the output of a path planning algorithm. In particular, usually exploration algorithms provide only setpoints, not full trajectories \cite{potentialField} \cite{visionBasedMAV}. Is then necessary to provide a tool to generate possible trajectorie with constraints in the enviroment and in the dynamic of the vehicle. In this project we implemented the solution proposed in the work \cite{minimumSnap}, where the author, after providing model and control, generate a trajectory composed by picewise polynomial functions.
+
+
+\section{Trajectoy definition}
+\label{trajDefinition}
+
+In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is define as a position in the space, $\mathbf{x}_d$, along a yaw angle, $\psi_d$, since in the next section we will control four degrees of freedom of the UAV, the position in the space and the yaw angle. We consider the problem of navigate through $m$ setpoints at specific time. A trivial trajectory is one that interpolate the setpoints using straight lines. However, such trajectory is inefficient because it require the quadrotor to come to a stop st each setpoint. This method generates trjectories that smoothly transition throught the setpoints at given times. We write down a trajectory as piecewise polynomial functions of order $n$ over $m$ time intervals
+
+\begin{equation}
+	\sigma_d(t)=
+	\begin{cases}
+		\sum\limits_{i=0}^{n}\sigma_{d,i,1}t^i & t_0 \le t < t_1 \\
+		\sum\limits_{i=0}^{n}\sigma_{d,i,2}t^i & t_1 \le t < t_2 \\
+		\vdots \\
+		\sum\limits_{i=0}^{n}\sigma_{d,i,m}t^i & t_{m-1} \le t < t_m \\
+	\end{cases}
+	\label{eq:defTraj}
+\end{equation}
+
+\noindent where $\sigma_{d,i,j}$ is the coefficient of orden $i$ of the trajectory piece $j$ and $t_k$ is the time that the vehicle has to reach setpoint $k$, $i \in \begin{bmatrix}0 & n\end{bmatrix}$, $j \in \begin{bmatrix}1 & m\end{bmatrix}$, $k \in \begin{bmatrix}1 & m\end{bmatrix}$. The interest is then to minimize a cost function wich can be written using these piecewise polynomial. 
+
+\begin{alignat}{3}
+	\min\qquad & \int_{t_0}^{t_m}\mu_{\mathbf{x}} \Bigg|\Bigg|\frac{d^{k_{\mathbf{x}}}\mathbf{x}_d}{dt^{k_{\mathbf{x}}}} \Bigg|\Bigg|^2 + \mu_{\psi}\frac{d^{k_{\psi}}\psi_d}{dt^{k_{\psi}}}^2 dt \\
+	\text{subject to}\qquad & \boldsymbol{\sigma}_d(t_i) = \boldsymbol{\sigma}_{d,i}, && i=0,\dots ,m \nonumber \\
+	& \frac{d^px_d}{dt^p}\Big|_{t=t_j}=0, && j=0,m; & p=1,\dots ,k_r \nonumber \\
+	& \frac{d^py_d}{dt^p}\Big|_{t=t_j}=0, && j=0,m; & p=1,\dots ,k_r \nonumber \\
+	& \frac{d^pz_d}{dt^p}\Big|_{t=t_j}=0, && j=0,m; & p=1,\dots ,k_r \nonumber \\
+	& \frac{d^p\psi_d}{dt^p}\Big|_{t=tj}=0, && j=0,m; & p=1,\dots ,k_{\psi} \nonumber
+	\label{eq:minimizationCost}
+\end{alignat}
+
+\noindent where $\mu_{\mathbf{x}}$ and $\mu_{\psi}$ are constants that make the integrand nondimensional. Here $\boldsymbol{\sigma}_d = \begin{bmatrix} x_d & y_d & z_d & \psi_d\end{bmatrix}^T$ and $\boldsymbol{\sigma}_{d,i}=\begin{bmatrix}x_{d,i} & y_{d,i} & z_{d,i} & \psi_{d,i}\end{bmatrix}^T$. The first constraint indicates that the result trajectory has to pass through the desire setpoints, while the rest of the constraints impose that all the derivatives at the initial and final point have to be zero (one can also set them to a specific value if necessary). By using the same choice of \cite{minimumSnap2}, we decide to minimize the snap for the position ($k_{\mathbf{x}}=4$) and the second derivative of the yaw angle ($k_{\psi}=2$). Now we want to formulate the trajectory generation problem as an optimization of a functional but in a finite dimensional setting. This will keep the computational effort very small to guarantee a real time application. In order to to this, we first write the constants $\boldsymbol{\sigma}_{d,i,j} =\begin{bmatrix}x_{d,i,j} & y_{d,i,j} & z_{d,i,j} & \psi_{d,i,j}\end{bmatrix}^T$ as a $4\cdot n\cdot m\times 1$ vector $c$ with decision variables $\{x_{d,i,j} , y_{d,i,j} , z_{d,i,j} , \psi_{d,i,j}, i \in \begin{bmatrix}0 & n\end{bmatrix}, j \in \begin{bmatrix}0 & m\end{bmatrix}\}$. The trajectory generation preoblem \eqref{eq:minimizationCost} can be written in the form of a quadratic program (QP):
+
+\begin{alignat}{2}
+	\min\qquad & c^THc + f^Tc \\
+	\text{subject to}\qquad & Ac \le b \nonumber \\
+	& A_{eq}c = b_{eq} \nonumber
+	\label{eq:quadraticProgram}
+\end{alignat}
+
+\noindent where the objective function will incorporate the minimization of the functional while the contraint can be used to satisfy constraints in the trajectory and it derivatives. A specification of an initial condition, final condition, or intermediate condition on any derivative of the trajectory (e.g. $\frac{d^kx_d}{dt^k}$) can be written as a row of the constraint $A_{eq}c = b_{eq}$. If conditions do not need to be
+specified exactly then they can be represented with the inequality constraint $Ac\le b$.

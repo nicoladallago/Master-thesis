@@ -8,7 +8,7 @@ In this chapter we will focus in the description of the mechanical model of the 
 
 The overall objective of the Prometheus project is navigate and mapping, for these we mean to obtain a 3D reconstruction of a indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a standard UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
 
-\begin{SCfigure}[\sidecaptionrelwidth][h!]
+\begin{SCfigure}[\sidecaptionrelwidth][h]
 	\includegraphics[scale=0.21]{images/lidar_laser.jpg}
 	\caption{Lidar laser scanner, able to perform a 360 degrees mapping.}
 	\label{fig:lidar}
@@ -26,7 +26,7 @@ Figure here RENDER
 Is pretty much clear from the previous section that this UAV is different from allmost every other vheicle that is possible to buy, this of course require a complete and detailed study to characterized the mathematical model. To characterized the model, is before necessary to provide some definitions, that are also valid for standars commercial quadrotors.
 \newline A quadrotor helicopter is made of a central frame and foor propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrate in figure \ref{fig:quadrtotor}.
 
-\begin{figure}[h!]
+\begin{figure}[h]
 	\centering
 	\tdplotsetmaincoords{50}{-60} % 50 -60
 		
@@ -82,7 +82,7 @@ Is pretty much clear from the previous section that this UAV is different from a
 
 \noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attach to the vehicle.
 
-\begin{figure}[h!]
+\begin{figure}[h]
 	\centering
 	\begin{tikzpicture}[]
 
@@ -323,7 +323,7 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 
 We consider first a standard quadrotor, without a rotating platform, like in figure \ref{fig:quadrtotorVectors}.
 
-\begin{figure}[h!]
+\begin{figure}[h]
 	\centering
 	\tdplotsetmaincoords{60}{-135} % 60 -135
 		
