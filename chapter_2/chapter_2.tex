@@ -507,6 +507,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		-g 
 	\end{bmatrix}
 	+ \ddot{\mathbf{x}}_B
+	\label{eq:gravity}
 \end{equation}
 
 \noindent where $g$ is equal to $9.81$ and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix build from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, again by using the rotation matrix we obtain
@@ -523,8 +524,53 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:orientation}
 \end{equation}
 
- BLOCK DIAGRAM HERE.
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[thick,scale=0.85, every node/.style={scale=0.85}]
+		\coordinate (origin)  at (0,    0);
+		\coordinate (input)   at (0,    3.02);
+		\coordinate (motors)  at (1,    3);
+		\coordinate (dynamic) at (4,    1.5);
+		\coordinate (gravity) at (7,    3);
+		\coordinate (integr1) at (7.3,  1.5);
+		\coordinate (integr2) at (9.6,  3.7);
+		\coordinate (bodywor) at (11.6, 1.5);
+		\coordinate (integr3) at (14.6, 3.7);
+		\coordinate (integr4) at (14.6, 1.5);		
+		\coordinate (output1) at (16.6, 4.11);
+		\coordinate (output2) at (16.6, 1.91);
+		\coordinate (outfit1) at (16.1, 1.9);
+		\coordinate (outfit2) at (6.3, 0.8);
+ 
+		\node[draw, minimum width=2cm, minimum height=1.5cm, anchor=south west, align=center] (MOT) at (motors) {Motors\\\eqref{eq:finalModel2}};
+		\node[draw, minimum width=2cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic\\\eqref{eq:finalModel1}};
+		\node[draw, minimum width=1.6cm, minimum height=1.5cm, anchor=south west, align=center] (GRA) at (gravity) {Gravity\\\eqref{eq:gravity}};
+		\node[draw, minimum width=1cm, minimum height=0.8cm, anchor=south west, align=center, fill=red] (IN1) at (integr1) {$\frac{1}{s}$};
+		\node[draw, minimum width=2cm, minimum height=3cm, anchor=south west, align=center] (BTW) at (bodywor) {Body\\to\\world\\\eqref{eq:velocityWorld}\eqref{eq:orientation}};
+		\node[draw, minimum width=1cm, minimum height=0.8cm, anchor=south west, align=center, fill=red] (IN2) at (integr2) {$\frac{1}{s}$};
+		\node[draw, minimum width=1cm, minimum height=0.8cm, anchor=south west, align=center, fill=red] (IN3) at (integr3) {$\frac{1}{s}$};
+		\node[draw, minimum width=1cm, minimum height=0.8cm, anchor=south west, align=center, fill=red] (IN4) at (integr4) {$\frac{1}{s}$};
 
+		\draw[->] ($(input) + (0, 0.75)$) -- node[above]{$\mathbf{u}_{in}$} ($(MOT.180)$);
+		\draw[->] ($(MOT.0)$) -- node[above]{$\mathbf{u}$} ($(DYN.180) + (0, 0.75)$);
+		\draw[->] ($(IN2.0)$) -- node[above]{$\dot{\mathbf{x}}_B$} ($(BTW.180) + (0, 1.1)$);
+		\draw[->] ($(BTW.0) + (0, 1.1)$) -- node[above]{$\dot{\mathbf{x}}_W$} ($(IN3.180)$);
+		\draw[->] ($(BTW.0) - (0, 1.1)$) -- node[above]{$\dot{\mathbf{q}}_W$} ($(IN4.180)$);
+		\draw[->] ($(DYN.0) + (0, 1.1)$) -- node[above]{$\ddot{\mathbf{x}}$} ($(GRA.180) + (0, 0.35)$);
+		\draw[->] ($(DYN.0) - (0, 1.1)$) -- node[above]{$\dot{\boldsymbol{\omega}}_B$} ($(IN1.180)$);
+		\draw[->] ($(IN1.0)$) -- node[above]{$\boldsymbol{\omega}_B$} ($(BTW.180) - (0, 1.1)$);
+		\draw[->] ($(GRA.0)$) - ++(0.5, 0) -- ++(0.5, 0) |- node[above]{$\ddot{\mathbf{x}}_B$}($(IN2.180)$); 
+		\draw[->] ($(IN3.0)$) -- node[above]{$\mathbf{x}_W$} (output1);
+		\draw[->] ($(IN4.0)$) -- node[above]{$\mathbf{q}_W$} (output2);
+		\draw[-] (outfit1) |- (outfit2);
+		\draw[->] (outfit2) |- ($(GRA.180) - (0, 0.35)$);
+
+	\end{tikzpicture}
+	\caption{Block diagram of the quadrotor's dynamic.}
+	\label{fig:quadDynBlock}
+\end{figure}
+
+\noindent In figure \ref{fig:quadDynBlock} is report a block diagram of the quadrtotor's dynamic, from the inputs $\mathbf{u}_{in}$, to position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ in the world frame.
 
 
 \subsection{Adding the rotating platform}

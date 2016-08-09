@@ -1,7 +1,7 @@
 \chapter{Trajectories generator}
 \label{trajectoriesGenerator}
 
-An important aspect of this project is the path plannig, because the aim is to map and navigate in a enviroment without a priori information and in complete autonomous. The study of path planning alghoritms and the sensor fusion to obtain the pose of the vehicle is not part of this thesis, however is part of this thesis to generate a trajectory for the UAV based on the output of a path planning algorithm. In particular, usually exploration algorithms provide only setpoints, not full trajectories \cite{potentialField} \cite{visionBasedMAV}. Is then necessary to provide a tool to generate possible trajectorie with constraints in the enviroment and in the dynamic of the vehicle. In this project we implemented the solution proposed in the work \cite{minimumSnap}, where the author, after providing model and control, generate a trajectory composed by picewise polynomial functions.
+An important aspect of this project is the path plannig, because the aim is to map and navigate in a enviroment without a priori information and in complete autonomous. The study of path planning alghoritms and the sensor fusion to obtain the pose of the vehicle is not part of this thesis, however is part of this thesis to generate a trajectory for the UAV based on the output of a path planning algorithm. In particular, usually exploration algorithms provide only setpoints, not full trajectories \cite{potentialField} \cite{visionBasedMAV}. Is then necessary to provide a tool to generate possible trajectorie with constraints in the enviroment and in the dynamic of the vehicle. In this project we implemented the solution proposed in the work \cite{minimumSnap} and \cite{polyTraj}, where the author, after providing model and control, generate a trajectory composed by picewise polynomial functions.
 
 
 \section{Trajectoy definition}
@@ -23,7 +23,7 @@ In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is define as a position
 \noindent where $\sigma_{d,i,j}$ is the coefficient of orden $i$ of the trajectory piece $j$ and $t_k$ is the time that the vehicle has to reach setpoint $k$, $i \in \begin{bmatrix}0 & n\end{bmatrix}$, $j \in \begin{bmatrix}1 & m\end{bmatrix}$, $k \in \begin{bmatrix}1 & m\end{bmatrix}$. The interest is then to minimize a cost function wich can be written using these piecewise polynomial. 
 
 \begin{alignat}{3}
-	\min\qquad & \int_{t_0}^{t_m}\mu_{\mathbf{x}} \Bigg|\Bigg|\frac{d^{k_{\mathbf{x}}}\mathbf{x}_d}{dt^{k_{\mathbf{x}}}} \Bigg|\Bigg|^2 + \mu_{\psi}\frac{d^{k_{\psi}}\psi_d}{dt^{k_{\psi}}}^2 dt \\
+	\min\qquad & \int_{t_0}^{t_m}\mu_{\mathbf{x}} \Bigg|\Bigg|\frac{d^{k_{\mathbf{x}}}\mathbf{x}_d}{dt^{k_{\mathbf{x}}}} \Bigg|\Bigg|^2 + \mu_{\psi}\Bigg(\frac{d^{k_{\psi}}\psi_d}{dt^{k_{\psi}}}\Bigg)^2dt \\
 	\text{subject to}\qquad & \boldsymbol{\sigma}_d(t_i) = \boldsymbol{\sigma}_{d,i}, && i=0,\dots ,m \nonumber \\
 	& \frac{d^px_d}{dt^p}\Big|_{t=t_j}=0, && j=0,m; & p=1,\dots ,k_r \nonumber \\
 	& \frac{d^py_d}{dt^p}\Big|_{t=t_j}=0, && j=0,m; & p=1,\dots ,k_r \nonumber \\
@@ -32,14 +32,186 @@ In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is define as a position
 	\label{eq:minimizationCost}
 \end{alignat}
 
-\noindent where $\mu_{\mathbf{x}}$ and $\mu_{\psi}$ are constants that make the integrand nondimensional. Here $\boldsymbol{\sigma}_d = \begin{bmatrix} x_d & y_d & z_d & \psi_d\end{bmatrix}^T$ and $\boldsymbol{\sigma}_{d,i}=\begin{bmatrix}x_{d,i} & y_{d,i} & z_{d,i} & \psi_{d,i}\end{bmatrix}^T$. The first constraint indicates that the result trajectory has to pass through the desire setpoints, while the rest of the constraints impose that all the derivatives at the initial and final point have to be zero (one can also set them to a specific value if necessary). By using the same choice of \cite{minimumSnap2}, we decide to minimize the snap for the position ($k_{\mathbf{x}}=4$) and the second derivative of the yaw angle ($k_{\psi}=2$). Now we want to formulate the trajectory generation problem as an optimization of a functional but in a finite dimensional setting. This will keep the computational effort very small to guarantee a real time application. In order to to this, we first write the constants $\boldsymbol{\sigma}_{d,i,j} =\begin{bmatrix}x_{d,i,j} & y_{d,i,j} & z_{d,i,j} & \psi_{d,i,j}\end{bmatrix}^T$ as a $4\cdot n\cdot m\times 1$ vector $c$ with decision variables $\{x_{d,i,j} , y_{d,i,j} , z_{d,i,j} , \psi_{d,i,j}, i \in \begin{bmatrix}0 & n\end{bmatrix}, j \in \begin{bmatrix}0 & m\end{bmatrix}\}$. The trajectory generation preoblem \eqref{eq:minimizationCost} can be written in the form of a quadratic program (QP):
+\noindent where $\mu_{\mathbf{x}}$ and $\mu_{\psi}$ are constants that make the integrand nondimensional. Here $\boldsymbol{\sigma}_d = \begin{bmatrix} x_d & y_d & z_d & \psi_d\end{bmatrix}^T$ and $\boldsymbol{\sigma}_{d,i}=\begin{bmatrix}x_{d,i} & y_{d,i} & z_{d,i} & \psi_{d,i}\end{bmatrix}^T$. We also assume that $t_0=0$ without loss of generality. The first constraint indicates that the result trajectory has to pass through the desire setpoints, while the rest of the constraints impose that all the derivatives at the initial and final point have to be zero (one can also set them to a specific value if necessary). By using the same choice of \cite{minimumSnap2}, we decide to minimize the snap for the position ($k_{\mathbf{x}}=4$) and the second derivative of the yaw angle ($k_{\psi}=2$). Now we want to formulate the trajectory generation problem as an optimization of a functional but in a finite dimensional setting. This will keep the computational effort very small to guarantee a real time application. In order to to this, we first write the constants $\boldsymbol{\sigma}_{d,i,j} =\begin{bmatrix}x_{d,i,j} & y_{d,i,j} & z_{d,i,j} & \psi_{d,i,j}\end{bmatrix}^T$ as a $4\cdot n\cdot m\times 1$ vector $\mathbf{c}$ with decision variables $\{x_{d,i,j} , y_{d,i,j} , z_{d,i,j} , \psi_{d,i,j}, i \in \begin{bmatrix}0 & n\end{bmatrix}, j \in \begin{bmatrix}0 & m\end{bmatrix}\}$. The trajectory generation preoblem \eqref{eq:minimizationCost} can be written in the form of a quadratic program (QP):
 
 \begin{alignat}{2}
-	\min\qquad & c^THc + f^Tc \\
-	\text{subject to}\qquad & Ac \le b \nonumber \\
-	& A_{eq}c = b_{eq} \nonumber
+	\min\qquad & \mathbf{c}^TH\mathbf{c} + f^T\mathbf{c} \\
+	\text{subject to}\qquad & A\mathbf{c} \le \mathbf{b} \nonumber \\
+	& A_{eq}\mathbf{c} = \mathbf{b}_{eq} \nonumber
 	\label{eq:quadraticProgram}
 \end{alignat}
 
-\noindent where the objective function will incorporate the minimization of the functional while the contraint can be used to satisfy constraints in the trajectory and it derivatives. A specification of an initial condition, final condition, or intermediate condition on any derivative of the trajectory (e.g. $\frac{d^kx_d}{dt^k}$) can be written as a row of the constraint $A_{eq}c = b_{eq}$. If conditions do not need to be
-specified exactly then they can be represented with the inequality constraint $Ac\le b$.
+\noindent where the objective function will incorporate the minimization of the functional while the contraint can be used to satisfy constraints in the trajectory and it derivatives. A specification of an initial condition, final condition, or intermediate condition on any derivative of the trajectory (e.g. $\frac{d^kx_d}{dt^k}$) can be written as a row of the constraint $A_{eq}\mathbf{c} = \mathbf{b}_{eq}$. If conditions do not need to be
+specified exactly then they can be represented with the inequality constraint $A\mathbf{c}\le \mathbf{b}$. 
+
+\noindent Moreover, to simplify the problem, can be notice that in the cost function of equation \eqref{eq:minimizationCost}, the four dimension are indipendent, this means that the problem can be split in four different problem for each dimension. In such a way, the construction of the qudratic problem vectors and matrices will be considerable more simple. Furthermore, is possible to assume that each setpoint starts from $t_0=0$ and end to $t_j=1$. This because if we define a new time varible such as
+
+\begin{equation}
+	\tau = \frac{t-t_{j-1}}{t_j-t_{j-1}}
+	\label{eq:simplyTime}
+\end{equation}
+
+\noindent the new one dimension position at time $\tau$ become
+
+\begin{equation}
+	x(\tau) = x(\frac{t-t_{j-1}}{t_j-t_{j-1}})	
+\end{equation}
+
+\noindent and its derivatives
+
+\begin{align*}
+	\frac{d}{dt}x(t) &= \frac{d}{dt}x(\tau) \\
+	&= \frac{d}{d\tau}\frac{d\tau}{dt}x(\tau) \\
+	&= \frac{1}{t_j-t_{j-1}}\frac{d}{d\tau}x(\tau) \\
+	&... \\
+	\frac{d^k}{dt^k}x(t) &= \frac{1}{(t_j-t_{j-1})^k}\frac{d^k}{d\tau^k}x(\tau)
+\end{align*}
+
+\noindent We can thus solve for each piecec of any piece-wise trajectory from $\tau=0$ to $1$, then scale to any $t_0$ to $t_j$.
+
+
+\section{Optimization of a trajectory between two setpoints}
+
+To make the derivation simpler, is better to start the optimization problem with only two setpoints and in only one dimension. In particular, the cost function become 
+
+\begin{alignat}{2}
+	J &= \int_{t_0}^{t_1}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt = \mathbf{c}^TH_{(t_0,t_1)}\mathbf{c} \\
+	\text{subject to}\qquad & A\mathbf{c} = \mathbf{b} \nonumber
+	\label{eq:oneSetpoint}
+\end{alignat}
+
+\noindent We can instead look for the non-dimensionalized trajectory $x(\tau)=c_n\tau^n+c_{n-1}\tau^{n-1}+\dots+c_1\tau+c_0$ where $\tau=\frac{t-t_0}{t_1-t_0}$. Note that this makes $\tau$ range from $0$ to $1$. Let $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$.We can wite the cost function $J$ in term of the non-dimensionalized trajectory $x(\tau)$:
+
+\begin{align}
+	J &= \int_{t_0}^{t_1}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt \\
+	&= \int_0^1\Bigg|\Bigg|\frac{1}{(t_1-t_0)^k}\frac{d^kx(\tau)}{d\tau}\Bigg|\Bigg|^2d(\tau(t_1-t_0)+t_0) \nonumber \\
+	&= \frac{t_1-t_0}{(t_1-t_0)^{2k}}\int_0^1\Bigg|\Bigg|\frac{d^kx(\tau)}{d\tau}\Bigg|\Bigg|^2d\tau \nonumber \\
+	&= \frac{1}{(t_1-t_0)^{2k-1}}\mathbf{c}^TH_{(0,1)}\mathbf{c} \nonumber \\
+	&= \mathbf{c}^T\Bigg(\frac{1}{(t_1-t_0)^{2k-1}}H_{(0,1)}\Bigg)\mathbf{c} \nonumber
+\end{align}
+
+\noindent Thus, we want to minimize the cost function
+
+\begin{alignat}{2}
+	J &= \mathbf{c}^T\Bigg(\frac{1}{(t_1-t_0)^{2k-1}}H_{(0,1)}\Bigg)\mathbf{c} \\
+	\text{subject to}\qquad & A\mathbf{c} = \mathbf{b} \nonumber
+\end{alignat}
+
+\noindent To find $H_{(0,1)}$, when $\mathbf{c}'=\begin{bmatrix}c_0 & c_1 & \dots & c_{n-1} & c_n\end{bmatrix}^T$, we can find $H'_{(0,1)}$ with:
+
+\begin{align}
+	H'[i,j]_{(t_0,t_11)} &=
+	\begin{cases}
+		\prod\limits_{z=0}^{k-1}(i-z)(j-z)\frac{t_1^{i+j-2k+1}-t_0^{i+j-2k+1}}{i+j-2k+1} & i\ge k \wedge j\ge k \\
+		0 & i<k \vee j<k
+	\end{cases} \label{eq:Htranspose} \\
+	& i=0,\dots,n,\qquad j=0,\dots,n \nonumber
+\end{align}
+
+\noindent However, $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$. Reflecting $H'$ from equation \eqref{eq:Htranspose} horizontally and vertcally will give the desire $H$ for the form of $\mathbf{c}$ we desire. The function to minimize is then $\Bigg(\frac{1}{(t_1-t_0)^{2k}}H_{(0,1)}\Bigg)$.
+
+\noindent To find $A$
+
+\begin{align*}
+	A\mathbf{c} &= \mathbf{b} \\
+	\begin{bmatrix}
+		A(t_0) \\
+		A(t_1) 
+	\end{bmatrix}
+	\mathbf{c} &=
+	\begin{bmatrix}
+		x(t_0) \\
+		\vdots \\
+		x^{(k-1)}(t_0) \\
+		x(t_1) \\
+		\vdots \\
+		x^{(k-1)}(t_1)
+	\end{bmatrix}
+\end{align*}
+
+\noindent Note that $A\mathbf{c}$ only contains rows where constraints are specified, if a condition is unconstrained just omit a row. Assuming that every condition is constrained, the general form of $A$ is:
+
+\begin{align}
+	A[i,j](t) &= 
+	\begin{cases}
+		\prod\limits_{z=0}^{i-1}(n-z-j)t^{n-j-i} & n-j \ge i \\
+		0 & n-j<i
+	\end{cases} \\
+	& i=0,\dots,r-1, \qquad j=0,\dots,n \nonumber
+\end{align}
+
+\noindent where $A[i,j]$ represents the $(n-j)$th coefficient of the $i$th derivative. In the non-dimensionalized case, we have $\tau_0=0$ and $\tau_1=1$:
+
+\begin{equation}
+	\begin{bmatrix}
+		A(\tau_0) \\
+		A(\tau_1) 
+	\end{bmatrix}
+	\mathbf{c} =
+	\begin{bmatrix}
+		x(t_0) \\
+		\vdots \\
+		(t_1-t_0)^{k-1}x^{(k-1)}(t_0) \\
+		x(t_1) \\
+		\vdots \\
+		(t_1-t_0)^{k-1}x^{(k-1)}(t_1)
+	\end{bmatrix}
+\end{equation}
+
+
+\section{Optimization of a trajectory between $m+1$ setpoints}
+
+In this section, by recalling what we study in the previous section, is possible to derive the equations to optimize a trajectory for an arbitrary number of setpoints. In particular, we seek the piece-wise trajectory:
+
+\begin{equation}
+	x(t)=
+	\begin{cases}
+		x_1(t), & t_0\le t<t_1 \\
+		x_2(t), & t_1\le t<t_2 \\
+		\vdots \\
+		x_m(t), & t_{m-1}\le t<t_m 	
+	\end{cases}
+\end{equation}
+
+\noindent and continue to minimize the cost function
+
+\begin{alignat}{2}
+	J &= \int_{t_0}^{t_m}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt = \mathbf{c}^TH_{(t_0,t_m)}\mathbf{c} \\
+	\text{subject to}\qquad & A\mathbf{c} = \mathbf{b} \nonumber
+\end{alignat}
+
+\noindent and again look for the non-dimensionalized trajectory
+
+\begin{align}
+	x(\tau) &=
+	\begin{cases}
+		x_1(\tau) = c_{1,n}\tau^n+\dots+c_{1,0}, & t_0\le t<t_1,\quad \tau=\frac{t-t_0}{t_1-t_0} \\
+		x_m(\tau) = c_{m,n}\tau^n+\dots+c_{m,0}, & t_{m-1}\le t<t_m,\quad \tau=\frac{t-t_{m-1}}{t_m-t_{m-1}}
+	\end{cases} \\
+	& 0\le\tau<1 \nonumber
+\end{align}
+
+\noindent Let $\mathbf{c}_z=\begin{bmatrix}c_{z,n} & c_{z,n-1} & \dots & c_{z,1} & c_{z,0}\end{bmatrix}^T$ and $\mathbf{c}=\begin{bmatrix}\mathbf{c}_1^T & \mathbf{c}_2^T & \dots & \mathbf{c}_m^T\end{bmatrix}^T$. Each piece of the trajectory is optimized individually between $\tau_0=0$ and $\tau_1=1$. We want to minimize:
+
+\begin{alignat}{2}
+	J &= \int_{t_0}^{t_m}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt \\
+	&= \sum\limits_{z=1}^m\int_{t_z-1}^{t_z}\Bigg|\Bigg|\frac{d^kx_z(t)}{dt}\Bigg|\Bigg|^2dt \nonumber \\
+	&= \sum\limits_{z=1}^m\int_0^1\frac{t_z-t_{z-1}}{(t_z-t_{z-1})^{2k}}\Bigg|\Bigg|\frac{d^kx_z(\tau)}{d\tau}\Bigg|\Bigg|^2d\tau \nonumber \\
+	&= \sum\limits_{z=1}^m \mathbf{c}_z^T\frac{1}{(t_z-t_{z-1})^{2k-1}}H_{(0,1)}\mathbf{c}_k \nonumber \\
+	&= \mathbf{c}^TH\mathbf{c} \nonumber \\
+	\text{subject to} \qquad & A\mathbf{c}=\mathbf{b} \nonumber
+\end{alignat}
+
+\noindent To find $H$, we recall that for each $\mathbf{c}'_z=\begin{bmatrix}c_{z,0} & c_{z,1} & \dots & c_{z,n-1} & c_{z,n} \end{bmatrix}^T$, where $z=1,\dots,m$, $H'_{(0,1)}$ is given by equation \eqref{eq:Htranspose}. Since $\mathbf{c}_z=\begin{bmatrix}c_{z,n} & c_{z,n-1} & \dots & c_{z,1} & c_{z,0}\end{bmatrix}^T$, refletting $H'$ horizzontally and vertically will give the desire $H$ for the form of $\mathbf{c}_k$. Is then possible to create the block diagonal matrix 
+
+\begin{equation}
+	H = 
+	\begin{bmatrix}
+		\frac{1}{(t_1-t_0)^{2k-1}}H_{(0,1)} & \dots & 0 & 0 \\
+		 & \dots & \dots & \vdots \\
+		\dots & 0 & \frac{1}{(t_{m-1}-t_{m-2})^{2k-1}}H_{(0,1)} & 0 \\
+		0 & \dots & 0 & \frac{1}{(t_m-t_{m-1})^{2k-1}}H_{(0,1)}
+	\end{bmatrix}	
+\end{equation}
+
+\noindent To find $A$,
