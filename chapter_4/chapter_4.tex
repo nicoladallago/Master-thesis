@@ -136,7 +136,7 @@ To make the derivation simpler, is better to start the optimization problem with
 	\begin{cases}
 		\prod\limits_{z=0}^{i-1}(n-z-j)t^{n-j-i} & n-j \ge i \\
 		0 & n-j<i
-	\end{cases} \\
+	\end{cases} \label{eq:matrixA} \\
 	& i=0,\dots,r-1, \qquad j=0,\dots,n \nonumber
 \end{align}
 
@@ -197,7 +197,7 @@ In this section, by recalling what we study in the previous section, is possible
 	J &= \int_{t_0}^{t_m}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt \\
 	&= \sum\limits_{z=1}^m\int_{t_z-1}^{t_z}\Bigg|\Bigg|\frac{d^kx_z(t)}{dt}\Bigg|\Bigg|^2dt \nonumber \\
 	&= \sum\limits_{z=1}^m\int_0^1\frac{t_z-t_{z-1}}{(t_z-t_{z-1})^{2k}}\Bigg|\Bigg|\frac{d^kx_z(\tau)}{d\tau}\Bigg|\Bigg|^2d\tau \nonumber \\
-	&= \sum\limits_{z=1}^m \mathbf{c}_z^T\frac{1}{(t_z-t_{z-1})^{2k-1}}H_{(0,1)}\mathbf{c}_k \nonumber \\
+	&= \sum\limits_{z=1}^m \mathbf{c}_z^T\frac{1}{(t_z-t_{z-1})^{2k-1}}H_{(0,1)}\mathbf{c}_z \nonumber \\
 	&= \mathbf{c}^TH\mathbf{c} \nonumber \\
 	\text{subject to} \qquad & A\mathbf{c}=\mathbf{b} \nonumber
 \end{alignat}
@@ -214,4 +214,151 @@ In this section, by recalling what we study in the previous section, is possible
 	\end{bmatrix}	
 \end{equation}
 
-\noindent To find $A$,
+\noindent To find $A$, first, we need to account for endpoint constraints, in the non-dimensionalized case:
+
+\begin{align}
+	A_{endpoint}\mathbf{c} &= \mathbf{b}_{endpoint} \\
+	\begin{bmatrix}
+		A(\tau_0) & 0         & \dots & 0         \\
+		A(\tau_1) & 0         & \dots & 0         \\
+		0         & A(\tau_0) & \dots & 0         \\
+		0         & A(\tau_1) & \dots & 0         \\
+		\vdots    & 0         & \dots & \vdots    \\
+		0         & \dots     & 0     & A(\tau_0) \\
+		0         & \dots     & 0     & A(\tau_1)            
+	\end{bmatrix}
+	\mathbf{c} &= 
+	\begin{bmatrix}
+		x_1(t_0) 								\\
+		\vdots   								\\
+		(t_1-t_0)^{k-1}x_1^{(k-1)}(t_0) 		\\
+		x_1(t_1) 								\\
+		\vdots   								\\
+		(t_1-t_0)^{k-1}x_1^{(k-1)}(t_1) 		\\
+		\vdots   								\\
+		x_m(t_{m-1}) 							\\
+		\vdots                                  \\
+		(t_m-t_{m-1})^{k-1}x_m^{(k-1)}(t_{m-1}) \\
+		x_m(t_m)                                \\
+		(t_m-t_{m-1})^{k-1}x_m^{(k-1)}(t_m)
+	\end{bmatrix} \nonumber
+\end{align}
+
+\noindent Like before, we just omit rows where a condition is unconstrained. Also, note that except for constraints at $t_0$ and $t_m$, every other constraint must be include twice. The equation for $A[i,j](t)$ is the same of \eqref{eq:matrixA}
+
+\noindent We must also take into account for constraints that ensure that when the trajectory switches from one piece to another at the sepoints, position and all the derivative lower than $k$ remain continuous, for a smooth path. In other words, is require that
+
+\begin{align}
+	A_{cont}\mathbf{c} &= \mathbf{b}_{cont} \\
+	\begin{bmatrix}
+		x_1(t_1)-x_2(t_2) 							  \\
+		\vdots            							  \\
+		x_1^{(k-1)}(t_1)-x_2^{(k-1)}(t_1) 			  \\
+		\vdots                                        \\
+		x_{m-1}(t_{m-1})-x_m(t_{m-1})                 \\
+		\vdots                                        \\
+		x_{m-1}^{(K-1)}(t_{m-1})-x_m^{(K-1)}(t_{m-1})
+	\end{bmatrix} 
+	&= 0 \nonumber
+\end{align}
+
+\noindent Translating to the non-dimeensionalized casa, $\tau_0=0$, $\tau_1=1$, and
+
+\begin{align}
+	A_{cont}\mathbf{c} &= \mathbf{b}_{cont} \\
+	\begin{bmatrix}
+		x_1(\tau_1)-x_2(\tau_2) \\
+		\vdots \\
+		\frac{1}{(t_1-t_0)^{k-1}}x_1^{(k-1)}(\tau_1)-\frac{1}{(t_2-t_1)^{k-1}}x_2^{(k-1)}(\tau_1) \\
+		\vdots \\
+		x_{m-1}(\tau_1)-x_m(\tau_0) \\
+		\vdots \\
+		\frac{1}{(t_{m-2}-t_{m-1})^{k-1}}x_{m-1}^{(K-1)}(\tau_1)-\frac{1}{(t_m-t_{m-1})^{k-1}}x_m^{(K-1)}(\tau_0)
+	\end{bmatrix}
+	&= 0 \nonumber
+\end{align}
+
+\noindent and then
+
+\begin{equation}
+	\begin{bmatrix}
+		A_{cont}(t_1) & 0             & \dots & 0 \\
+		0             & A_{cont}(t_2) &	\dots & 0 \\
+		\vdots        & 0             & \dots & 0 \\
+		0             & \dots         & 0     & A_{cont}(t_{m-1})  
+	\end{bmatrix}
+	\mathbf{c}=0
+\end{equation}
+
+\noindent where
+
+\begin{align}
+	A_{cont}[i,j](t_z) &=
+	\begin{cases}
+		\frac{1}{(t_z-t_{z-1})^i}\prod\limits_{z=0}^{i-1}(n-z-j)\tau_1^{n-j-i}, & n-j\ge i\wedge j\le n \\
+		0,                                                                       & n-j<i\wedge j\le n   \\
+		-\frac{1}{(t_{z+1}-t_z)^i}\prod\limits_{z=0}^{i-1}(1-z-j)\tau_0^{1-j-i}, & 1-j\ge i\wedge j>n   \\
+		0,                                                                       & 1-j<i\wedge j>n      
+	\end{cases} \\
+	& i=0,\dots,k-1,\quad j=0,\dots,2(n+1) \nonumber 
+\end{align}
+
+\noindent The final constraints $A\mathbf{c}=\mathbf{b}$ take then the final form
+
+\begin{align} 
+	A\mathbf{c} &= \mathbf{b} \\
+	\begin{bmatrix}
+		A_{endpoint} \\
+		A_{cont}
+	\end{bmatrix}
+	\mathbf{c} &=
+	\begin{bmatrix}
+		b_{endpoint} \\
+		0
+	\end{bmatrix} \nonumber	
+\end{align}
+
+
+\section{Adding corridor constraints}
+
+In this section, corridors constraints will add in the cost function \eqref{eq:minimizationCost}. For corridor constraints, we mean that the desire trajectory must be inside a corridor, this why for a safe obstacle avoidance and navigation algorithm, the vehicle must respect distance between walls and obstacles. To do this, we first define $\mathbf{u}_i$ as the unit vector along the segment from setpoint $\mathbf{r}_i$ and setpoint $\mathbf{r}_{i+1}$. 
+
+\begin{equation}
+	\mathbf{u}_i=\frac{\mathbf{r}_{i+1}-\mathbf{r}}{||\mathbf{r}_{i+1}-\mathbf{r}||}
+	\label{eq:unitVector}
+\end{equation}
+
+\noindent The perpendicular distance vector, $\mathbf{d}_i(t)$, from segment $i$ is define as
+
+\begin{equation}
+	\mathbf{d}_i(t) = (\mathbf{r}_d(t)-\mathbf{r}_i)-((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{t}_i)\mathbf{u}_i		
+	\label{eq:perpendicularVector}	
+\end{equation}
+
+\noindent where $\mathbf{r}_d(t)$ is the desire trajectory at istant $t$. A corridor width on the infinity norm, $\delta_{i}$, is define for each corridor as follow
+
+\begin{equation}
+	\big|\big|\mathbf{d}_i(t)\big|\big|_{\infty}\le\delta_i \quad \text{while} \quad t_i\le t\le t_{i+1}
+	\label{eq:corridorWidth}
+\end{equation}
+
+\noindent The reason to write the constraint like that, is because it can be incorporate into the QP problem by introducing $n_c$ intermediate points as
+
+\begin{equation}
+	\Bigg|x_a\cdot\mathbf{d}_i\Big(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)\Big)\Bigg|\le\delta_i \quad \text{for} \quad j=1,\dots,n_c
+	\label{eq:intermediatePoints}
+\end{equation}
+
+\noindent where for $x_a$ we mean that procedure must be compute for $x_W$, $y_W$ and $z_W$, with $\mathbf{x}_W=\begin{bmatrix}x_W & y_W & z_W\end{bmatrix}^T$. Of course a corridor constraint in the desire yaw doesn't have sense. To do this, we introduce inequality constraints of the form $A_{ineq}\mathbf{c}\le \mathbf{b}_{ineq}$. 
+
+\noindent To find $A_{ineq}$, we first break down the inequality \eqref{eq:intermediatePoints} into
+
+\begin{align}
+	(x_a\cdot\mathbf{d}_i(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)))\le & \delta_i \\
+	-(x_a\cdot\mathbf{d}_i(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)))\le & \delta_i
+	\label{eq:breakConstraint}
+\end{align}
+
+\noindent This result in a total of $2\cdot2\cdot n_c$ constraints for each corridor constraint. Then by performing some math, the matrix $A_{ineq}$ and the vector $b_{ineq}$ can be deduce \footnote{The formulation of such matrix is very eavy and difficoult to understand, that's why is not report.}.
+
+ADD FIGURES OF SOME TRAJECTORIES AND COMMMENTS

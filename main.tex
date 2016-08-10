@@ -44,6 +44,19 @@
 	./chapter_5/chapter_5
 }
 
+% fancyhdr setup
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancypagestyle{plain}{}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+\fancyhead[LE]{\bfseries{\thepage}}
+\fancyhead[RO]{\bfseries{\thepage}}
+\fancyhead[LO]{\bfseries{\leftmark}}
+\fancyhead[RE]{\bfseries{\nouppercase{\rightmark}}}
+\cfoot{}
+
+
 % Font
 \usepackage[english]{babel} 
 \usepackage[T1]{fontenc}
