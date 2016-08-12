@@ -361,4 +361,11 @@ In this section, corridors constraints will add in the cost function \eqref{eq:m
 
 \noindent This result in a total of $2\cdot2\cdot n_c$ constraints for each corridor constraint. Then by performing some math, the matrix $A_{ineq}$ and the vector $b_{ineq}$ can be deduce \footnote{The formulation of such matrix is very eavy and difficoult to understand, that's why is not report.}.
 
-ADD FIGURES OF SOME TRAJECTORIES AND COMMMENTS
+\begin{figure}[h]
+	\centering
+ 	\includestandalone[]{./chapter_4/plots/corridor}
+ 	\caption{Setpoints and desire trajectory, with and without corridor constraints between setpoints 1 and 2.}
+ 	\label{fig:trajectory}		
+\end{figure}
+
+\noindent In figure \ref{fig:trajectory} are reported examples of trajectories, with and without corridor constraints.

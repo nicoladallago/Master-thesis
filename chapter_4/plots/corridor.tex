@@ -1,0 +1,41 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat = 1.9}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	
+	\begin{tikzpicture}[scale=1]
+		%\draw[help lines,step=.2] (0,0) grid (7,4);
+		\begin{axis}[
+		grid=major,
+  		xmin=0, 
+  		xmax=1.4, 
+  		ymin=-0.05, 
+  		ymax=0.45,
+  		title = {Trajectory generator},
+  		xlabel = {$x \hspace{10pt} [m]$},
+  		ylabel = {$y \hspace{10pt} [m]$},
+  		grid = major,              
+  		width = 14cm,
+		height = 10cm,  		
+  		legend pos=north east,         
+  		legend cell align=right,
+  		legend style={at={(0.5,-0.2)},anchor=north},     
+  		legend entries={setpoints, trivial trajectory, witout corridor constraints, with corridor constraints}
+		]
+			\addplot[black, only marks, mark=*] table {../data/des_pos.dat};
+			\addplot[black, dashed] table {../data/des_pos.dat};
+			\addplot[blue] table {../data/traj.dat};
+			\addplot[red] table {../data/traj_corr.dat};
+		\end{axis}
+	\end{tikzpicture}
+\end{document}		
