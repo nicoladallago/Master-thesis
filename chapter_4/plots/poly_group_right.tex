@@ -1,0 +1,41 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{filecontents}{zeros.txt}
+	X    Y
+	0    0
+	6    0
+\end{filecontents}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+    	group style={
+        	group name = left,
+        	group size = 1 by 2,
+        	ylabels at = edge left, 
+        	yticklabels at = edge left,    
+        	vertical sep = 50pt},        
+		xmin = 0,
+      	xmax = 6,
+		width = 7.5cm,
+		height = 5cm] 
+			\nextgroupplot[title = {$\dot{x}(t) \hspace{10pt} [m/s]$}, grid=major, xlabel={$t \hspace{10pt} [s]$}, xlabel shift = -10 pt]
+			\addplot[blue, ultra thick] table {../data/vel_x.dat};
+			\addplot[black, only marks, mark=*,ultra thick] table {zeros.txt};
+			\nextgroupplot[title = {$\frac{d^3x(t)}{dt^3} \hspace{10pt} [m/s^3]$}, grid=major, xlabel={$t \hspace{10pt} [s]$}, xlabel shift = -10 pt, 		legend pos=north east,         
+  			legend cell align=right,
+  			legend style={at={(0.5, -0.85)},anchor=north},     
+  			legend entries={setpoints, derivatives of the trajectory}]
+  			\addplot[black, only marks, mark=*,ultra thick] table {zeros.txt};
+			\addplot[blue, ultra thick] table {../data/jerk_x.dat};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}

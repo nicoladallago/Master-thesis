@@ -1,0 +1,41 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat = 1.9}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{filecontents}{zeros.txt}
+	X    Y
+	0    0
+	6    0
+\end{filecontents}
+
+\begin{document}
+	
+	\begin{tikzpicture}[scale=1]
+		%\draw[help lines,step=.2] (0,0) grid (7,4);
+		\begin{axis}[
+  		title = {$\frac{d^4x(t)}{dt^4} \hspace{10pt} [m/s^4]$},
+  		xlabel = {$t \hspace{10pt} [s]$},
+  		grid = major,              
+		xmin = 0,
+      	xmax = 6,
+      	xlabel shift = -10 pt,
+		width = 7.5cm,
+		height = 4cm, 		
+  		legend pos=north east,         
+  		legend cell align=right,
+  		legend style={at={(2, 0)},anchor=north},     
+  		legend entries={derivatives of the trajectory, setpoints}
+		]
+			\addplot[blue, ultra thick] table {../data/snap_x.dat};
+			\addplot[black, only marks, mark=*,ultra thick] table {zeros.txt};
+		\end{axis}
+	\end{tikzpicture}
+\end{document}		

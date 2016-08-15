@@ -79,14 +79,14 @@
 		width = 11cm,
 		height = 5cm] 
 			\nextgroupplot[title={$\boldsymbol{\omega},\hat{\boldsymbol{\omega}} \hspace{10pt} [rad/s]$}, legend entries={$\omega_x$, $\hat{\omega}_x$}, grid=major]
- 			\addplot[red] table {../data/omega_x.dat};
- 			\addplot[blue] table {../data/omega_x_est.dat};
+ 			\addplot[red, thick] table {../data/omega_x.dat};
+ 			\addplot[blue, thick] table {../data/omega_x_est.dat};
 			\nextgroupplot[legend entries={$\omega_y$, $\hat{\omega}_y$}, grid=major]
- 			\addplot[red] table {../data/omega_y.dat};
- 			\addplot[blue] table {../data/omega_y_est.dat};
+ 			\addplot[red, thick] table {../data/omega_y.dat};
+ 			\addplot[blue, thick] table {../data/omega_y_est.dat};
      		\nextgroupplot[legend entries={$\omega_z$, $\hat{\omega}_z$}, grid=major]
- 			\addplot[red] table {../data/omega_z.dat};
- 			\addplot[blue] table {../data/omega_z_est.dat};
+ 			\addplot[red, thick] table {../data/omega_z.dat};
+ 			\addplot[blue, thick] table {../data/omega_z_est.dat};
 		\end{groupplot}
 	\end{tikzpicture}
 \end{document}

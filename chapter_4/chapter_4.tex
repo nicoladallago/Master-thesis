@@ -318,6 +318,15 @@ In this section, by recalling what we study in the previous section, is possible
 	\end{bmatrix} \nonumber	
 \end{align}
 
+\begin{figure}[h]
+	\centering
+ 	\includestandalone[valign=t]{./chapter_4/plots/poly_group_left}
+ 	\includestandalone[valign=t]{./chapter_4/plots/poly_group_right}
+ 	\caption{Generated trajectory with its derivatives.}
+ 	\label{fig:polyTrajectory}		
+\end{figure}
+
+\noindent In figure \ref{fig:polyTrajectory} is reported the firt dimension of a generate trajectory evolving over the time. In particular in blue are plot the trajectory and its first four derivative, till the snap. Instead in black are plot the setpoints for the trajectory and the initial and final condition for each derivative, that are equal to zero. Notice that between setpoints two and three, the trajectory is not as expected, in the sense that first tend to go far from the desire setpoint and than reach it. That's because this is only one dimension of a more complex three dimension trajectory.
 
 \section{Adding corridor constraints}
 
@@ -364,8 +373,8 @@ In this section, corridors constraints will add in the cost function \eqref{eq:m
 \begin{figure}[h]
 	\centering
  	\includestandalone[]{./chapter_4/plots/corridor}
- 	\caption{Setpoints and desire trajectory, with and without corridor constraints between setpoints 1 and 2.}
+ 	\caption{Setpoints and desire trajectory, with and without corridor constraints between setpoints 2 and 3.}
  	\label{fig:trajectory}		
 \end{figure}
 
-\noindent In figure \ref{fig:trajectory} are reported examples of trajectories, with and without corridor constraints.
+\noindent In figure \ref{fig:trajectory} are reported examples of trajectories, with and without corridor constraints. For better understanding are reposrt 2D trajectories, but the same example could be made also for 3D trajectories. The corridor constraint is present only between two setpoints, setpoint 2 and setpoint 3. As is possible to see, the trajectory remain in beetween the constraint, but become less smooth in compare to the one without constraints. Moreover, notice that the entire trajectory is different and not only the segment in between the corridor, this is another important advantage of using this technique to generate trajectores. 

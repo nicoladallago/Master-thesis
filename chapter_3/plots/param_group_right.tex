@@ -25,13 +25,13 @@
 		width = 7.5cm,
 		height = 4cm] 
 			\nextgroupplot[title = {$\frac{A_F}{I_{xx}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
-			\addplot[blue] table {../data/beta_2.dat};
+			\addplot[blue, ultra thick] table {../data/beta_2.dat};
 			\nextgroupplot[title = {$\frac{A_F}{I_{zz}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
-			\addplot[blue] table {../data/beta_4.dat};
+			\addplot[blue, ultra thick] table {../data/beta_4.dat};
       \nextgroupplot[title = {$\tau \hspace{10pt} [s]$}, grid=major]
-      \addplot[blue] table {../data/tau.dat};
+      \addplot[blue, ultra thick] table {../data/tau.dat};
       \nextgroupplot[title = {$\Delta l_y \hspace{10pt} [m]$}, grid=major, ytick={-0.1,-0.05,0}, yticklabels={$-0.1$, $-0.05$, $0$}]
-      \addplot[blue] table {../data/beta_7.dat};
+      \addplot[blue, ultra thick] table {../data/beta_7.dat};
 		\end{groupplot}
 	\end{tikzpicture}
 \end{document}

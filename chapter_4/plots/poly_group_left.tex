@@ -1,0 +1,49 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{filecontents}{setpoints.txt}
+	X    Y
+	0    0
+	2    0.5
+	4    0.7
+	6    1.4
+\end{filecontents}
+
+\begin{filecontents}{zeros.txt}
+	X    Y
+	0    0
+	6    0
+\end{filecontents}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+    	group style={
+        	group name = left,
+        	group size = 1 by 3,
+        	ylabels at = edge left, 
+        	yticklabels at = edge left,    
+        	vertical sep = 50pt},        
+		xmin = 0,
+      	xmax = 6,
+		width = 7.5cm,
+		height = 5cm] 
+			\nextgroupplot[title = {$x(t) \hspace{10pt} [m]$}, grid=major, xlabel={$t \hspace{10pt} [s]$}, xlabel shift = -10 pt]
+			\addplot[blue, ultra thick] table {../data/traj_x.dat};
+			\addplot[black, only marks, mark=*,ultra thick] table {setpoints.txt};
+			\nextgroupplot[title = {$\ddot{x}(t) \hspace{10pt} [m/s^2]$}, grid=major, xlabel={$t \hspace{10pt} [s]$}, xlabel shift = -10 pt]
+			\addplot[blue, ultra thick] table {../data/acc_x.dat};
+			\addplot[black, only marks, mark=*,ultra thick] table {zeros.txt};
+			\nextgroupplot[title = {$\frac{d^4x(t)}{dt^4} \hspace{10pt} [m/s^4]$}, grid=major, xlabel={$t \hspace{10pt} [s]$}, xlabel shift = -10 pt]
+			\addplot[blue, ultra thick] table {../data/snap_x.dat};
+			\addplot[black, only marks, mark=*,ultra thick] table {zeros.txt};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}
