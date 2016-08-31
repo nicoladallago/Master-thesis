@@ -1,30 +1,29 @@
 \chapter{Design and model}
 \label{designModel}
 
-In this chapter we will focus in the description of the mechanical model of the UAV and the sensor system and, from these, a mathematical model will derive, necessary for build and simulate a control law, and to perform system identification.
+In this chapter we will focus in the description of the mechanical model of the UAV and the sensor system and, from these, a mathematical model will be derived, necessary for build and simulate a control law, and to perform system identification.
 
 \section{Mechanical design}
 \label{mechanicalDesign}
 
-The overall objective of the Prometheus project is navigate and mapping, for these we mean to obtain a 3D reconstruction of a indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a standard UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
+The overall objective of the Prometheus project is navigation and mapping, for these we mean obtain a 3D reconstruction of an unknown indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a quadrotor type UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
 
 \begin{SCfigure}[\sidecaptionrelwidth][h]
 	\includegraphics[scale=0.21]{images/lidar_laser.jpg}
-	\caption{Lidar laser scanner, able to perform a 360 degrees mapping.}
+	\caption{Lidar laser scanner, it is able to perform a 360 degrees mapping.}
 	\label{fig:lidar}
 \end{SCfigure}
 
-\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is report in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attach in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attach to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can 3D map, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus where the sensors are also rotating around the UAV. In such a way, the Lidar has three degrees of fredom in the movement and 3D mapping can be perform. This solution comport, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
+\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is depict in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attached in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attached to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can maps direclty in 3D, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus, where the sensor is also rotating around the UAV. In such a way, the Lidar has three degrees of freedom in the movement and a 3D mapping can be performed. This solution comports, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
 
-Figure here RENDER
+\textcolor{red}{Add renders here.}
 
-\noindent In figure [] is possible to see clearly the platform, made of two lighweight rings, and the cart that provide the circular movement of the sensor. An important choice was also the selection of the UAV, that has to garantee to flight also with the weight of the mechanical structure, sensor and all the eletronics needed to fly and control the movement of the cart.
+\noindent In figure [\textcolor{red}{renders}] is possible to see clearly the platform, made of two lightweight rings, and the cart that provides the circular movement of the sensor. An important choice was also the selection of the UAV, that has to guarantee to flight also with the weight of the mechanical structure, sensor and all the electronics needed to fly and control the movement of the cart.
 
 \section{Mathematical model}
 \label{mathematicalModel}
 
-Is pretty much clear from the previous section that this UAV is different from allmost every other vheicle that is possible to buy, this of course require a complete and detailed study to characterized the mathematical model. To characterized the model, is before necessary to provide some definitions, that are also valid for standars commercial quadrotors.
-\newline A quadrotor helicopter is made of a central frame and foor propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrate in figure \ref{fig:quadrtotor}.
+Is pretty much clear from the previous section that this UAV is different from almost every other vehicle that is possible to buy, this of course require a complete and detailed study to characterize the mathematical model. For characterize the model, is before necessary to provide some definitions, that are also valid for standar commercial quadrotors.
 
 \begin{figure}[h]
 	\centering
@@ -80,7 +79,8 @@ Is pretty much clear from the previous section that this UAV is different from a
 	\label{fig:quadrtotor}
 \end{figure}
 
-\noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attach to the vehicle.
+\noindent A quadrotor helicopter is made of a central frame and four propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrated in figure \ref{fig:quadrtotor}. \newline
+\noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attached to the vehicle.
 
 \begin{figure}[h]
 	\centering
@@ -105,17 +105,18 @@ Is pretty much clear from the previous section that this UAV is different from a
 		\draw[-, dashed, rotate=30] (0, 0, 0) -- (\xbody, \ybody, 0);
 
 	\end{tikzpicture}
-	\caption{Illustration of the world and body frames.}
+	\caption{Illustration of the world and body frames. \textcolor{red}{Maybe change the inclination}
+}
 	\label{fig:frames}
 \end{figure}
 
-\noindent In figure \ref{fig:frames} is possible to see the two frames, the word frame, in black, is fixed to a point and can't be move, the body frame, in blue, instead is attach to the quadrotor and can move with three degrees of freedom. In this, we are interesting in know the translation and rotation of the body frame in respect to the world frame. For rappresent the translation, a three dimension vector $\mathbf{x}$ is enough, that actualy indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduce in the following section.
+\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the traslation and rotation of the body frame in respect to the world frame. For rappresent the traslation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduced in the following section.
 
 	
 \subsection{Quaternion math}
 \label{quaternion}
 
-A quaternion is a hyper complex number of rank 4, wich can be represented as follow
+A quaternion is a hyper complex number of rank 4, which can be represented as follow
 
 \begin{equation}
 	\mathbf{q} = 
@@ -125,7 +126,7 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 	\label{eq:quatDef}
 \end{equation}
 
-\noindent The quaternion units from $q_1$ to $q_3$ are called the vector part of the quaternion, while $q_0$ is the scalar part \cite{EmilQuaternion}. Multiplication of two quaternions $\mathbf{p}$ and $\mathbf{q}$, is benig performed by the Kronecker product, denoted as $\otimes$. If $\mathbf{p}$ represents one rotation and $\mathbf{q}$ represents another rotation, then $\mathbf{p} \otimes \mathbf{q}$ represents the combined rotation.
+\noindent The quaternion units from $q_1$ to $q_3$ are called the vector part of the quaternion, while $q_0$ is the scalar part \cite{EmilQuaternion}. Multiplication of two quaternions $\mathbf{p}$ and $\mathbf{q}$, is being performed by the Kronecker product, denoted as $\otimes$. If $\mathbf{p}$ represents one rotation and $\mathbf{q}$ represents another rotation, then $\mathbf{p} \otimes \mathbf{q}$ represents the combined rotation.
 
 \begin{align}
 	\mathbf{p} \otimes \mathbf{q} &=
@@ -164,7 +165,7 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 	\label{eq:quatKronecker}
 \end{align}
 
-\noindent The norm of a quaternion is define as
+\noindent The norm of a quaternion is defined as
 
 \begin{equation}
 	||\mathbf{q}|| = \sqrt{q_0^2 + q_1^2 + q_2^2 + q_3^2} 
@@ -181,14 +182,14 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 	\label{eq:quatConj}
 \end{equation}
 
-\noindent The inverse of a quaternion is define as a normal inverse of a complex number.
+\noindent The inverse of a quaternion is defined as a normal inverse of a complex number.
 
 \begin{equation}
 	\mathbf{q}^{-1} = \frac{\mathbf{q}^*}{||\mathbf{q}||^2}
 	\label{eq:quatInverse}
 \end{equation}
 
-\noindent The time derivative of the unit quaternion is the vector of quaternion rates \cite{quaternion2}. It requires some alebraic manipulation but is important to notice that the quaternion rates, $\dot{\mathbf{q}}$, are related to the angular velocity $\boldsymbol{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$. It can be represented in two way:
+\noindent The time derivative of the unit quaternion is the vector of quaternion rates \cite{quaternion2}. It requires some algebraic manipulation but is important to notice that the quaternion rates, $\dot{\mathbf{q}}$, are related to the angular velocity $\boldsymbol{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$. It can be represented in two ways:
 
 \begin{itemize}
 		
@@ -236,7 +237,7 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 	\label{eq:quatRotateVector}
 \end{equation}
 
-\noindent Unit quaternion can be use also to represents rotation matrixes. Consider a vector $\mathbf{z}$ in the world frame. If $\mathbf{v}'$ is the same vector in the body coordinates, the the following relations hold
+\noindent Unit quaternion can be use also to represents rotation matrixes. Consider a vector $\mathbf{v}$ in the world frame. If $\mathbf{v}'$ is the same vector in the body coordinates, the the following relations hold
 
 \begin{align}
 	\begin{bmatrix}
@@ -317,13 +318,14 @@ A quaternion is a hyper complex number of rank 4, wich can be represented as fol
 	\label{eq:quatEuler}
 \end{gather}
 
+\phantom{x} % necessary to place the next figure
 
 \subsection{Quadrotor modelling}
 \label{quadModel}
 
-We consider first a standard quadrotor, without a rotating platform, like in figure \ref{fig:quadrtotorVectors}.
+We consider first a standard quadrotor, without a rotating platform, like in figure \ref{fig:quadrtotorVectors}. 
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\tdplotsetmaincoords{60}{-135} % 60 -135
 		
@@ -415,21 +417,21 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 
 \noindent Where $\mathbf{F} = \begin{bmatrix} F_x & F_y & F_z \end{bmatrix}^T$ is the vector of the total force, $\boldsymbol{\tau} = \begin{bmatrix} \tau_x & \tau_y & \tau_z \end{bmatrix}^T$ is the total torque, $m$ is the mass of the quadrtotor, $I_{cm}$ is the matrix of inertia related to the center of mass, $\mathbf{\ddot{x}_B}$ is the acceleration of the quadrotor center of mass related to the body frame and $\boldsymbol{\omega_B} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$ is the rotational rates in the body frame.
 
-\noindent Before deriving the torque relationship, the motor models from the input signal to the thrust force are needed. In specific, the four input signals are the speed of the propellers $u_i$, map between $0$ (zero speed) and $1$ (full speed). Then, the thrust for each propeller can be simply derive as follow
+\noindent Before deriving the torque relationship, the motors' models from the input signal to the thrust force are needed. In specific, the four input signals are the speed of the propellers $u_i$, map between $0$ (no throttle) and $1$ (full throttle). Then, the thrust for each propeller can be simply derive as follow
 
 \begin{equation}
 	F_i(t) = A_{F,i} \Omega_i^2 = A_{F,i}\Omega_{max, i}^2 u_i(t)^2
 	\label{eq:motorThrust}
 \end{equation}
 
-\noindent where $A_{F,i} \in \rm I\!R_+$ are the thrust constants of the motor-propeller cobination, $\Omega_{max, i} \in \rm I\!R_+$ are the maximum rotational soeed of the motors and $u_i(t)$ are the motor signals. What is missing in equation \eqref{eq:motorThrust} is the model of the DC motors and in particular, a map between the input signal $u_i(t)$ and the control signal $u_{in,i}(t)$. To keep the model simple but still accurate \footnote{\url{http://pi19404.github.io/pyVision/2015/04/10/25/}}, the motor has been modeled like a delay, like in equation \eqref{eq:motorDelay}.
+\noindent where $A_{F,i} \in \rm I\!R_+$ are the thrust constants of the motor-propeller combination, $\Omega_{max, i} \in \rm I\!R_+$ are the maximum rotational speed of the motors and $u_i(t)$ are the motors' signals. What is missing in equation \eqref{eq:motorThrust} is the model of the DC motors and in particular, a map between the input signal $u_i(t)$ and the control signal $u_{in,i}(t)$. To keep the model simple but still accurate \footnote{\url{http://pi19404.github.io/pyVision/2015/04/10/25/}}, the motor has been modeled like a delay, like in equation \eqref{eq:motorDelay}.
 
 \begin{equation}
 	u_i(t) \approx \frac{1}{\tau_i s+1}u_{in.i}(t)
 	\label{eq:motorDelay}
 \end{equation}
 
-\noindent This approach is very common \cite{motor}, since all the parameters of a motor are not provide from datasheet, especially from cheap motors that is possible to find quiet often in a commercial quadrotor. Furthermore, to represent the direction of the thrust from a motor it should be considered that 
+\noindent This approach is very common \cite{motor}, since all the parameters of a motor are not provide from datasheet, especially from cheap motors that is possible to find quite often in a commercial quadrotor. Furthermore, to represent the direction of the thrust from a motor it should be considered that 
 
 \begin{align}
 	\mathbf{F}_i(t) &= A_{F,i} \Omega_{max,i}^2u_i(t)\mathbf{n}_i \label{eq:propellerDirection1} \\
@@ -449,7 +451,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 
 \noindent where $B_{F,i} \in \rm I\!R_+$ is the torque constant.
 
-\noindent Now, by defing the vector $\mathbf{l}_i = \begin{bmatrix} l_{x,i} & l_{y,i} & l_{z,i} \end{bmatrix}^T$ the distance between the center of mass and the position where the propeller $i$ is attach, combining equations \eqref{eq:propellerDirection1}, \eqref{eq:propellerDirection2} and \eqref{eq:motorTorque} is possible to obtain equation \eqref{eq:forceTorque} as in the work \cite{modelIdentification}.
+\noindent Now, by defining the vector $\mathbf{l}_i = \begin{bmatrix} l_{x,i} & l_{y,i} & l_{z,i} \end{bmatrix}^T$ the distance between the center of mass and the position where the propeller $i$ is attached, combining equations \eqref{eq:propellerDirection1}, \eqref{eq:propellerDirection2} and \eqref{eq:motorTorque} is possible to obtain equation \eqref{eq:forceTorque} as in the work \cite{modelIdentification}.
 
 \begin{equation}
 	\begin{bmatrix}
@@ -464,7 +466,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:forceTorque}
 \end{equation}
 
-\noindent This combined with the Newton-Euler kinematics of equation \eqref{eq:NewtonEuler} gives the final model, from control signal to accelerationa and angular acceleration, as depicted in equations \eqref{eq:finalModel1} and \eqref{eq:finalModel2}.
+\noindent This combined with the Newton-Euler kinematics of equation \eqref{eq:NewtonEuler} gives the final model, from control signal to acceleration and angular acceleration, as depicted in equations \eqref{eq:finalModel1} and \eqref{eq:finalModel2}.
 
 \begin{equation}
 	\begin{split}
@@ -497,7 +499,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:finalModel2}
 \end{equation}
 
-\noindent Where $\boldsymbol{\Delta l}$ is the offset vector of the CoG in the body frame of reference. From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those to the world frame and integrate to obtain the position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ of the quadrotor with the respect to the world frame. Then, by adding the gravity term we have
+\noindent Where $\boldsymbol{\Delta l}$ is the offset vector of the center of gravity (CoG) in the body frame of reference. From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those from the body frame and integrate to obtain the position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ of the quadrotor with the respect to the world frame. Then, by adding the gravity term we have
 
 \begin{equation}
 	\ddot{\mathbf{x}}_{B, g} = R_{\mathbf{q}_W}(\mathbf{q}_W)^T \cdot
@@ -510,7 +512,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:gravity}
 \end{equation}
 
-\noindent where $g$ is equal to $9.81$ and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix build from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, again by using the rotation matrix we obtain
+\noindent  where $g$ is the gravity costant, about $9.81$, and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix built from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, once again by using the rotation matrix we obtain
 
 \begin{equation}
 	\dot{\mathbf{x}}_W = R_{\mathbf{q}_W}(\mathbf{q}_W)\cdot\dot{\mathbf{x}}_B
@@ -566,19 +568,18 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\draw[->] (outfit2) |- ($(GRA.180) - (0, 0.35)$);
 
 	\end{tikzpicture}
-	\caption{Block diagram of the quadrotor's dynamic.}
+	\caption{Block diagram of the quadrotor's dynamic. \textcolor{red}{Missing a line between omega and the dynamic}}
 	\label{fig:quadDynBlock}
 \end{figure}
 
-\noindent In figure \ref{fig:quadDynBlock} is report a block diagram of the quadrtotor's dynamic, from the inputs $\mathbf{u}_{in}$, to position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ in the world frame.
-
+\noindent In figure \ref{fig:quadDynBlock} is depicted a block diagram of the quadrotor dynamic, from the inputs $\mathbf{u}_{in}$, to position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ in the world frame.
 
 \subsection{Adding the rotating platform}
 \label{addPlatform}
 
-Till now, all the model was design for a standard quadrotor vehicle, what we want to do in this section ids to add the model of the rotating platform, necessary to deduce a controller and simulate this.
+Till now, all the model was designed for a standard quadrotor vehicle, what we want to do in this section is to add the model of the rotating platform, necessary for deduce a controller and simulate it.
 
-\noindent The movement of the platform, introduce a time variant center of mass gravity, that is simply modelled by time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller wit the respect of the CoG. If we know preciselly the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be compute. 
+\noindent The movement of the platform, introduces a time variant center of gravity, that is simply modelled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be compute.
 
 
 \begin{figure}[h]
@@ -706,17 +707,28 @@ Till now, all the model was design for a standard quadrotor vehicle, what we wan
 		\caption{Side view.}
 		\label{fig:quadrotorRingSide}
 	\end{subfigure}
-	\caption{Quadrotor with the rotating platform in blue, in red the CoG of the quadrotor and in orange the resulting CoG.}
+	\caption{Quadrotor with the rotating platform in blue, in red the CoG of the quadrotor and in orange the resulting CoG. \textcolor{red}{align the figures with the center, not with the bottom}}
 	\label{fig:quadrotorRing}
 \end{figure}
 
-\noindent In figure \ref{fig:quadrotorRing} is illustrate how the resulting CoG change with the position of the cart, is possible to see also the four $\mathbf{l}_i(t)$ vectors in black dashed line. Then the position of the CoG is
+\noindent In figure \ref{fig:quadrotorRing} is illustrated how the resulting CoG change with the position of the cart, is possible to see also the four $\mathbf{l}_i(t)$ vectors in black dashed line. Then the position of the CoG is
 
 \begin{equation}
 	\mathbf{p} = \frac{1}{m}\cdot \bigl(m_{quad}\mathbf{p}_{quad} + m_{cart}\mathbf{p}_{cart}\bigl)	
 	\label{eq:CoG}
 \end{equation}
 
-\noindent where $m=m_{quad}+m_{cart}$ is the sum of the mass of the quadrotor plus the mass of the moving cart, then the total mass, $\mathbf{p}_{quad}$ is the position of the center of gravity of the quadrotor without the cart with the resect to the origin of the body frame (we assume that the quadrotor frame is not symmetrical) and $\mathbf{p}_{cart}$ is the position of the CoG of the cart with the respect to the body frame. Then the vectors $\mathbf{l}_i$ are just the distance between the center of the propeller $i$ and $\mathbf{p}$.
+\noindent where $m=m_{quad}+m_{cart}$ is the sum of the mass of the quadrotor plus the mass of the moving cart, then the total mass, $\mathbf{p}_{quad}$ is the position of the center of gravity of the quadrotor without the cart with the respect to the origin of the body frame (in general the quadrotor frame is not symmetrical) and $\mathbf{p}_{cart}$ is the position of the CoG of the cart with the respect to the body frame. Then the vectors $\mathbf{l}_i$ are just the distance between the center of the propeller $i$ and $\mathbf{p}$.
 
-\noindent Another different in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the dettailed CAD model of the entire vehicle, provide in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple picewise model.
+\noindent Another difference in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the detailed CAD model of the entire vehicle, provided in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple piecewise model. 
+
+\noindent \textcolor{red}{Add some graphs as soon as carlos send me the CAD.}
+
+\noindent \textcolor{red}{Add the equation for the centrifugal force, and explain (with the computation) why is almost negligible, due to the slow rotation (6 rpm).}
+
+\noindent \textcolor{red}{Other effects?}
+
+
+\section{Experimental setup}
+
+\textcolor{red}{Description of all the systems, ROS, vicon, etcetera.}

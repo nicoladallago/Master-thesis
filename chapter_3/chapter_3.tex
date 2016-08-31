@@ -1,12 +1,12 @@
 \chapter{System identification}
 \label{systemIdentification}
 
-In this chapter, is going to be address an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
+In this chapter,is about to be addressed an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
 
 \section{System simplification and linear approxmation}
 \label{linearization}
 
-Starting from the model deduce in section \ref{quadModel}
+Starting from the model deducted in section \ref{quadModel}
 
 \begin{equation}
 	\begin{split}
@@ -48,13 +48,13 @@ Starting from the model deduce in section \ref{quadModel}
 	\label{eq:simplification}
 \end{align}
 
-\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily see just by simulating the mathematical model with and without the term, the differences are very small.
+\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily seen simply by simulating the mathematical model with and without the term, the differences are very small. \textcolor{red}{Add a graph with the simulation?}
 
-\noindent Another simplification, is that the inertia matrix $I_{cm}$ is adiagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is general true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we allign the $x$ axis with the orinetation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is require.
+\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orinetation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficently big to modify enough the matrix and this assumption is valid also here. \textcolor{red}{Add numbers with the CAD.} Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required.
 
-\noindent Another non linearization is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the suare of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics.
+\noindent Another non linearity is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the square of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics. \textcolor{red}{Maybe explain it a bit better}
 
-\noindent In conclusion, the approximated linear model is
+\noindent In conclusion, the approximate linear model is
 
 \begin{gather}
 	\begin{bmatrix}
@@ -76,13 +76,13 @@ Starting from the model deduce in section \ref{quadModel}
 	\label{eq:linearModel2}
 \end{gather}
 
-\noindent where instead of $\mathbf{n}_i$ there is $\mathbf{e}_3$ because in the structure of this particular vehicle, the propellers are mounted parallel to the ground and then with a force vector align to $\mathbf{e}_3=\begin{bmatrix}0 & 0 & 1\end{bmatrix}^T$.
+\noindent where instead of $\mathbf{n}_i$ there is $\mathbf{e}_3$ because in the structure of this particular vehicle, the propellers are mounted parallel to the ground and then with a force vector aligned to $\mathbf{e}_3=\begin{bmatrix}0 & 0 & 1\end{bmatrix}^T$.
 
 
 \section{Quadrotor parameters}
 \label{quadParameters}
 
-From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linearModel2}, the identifiable parameters are 
+From the simplified model of equations \eqref{eq:linearModel1} and \eqref{eq:linearModel2}, the identifiable parameters are 
 
 \begin{equation}
 	\boldsymbol{\beta} =
@@ -108,7 +108,7 @@ From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linea
 	\label{eq:linearCompact}
 \end{equation}
 
-\noindent Under the assumption of the sampling rate to be much faster than the dynamics \footnote{in this case, thanks to the performance of the onboard electronics, the sampling rate is equal to $222$ Herz.}, equation \eqref{eq:linearModel2} is implemented as discrete-time first order system, and the parameters are modeled as integrated white noise, which gives the following prediction equationI
+\noindent Under the assumption of the sampling rate to be much faster than the dynamics \footnote{in this case, thanks to the performance of the onboard electronics, the sampling rate is equal to $222$ Herz.}, equation \eqref{eq:linearModel2} is implemented as discrete-time first order system, and the parameters are modeled as integrated white noise, which gives the following prediction equations
 
 \begin{align}
 	\boldsymbol{\omega}_{k} &= \boldsymbol{\omega}_{k-1}+\Delta t A(\boldsymbol{\beta}_{k-1})\mathbf{u}_{k-1} \\
@@ -117,121 +117,127 @@ From the simplify model of equations \eqref{eq:linearModel1} and \eqref{eq:linea
     \tau_k &= \tau_{k-1}
 \end{align}
 
-\noindent where $\mathbf{u}_k$ and $\mathbf{u}_{in,k}$ are the inputs at time instant $k$ expres in a vectorial way, $\Delta t$ is the sampling period and $\bullet^2$ is the element-wise square of a vector.
+\noindent where $\mathbf{u}_k$ and $\mathbf{u}_{in,k}$ are the inputs at time instant $k$ expressed in a vectorial way, $\Delta t$ is the sampling period and $\bullet^2$ is the element-wise square of a vector.
 
 
 \section{Kalman filter}
 \label{KalmanFilter}
 
-A Kalman filter approach is chose for this project since it has good result in this kind of application. Of course, better performance can be optain with specific strategies for non linear systems \cite{parameterIdentification}, but these methods are in general much more complicated and require much more computational effort, especially if is necessary to estimate the parameters online.  
+A Kalman filter approach is chose for this project since it has good result in this kind of applications. Of course, better performances can be obtained with specific strategies for non linear systems \cite{parameterIdentification}, but these methods are in general much more complicated and require much more computational effort, especially if is necessary to estimate the parameters online.  
 
-\noindent Now, is possible to use the standard Kalman filter equations \cite{KalmanFilter} to develop an online identification alghoritm as follow:
+\noindent Now, is possible to use the standard Kalman filter equations \cite{KalmanFilter} to develop an online identification alghoritm as follow.
 
-\begin{itemize}
-	\item the augmented state $\mathbf{x}_{est}$ is
-	\begin{equation}
-		\mathbf{x}_{est}=
-		\begin{bmatrix}
-			\boldsymbol{\omega}_B & \mathbf{u}_{in} & \boldsymbol{\beta} & \tau
-		\end{bmatrix}^T
-		\in \rm I\!R^{15}
-		\label{eq:augmentedState}
-	\end{equation} 
-	The initial values of $\boldsymbol{\omega}_B$ and $\mathbf{u}_{in}$ are know, so the state is initialize with these. Moreover, due to the parameters $\boldsymbol{\beta}$ and $\tau$ having a constraint to being positive, they are implemented as $\exp(\boldsymbol{\beta})$ and $\exp(\tau)$ to force positive results from the estimation, while the $\boldsymbol{\Delta l}$ are constrained to be within the propellers (the legnth of the arms is suppose to be equal to one, since the correct length is not necessary for the identification) wich is implemented using a zero centered logistic function
-	\begin{equation}
-		\frac{2}{1-\exp(-\Delta l)} -1
-		\label{eq:logisticFunction}
-	\end{equation}
+\noindent The augmented state $\mathbf{x}_{est}$ is
 
-	\item With the augmented state is possible to write a new state space system in discrete time with matrix $A_{est}$ \footnote{For notation, $\mathbf{0}_{a\times b}$ is equal to a zero matrix with $a$ rows and $b$ columns,$\mathbf{1}_{a\times b}$ is equal to a ones matrix with $a$ rows and $b$ columns,$I_a$ is the identity matrix of dimension $a\times a$, and the vector $\mathbf{x}_{est,a:b}$ are the entries from $a$ to $b$ of the augmented state (is implicit that is consider at time $k$)}
-	\begin{align*}
-		A_{\boldsymbol{\omega}, \mathbf{u}_{in}} &= 
-		\left[
-		\begin{array}{c}
-			2\Delta te^{\beta_2}(\Delta l_y-1)\cdot\mathbf{u}^T \\
-			\hline
-			-2\Delta te^{\beta_3}(\Delta l_x+1)\cdot\mathbf{u}^T \\
-			\hline
-			-\sgn(\Omega_i)2\Delta te^{\beta_4}\cdot\mathbf{u}^T
+\begin{equation}
+	\mathbf{x}_{est}=
+	\begin{bmatrix}
+		\boldsymbol{\omega}_B & \mathbf{u}_{in} & \boldsymbol{\beta} & \tau
+	\end{bmatrix}^T
+	\in \rm I\!R^{15}
+	\label{eq:augmentedState}
+\end{equation} 
+
+\noindent The initial values of $\boldsymbol{\omega}_B$ and $\mathbf{u}_{in}$ are know, so the state is initialized with these. Moreover, due to the parameters $\boldsymbol{\beta}$ and $\tau$ having a constraint to being positive, they are implemented as $\exp(\boldsymbol{\beta})$ and $\exp(\tau)$ to force positive results from the estimation, while the $\boldsymbol{\Delta l}$ are constrained to be within the propellers (the length of the arms is set to be equal to one, since the correct length is not necessary for the identification) wich is implemented using a zero centered logistic function
+
+\begin{equation}
+	\frac{2}{1-\exp(-\Delta l)} -1
+	\label{eq:logisticFunction}
+\end{equation}
+
+\noindent With the augmented state is possible to write a new state space system in discrete time with matrix $A_{est}$ \footnote{For notation, $\mathbf{0}_{a\times b}$ is equal to a zero matrix with $a$ rows and $b$ columns,$\mathbf{1}_{a\times b}$ is equal to a ones matrix with $a$ rows and $b$ columns,$I_a$ is the identity matrix of dimension $a\times a$, and the vector $\mathbf{x}_{est,a:b}$ are the entries from $a$ to $b$ of the augmented state (is implicit that is consider at time $k$)}
+
+\begin{align*}
+	A_{\boldsymbol{\omega}, \mathbf{u}_{in}} &= 
+	\left[
+	\begin{array}{c}
+		2\Delta te^{\beta_2}(\Delta l_y-1)\cdot\mathbf{u}^T \\
+		\hline
+		-2\Delta te^{\beta_3}(\Delta l_x+1)\cdot\mathbf{u}^T \\
+		\hline
+		-\sgn(\Omega_i)2\Delta te^{\beta_4}\cdot\mathbf{u}^T
+	\end{array}
+	\right] 
+	& &\in \rm I\!R^{3\times 4} \\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}_1} &= \mathbf{0}_{3\times 1} & &\in \rm I\!R^{3\times 1}\\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{2}} &=
+	\begin{bmatrix}
+		\Delta te^{\beta_2}\bigg(\Delta l_y\sum\limits_{i=1}^{4}u_i^2-u_1^2-u_2^2+u_3^2+u_4^2\bigg) & 0 & 0
+	\end{bmatrix}^T 
+	& &\in \rm I\!R^{3\times 1}\\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{3}} &=
+	\begin{bmatrix}
+		0 & -\Delta te^{\beta_3}\bigg(\Delta l_y\sum\limits_{i=1}^{4}u_i^2+u_1^2-u_2^2-u_3^2+u_4^2\bigg) & 0
+	\end{bmatrix}^T 
+	& &\in \rm I\!R^{3\times 1}\\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{4}} &=
+	\begin{bmatrix}
+		0 & 0 & -\Delta te^{\beta_4}\sum\limits_{i=1}^{4}\sgn(\Omega_i)u_i^2
+	\end{bmatrix}^T 
+	& &\in \rm I\!R^{3\times 1}\\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{5}} &=
+	\begin{bmatrix}
+		0 & 0 & \Delta t
+	\end{bmatrix}^T 
+	& &\in \rm I\!R^{3\times 1}\\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{6:7}} &=
+	\begin{bmatrix}
+		0 & \Delta te^{\beta_2}\sum\limits_{i=1}^{4}u_i^2 \\ 
+		-\Delta te^{\beta_3}\sum\limits_{i=1}^{4}u_i^2	& 0 \\
+		0 & 0 
+	\end{bmatrix} 
+	& &\in \rm I\!R^{3\times 2}\\
+	A_{\boldsymbol{\omega}, \boldsymbol{\beta}} &=
+	\left[
+	\begin{array}{c|c|c|c|c|c}
+		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_1} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_2} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_3} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_4} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_5} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{6:7}}
+	\end{array}
+	\right]
+	& &\in \rm I\!R^{3\times 7}\\
+	A_{\mathbf{u}_{in}} &= \Big(1-\frac{\Delta t}{\Delta t+e^{\tau}}\Big)\cdot I_4 & &\in \rm I\!R^{4\times 4} \\
+	A_{est,k} &=
+	\left[ 
+	\begin{array}{c}
+		\begin{array}{c|c|c|c}
+			I_{3} & A_{\boldsymbol{\omega}, \mathbf{u}_{in}} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}} & \mathbf{0}_{3\times 1}
+		\end{array} \\
+		\hline
+		\begin{array}{c|c|c}
+			\mathbf{0}_{4\times 3} & A_{\mathbf{u}_{in}} & \mathbf{0}_{4\times 8}
+		\end{array} \\
+		\hline
+		\begin{array}{c|c} 
+			\mathbf{0}_{8\times7} & I_8
 		\end{array}
-		\right] 
-		& &\in \rm I\!R^{3\times 4} \\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_1} &= \mathbf{0}_{3\times 1} & &\in \rm I\!R^{3\times 1}\\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{2}} &=
-		\begin{bmatrix}
-			\Delta te^{\beta_2}\bigg(\Delta l_y\sum\limits_{i=1}^{4}u_i^2-u_1^2-u_2^2+u_3^2+u_4^2\bigg) & 0 & 0
-		\end{bmatrix}^T 
-		& &\in \rm I\!R^{3\times 1}\\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{3}} &=
-		\begin{bmatrix}
-			0 & -\Delta te^{\beta_3}\bigg(\Delta l_y\sum\limits_{i=1}^{4}u_i^2+u_1^2-u_2^2-u_3^2+u_4^2\bigg) & 0
-		\end{bmatrix}^T 
-		& &\in \rm I\!R^{3\times 1}\\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{4}} &=
-		\begin{bmatrix}
-			0 & 0 & -\Delta te^{\beta_4}\sum\limits_{i=1}^{4}\sgn(\Omega_i)u_i^2
-		\end{bmatrix}^T 
-		& &\in \rm I\!R^{3\times 1}\\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{5}} &=
-		\begin{bmatrix}
-			0 & 0 & \Delta t
-		\end{bmatrix}^T 
-		& &\in \rm I\!R^{3\times 1}\\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{6:7}} &=
-		\begin{bmatrix}
-			0 & \Delta te^{\beta_2}\sum\limits_{i=1}^{4}u_i^2 \\ 
-			-\Delta te^{\beta_3}\sum\limits_{i=1}^{4}u_i^2	& 0 \\
-			0 & 0 
-		\end{bmatrix} 
-		& &\in \rm I\!R^{3\times 2}\\
-		A_{\boldsymbol{\omega}, \boldsymbol{\beta}} &=
-		\left[
-		\begin{array}{c|c|c|c|c|c}
-			A_{\boldsymbol{\omega}, \boldsymbol{\beta}_1} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_2} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_3} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_4} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_5} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}_{6:7}}
-		\end{array}
-		\right]
-		& &\in \rm I\!R^{3\times 7}\\
-		A_{\mathbf{u}_{in}} &= \Big(1-\frac{\Delta t}{\Delta t+e^{\tau}}\Big)\cdot I_4 & &\in \rm I\!R^{4\times 4} \\
-		A_{est,k} &=
-		\left[ 
-		\begin{array}{c}
-			\begin{array}{c|c|c|c}
-				I_{3} & A_{\boldsymbol{\omega}, \mathbf{u}_{in}} & A_{\boldsymbol{\omega}, \boldsymbol{\beta}} & \mathbf{0}_{3\times 1}
-			\end{array} \\
+	\end{array}
+	\right]
+	& &\in \rm I\!R^{15\times 15}
+\end{align*}
+
+\noindent and then use the Kalman filter equations in a recursive way \cite{KalmanFilter}
+
+\begin{align*}
+	P_k &= A_{est,k}\cdot P_{k-1}\cdot A_{est,k}^T + Q & \hspace{37pt} &\in \rm I\!R^{15\times 15} \\
+	H_k &=
+	\left[
+		\begin{array}{c|c}
+			I_3 & \mathbf{0}_{3\times 12} \\
 			\hline
-			\begin{array}{c|c|c}
-				\mathbf{0}_{4\times 3} & A_{\mathbf{u}_{in}} & \mathbf{0}_{4\times 8}
-			\end{array} \\
-			\hline
-			\begin{array}{c|c} 
-				\mathbf{0}_{8\times7} & I_8
-			\end{array}
+			\mathbf{0}_{1\times 3} & \begin{array}{c|c|c|c} 2e^{\beta_1}\cdot\mathbf{u}^T & \mathbf{0}_{1\times 2} & e^{\beta_1}\sum\limits_{i=1}^{4}u_i^2 & \mathbf{0}_{1\times 5} \end{array}
 		\end{array}
-		\right]
-		& &\in \rm I\!R^{15\times 15}
-	\end{align*}
-	and then use the Kalman filter equations in a recursive way \cite{KalmanFilter}
-	\begin{align*}
-		P_k &= A_{est,k}\cdot P_{k-1}\cdot A_{est,k}^T + Q & \hspace{37pt} &\in \rm I\!R^{15\times 15} \\
-		H_k &=
-		\left[
-			\begin{array}{c|c}
-				I_3 & \mathbf{0}_{3\times 12} \\
-				\hline
-				\mathbf{0}_{1\times 3} & \begin{array}{c|c|c|c} 2e^{\beta_1}\cdot\mathbf{u}^T & \mathbf{0}_{1\times 2} & e^{\beta_1}\sum\limits_{i=1}^{4}u_i^2 & \mathbf{0}_{1\times 5} \end{array}
-			\end{array}
-		\right] & &\in \rm I\!R^{4\times 15} \\
-		S_k &= H_k\cdot P_k\cdot H_k^T + R & &\in \rm I\!R^{4\times 4} \\
-		K_k &= P_k\cdot H_k^T\cdot S_k^{-1} & &\in \rm I\!R^{15\times 4} \\
-		P_k &= \big(I_{15} - K_k\cdot H_k\big)\cdot P_{k-1} & &\in \rm I\!R^{15\times 15} \\
-		\mathbf{x}_{est,k} &= \mathbf{x}_{est,k-1} + K_k\cdot\Big(\begin{bmatrix}\boldsymbol{\omega} \\ \ddot{x}_z \end{bmatrix} - \begin{bmatrix}\mathbf{x}_{est,1:3} \\ e^{\beta_1}\cdot\mathbf{1}_{1\times 4}\cdot\mathbf{x}_{est,4:7}^2 \end{bmatrix}\Big) & &\in \rm I\!R^{15\times 1}
-	\end{align*}
-	where $P_k$ is the state update covariance matrix based on model, $H_k$ maps the measurement to the states, $S_k$ is the update measurement covariance, $K_k$ is the update Kalman gain, $Q\in\rm I\!R^{15\times 15}$ is the fixed covariance matrix and $R\in\rm I\!R^{4\times 4}$ the fixed measurement covariance matrix. Both $Q$ and $R$ are diagonal matrices.
-\end{itemize}
+	\right] & &\in \rm I\!R^{4\times 15} \\
+	S_k &= H_k\cdot P_k\cdot H_k^T + R & &\in \rm I\!R^{4\times 4} \\
+	K_k &= P_k\cdot H_k^T\cdot S_k^{-1} & &\in \rm I\!R^{15\times 4} \\
+	P_k &= \big(I_{15} - K_k\cdot H_k\big)\cdot P_{k-1} & &\in \rm I\!R^{15\times 15} \\
+	\mathbf{x}_{est,k} &= \mathbf{x}_{est,k-1} + K_k\cdot\Big(\begin{bmatrix}\boldsymbol{\omega} \\ \ddot{x}_z \end{bmatrix} - \begin{bmatrix}\mathbf{x}_{est,1:3} \\ e^{\beta_1}\cdot\mathbf{1}_{1\times 4}\cdot\mathbf{x}_{est,4:7}^2 \end{bmatrix}\Big) & &\in \rm I\!R^{15\times 1}
+\end{align*}
+
+\noindent where $P_k$ is the state update covariance matrix based on model, $H_k$ maps the measurement to the states, $S_k$ is the update measurement covariance, $K_k$ is the update Kalman gain, $Q\in\rm I\!R^{15\times 15}$ is the fixed covariance matrix and $R\in\rm I\!R^{4\times 4}$ the fixed measurement covariance matrix. Both $Q$ and $R$ are diagonal matrices.
+
 
 \section{Results}
 \label{resultsKalman}
-The estimator needs to be setup with specific process and measurement covariance $Q$ and $R$, and the starting state covariance $P_0$. The values for $Q$ and $P_0$ where found simply with a trial and error procedure, while $R$ was taken from the noise densities of the measured signals. In particular we measured a stady state position of the quadrotor, record the acceleration in the z axis $\ddot{x}_{B,z}$ and the angular rate $\boldsymbol{\omega}_B$, then by analazing these data, a noise variance was extracted. Moreover, since in the augmented state $\mathbf{x}_{est}$ is present also an estimation of the angular rate $\hat{\boldsymbol{\omega}}$, to evaluate the quality of the estimation was also compare it with the measured angular rate. In this case the initial values of the state $\mathbf{x}_{est}$ where chose to be considerably different from a real value, just to show the performace of the etimator.
+The estimator needs to be setup with specific process and measurement covariance $Q$ and $R$, and the starting state covariance $P_0$. The values for $Q$ and $P_0$ where found simply with a trial and error procedure, while $R$ was taken from the noise densities of the measured signals. In particular we measured a steady state position of the quadrotor, record the acceleration in the z axis $\ddot{x}_{B,z}$ and the angular rate $\boldsymbol{\omega}_B$, then by analyzing these data, a noise variance was extracted. Moreover, since in the augmented state $\mathbf{x}_{est}$ is present also an estimation of the angular rate $\hat{\boldsymbol{\omega}}$, to evaluate the quality of the estimation was also compare it with the measured angular rate. In this case the initial values of the state $\mathbf{x}_{est}$ were chose to be considerably different from a real value, just to show the performace of the etimator.
 
 \begin{figure}[h]
 	\centering
@@ -240,7 +246,7 @@ The estimator needs to be setup with specific process and measurement covariance
  	\label{fig:omegaKalman}		
 \end{figure}
 
-\noindent As is possible to see in figure \ref{fig:omegaKalman}, the estimation of the angular rate works pretty well from the begining for all three axis. In figure \ref{fig:betaTauKalman} are instead plot the estimation of all parameters $\boldsymbol{\beta}$ and $\tau$. The identification was performed with the cart fixed in one position. Is possible to see that for almost all parameters there is convergence after about 15 seconds, while for the parameter $\frac{B_F}{I_{zz}}$ is necessary more time. This can be explain by observing the angular rate, in particular note that $\omega_z$ is almost zero for about the first 10 seconds, due to the particular trajectory of the vehicle. Of course, is not possible to perform system identification without exitation of the system and thats why the parameters depending on $\omega_z$ require more time to converge.
+\noindent As is possible to see in figure \ref{fig:omegaKalman}, the estimation of the angular rate works pretty well from the begining for all the three axis. In figure \ref{fig:betaTauKalman} are instead plotted the estimations of all parameters $\boldsymbol{\beta}$ and $\tau$. The identification was performed with the cart fixed in one position. Is possible to see that for almost all parameters there is convergence after about 15 seconds, while for the parameter $\frac{B_F}{I_{zz}}$ is necessary more time. This can be explain by observing the angular rate, in particular note that $\omega_z$ is almost zero for about the first 10 seconds, due to the particular trajectory of the vehicle. Of course, is not possible to perform system identification without excitation of the system and thats why the parameters depending on $\omega_z$ require more time to converge.
 
 \begin{figure}[h]
 	\centering
@@ -250,4 +256,4 @@ The estimator needs to be setup with specific process and measurement covariance
 	\label{fig:betaTauKalman}
 \end{figure}
 
-\noindent However the alghoritm has been show to work quite well, and is not necessary to use more sofisticate system identification procedures.
+\noindent In conclusion the alghoritm has been shown to work quite well, and for this application is not then necessary to use more sopisticated techniques.
