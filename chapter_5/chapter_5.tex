@@ -1,6 +1,158 @@
 \chapter{Control}
 \label{control}
 
-Some introduction
+The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor.
 
 \section{Force and torque position controller}
+
+In this section, will be introduce a Tracking Control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressiv flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group.
+
+\noindent The \textit{general linear group} of order $3$, $GL(3)$, is a algebraic group composed by all the non singular matrices $A \in \rm I\!R^{3\times 3}$ with matrix product.
+
+\noindent The \textit{orthogonal group} of order $3$, $O(3)$, is deefine as
+
+\begin{equation*}
+	O(3) = \{A \in GL(3) : A^TA=I \} \subseteq GL(3)
+\end{equation*}
+
+\noindent Is easy to prove that if $A$ belongs to $O(3)$, then $\det[A]=\pm 1$.
+
+\noindent The \textit{special orthogonal grouop} of order $3$, $SO(3)$, is define as
+
+\begin{equation*}
+	SO(3) = \{A \in O(3) : \det[A] = 1\} 
+\end{equation*}
+
+\noindent Belong to this gruop the rotation matrices, and is because the controller will use errors based iìon matrices, we need to keep all the results in the group $SO(3)$.
+
+\noindent To derive the control law, we first need to define the tracking errors. In particular the position and the velocity tracking errors are given by, respectively
+
+\begin{align}
+	\mathbf{e}_x &= \mathbf{x} - \mathbf{x}_d \\ 
+	\mathbf{e}_v &= \dot{\mathbf{x}} - \dot{\mathbf{x}}_d
+\end{align}
+
+\noindent where the subscript $d$ stands for desire. The attitude error is insted define as
+
+\begin{equation}
+	\mathbf{e}_R = \frac{1}{2}\bigl(R_c^TR-R^TR_C \bigl)^{\vee}
+\end{equation}
+
+\noindent where $R$ is the rotation matrix that encode the actual attitude of the UAV, while $R_c(t) \in SO(3)$ is the computed attitude matrix, that must belongs to the special ortoghonal group. In fact we can define it as
+
+\begin{align}
+	\mathbf{b}_{1,c} &= \begin{bmatrix} \cos(\psi_d) & \sin(\psi_d) & 0 \end{bmatrix}^T \\
+	\mathbf{b}_{3,c} &= -\frac{k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d}{||k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d||} \\
+	\mathbf{b}_{2,c} &= \frac{\mathbf{b}_{3,c}\times\mathbf{b}_{1,c}}{||\mathbf{b}_{3,c}\times\mathbf{b}_{1,c}||} \\
+	R_c &= \left[\begin{array}{c|c|c}\mathbf{b}_{2,c}\times\mathbf{b}_{3,c} & \mathbf{b}_{2,c} & \mathbf{b}_{3,c} \end{array}\right]
+\end{align}
+
+\noindent Where $\psi_d$ is the desire yaw, $\mathbf{e}_3$ is the third dimension canonical vector, $k_x$ and $k_v$ are positive control constants. The \textit{vee} map $\cdot^{\vee}$ is the inverse of the \textit{hat} map $\hat{\cdot}: \rm I\!R^3 \rightarrow SO(3)$ define as
+
+\begin{align}
+	\mathbf{v} &= \begin{bmatrix} v_1 & v_2 & v_3 \end{bmatrix}^T \nonumber \\ 
+	\hat{\mathbf{v}} &= 
+	\begin{bmatrix}
+		0    & -v_3 & v_2 \\
+		v_3  & 0    & -v_1 \\
+		-v_2 & v_1  & 0
+	\end{bmatrix}
+\end{align}
+
+\noindent The angular velocity error $e_{\omega}$ depends only from the desire yaw, since our trajectory generator compute the desire yaw till the second derivative. However, it can be compute simple by 
+
+\begin{equation}
+	\mathbf{e}_{\omega} = \omega - R^TR_c\omega_c
+\end{equation}
+
+\noindent where $\hat{\omega}_c = R_c^T\dot{R}_c$.
+
+\noindent The final control law is then divide in two contributions, one for the total force and one for the torque
+
+\begin{align}
+	f &= -(k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d)^TR\mathbf{e}_3 \\
+	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}e_{\omega} + \omega\times I_{cm}\omega
+\end{align}
+
+\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentialy stable, if the initial conditions are sufficently small\footnote{see the paper \cite{LeeController} for more details and the prooof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for compute the linear acceleration in the body frame we just need to do 
+
+\begin{equation}
+	\ddot{\mathbf{x}}_B = \frac{1}{m}\cdot\begin{bmatrix}0 & 0 & f\end{bmatrix}^T
+\end{equation}
+
+\noindent For the angular acceleration in the body frame, in theory we just need to compute
+
+\begin{equation}
+	\dot{\boldsymbol{\omega}}_B = I_{cm}^{-1}\boldsymbol{\tau}
+\end{equation}
+
+\noindent Then, by using the results from section \ref{quadModel}, we can compute the speed of the propeller with
+
+\begin{equation}
+	\begin{bmatrix}
+		\vdots \\
+		u_i^2 \\
+		\vdots
+	\end{bmatrix}
+	=
+	\underbrace{
+	\begin{bmatrix}
+		\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
+		\dots & I_{cm}^{-1}\Big[ \mathbf{l}_i\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+	\end{bmatrix}^{-1}
+	}_{T^{-1}(\boldsymbol{\beta})}	
+	\cdot
+	\left[
+	\begin{array}{c}
+		f \\
+		\hline
+		\boldsymbol{\tau}
+	\end{array}
+	\right]
+\end{equation}
+
+\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the invers of the estimated parameters. However the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to etimate directly this. A naive approach is simply use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. HOvewer, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
+
+
+\subsection{Adding the rotating platform}
+
+The previous controller was derive without the roating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving COG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provid of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more preciselly solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpretate the system as a piecewise system.
+
+\begin{figure}[h]
+\centering
+	\begin{tikzpicture}[thick,scale=0.85, every node/.style={scale=0.85}]
+		\coordinate (origin)  at (0,    0);
+		\coordinate (traj)    at (1,    1);
+		\coordinate (control) at (5,    1);
+		\coordinate (mixing)  at (9,    1.5);
+		\coordinate (dynamic) at (13,   1);
+		\coordinate (output1) at (16.5, 2.5);
+		\coordinate (outfit1) at (16,   2.5);
+		\coordinate (outfit2) at (4.5,    0.5);
+		\coordinate (outfit3) at (4.55,    0.45);
+
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (TRA) at (traj) {Trajectory\\generator};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (CON) at (control) {Position\\controller};
+		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$T^{-1}(\boldsymbol{\beta})$};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Full\\quadrotor\\dynamic};
+
+		\draw[->] ($(TRA.0)+(0, 1)$) -- node[above]{$\mathbf{x}_d$, $\dot{\mathbf{x}}_d$} ($(CON.180)+(0, 1)$);
+		\draw[->] ($(TRA.0)-(0, 1)$) - ++(0.5, 0) -- ++(0.5, 0) |- node[above]{\hspace{10pt}$\psi_d$, $\dot{\psi}_d$} ($(CON.180)$);
+		\draw[->] ($(CON.0)+(0, 1)$) - ++(0.75, 0)node[above]{$f$} -- ++(0.75, 0) |- ($(MIX.180)+(0, 0.5)$);
+		\draw[->] ($(CON.0)-(0, 1)$) - ++(0.75, 0) -- ++(0.75, 0) |- node[above]{$\boldsymbol{\tau}$} ($(MIX.180)-(0, 0.5)$);
+		\draw[->] ($(MIX.0)$) -- node[above]{$\mathbf{u}$} ($(DYN.180)$);
+		\draw[->] ($(DYN.0)+(0, 1)$) -- node[above]{\hspace{5pt}$\mathbf{x}$, $\dot{\mathbf{x}}$, $\ddot{\mathbf{x}}$} ($(DYN.0)+(1, 1)$);
+		\draw[->] ($(DYN.0)-(0, 1)$) -- node[above]{\hspace{10pt}$R$, $\boldsymbol{\omega}$, $\dot{\boldsymbol{\omega}}$} ($(DYN.0)+(1, -1)$);
+		\draw[-] ($(DYN.0)+(0.5, -1)$) |- (outfit2);
+		\draw[-] ($(DYN.0)+(0.55, 1)$) |- (outfit3);
+		\draw[->] (outfit2) |- ($(CON.180)-(0, 1)$);
+		\draw[->] (outfit3) |- ($(CON.180)-(0, 1.05)$);
+		\draw[->] ($(MIX.90)+(0, 0.8)$) -- node[right]{$\gamma$} ($(MIX.90)$);
+
+	\end{tikzpicture}
+	\caption{Block diagram of the control scheme (the subscripts that indicate the appartenence of the frame are omitted).}
+	\label{fig:controlBlock}
+\end{figure}
+
+
+\subsection{Simulation Results}

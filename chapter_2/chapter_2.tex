@@ -542,8 +542,10 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\coordinate (output1) at (16.6, 4.11);
 		\coordinate (output2) at (16.6, 1.91);
 		\coordinate (outfit1) at (16.1, 1.9);
-		\coordinate (outfit2) at (6.3, 0.8);
- 
+		\coordinate (outfit2) at (6.3,  0.8);
+		\coordinate (outfit3) at (8.8,  1.9);
+		\coordinate (outfit4) at (3.3,  1);
+
 		\node[draw, minimum width=2cm, minimum height=1.5cm, anchor=south west, align=center] (MOT) at (motors) {Motors\\\eqref{eq:finalModel2}};
 		\node[draw, minimum width=2cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic\\\eqref{eq:finalModel1}};
 		\node[draw, minimum width=1.6cm, minimum height=1.5cm, anchor=south west, align=center] (GRA) at (gravity) {Gravity\\\eqref{eq:gravity}};
@@ -566,9 +568,11 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\draw[->] ($(IN4.0)$) -- node[above]{$\mathbf{q}_W$} (output2);
 		\draw[-] (outfit1) |- (outfit2);
 		\draw[->] (outfit2) |- ($(GRA.180) - (0, 0.35)$);
+		\draw[-] (outfit3) |- (outfit4);
+		\draw[->] (outfit4) |- ($(DYN.180) - (0, 0.75)$);
 
 	\end{tikzpicture}
-	\caption{Block diagram of the quadrotor's dynamic. \textcolor{red}{Missing a line between omega and the dynamic}}
+	\caption{Block diagram of the quadrotor's dynamic.}
 	\label{fig:quadDynBlock}
 \end{figure}
 
@@ -703,11 +707,13 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 			\shade[tdplot_rotated_coords, ball color=orange] (0, 0.2*0.866, 0.2*0.5) circle (.04cm) node[anchor=south east]{CoG};
 
 			\shade[ball color=red] (0, 0, 0) circle (0.04cm);
+
+			\node [text=white] at (0, 0, -0.98) {};
 		\end{tikzpicture}
 		\caption{Side view.}
 		\label{fig:quadrotorRingSide}
 	\end{subfigure}
-	\caption{Quadrotor with the rotating platform in blue, in red the CoG of the quadrotor and in orange the resulting CoG. \textcolor{red}{align the figures with the center, not with the bottom}}
+	\caption{Quadrotor with the rotating platform in blue, in red the CoG of the quadrotor and in orange the resulting CoG.}
 	\label{fig:quadrotorRing}
 \end{figure}
 
