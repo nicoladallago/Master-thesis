@@ -730,9 +730,60 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \noindent \textcolor{red}{Add some graphs as soon as carlos send me the CAD.}
 
-\noindent \textcolor{red}{Add the equation for the centrifugal force, and explain (with the computation) why is almost negligible, due to the slow rotation (6 rpm).}
+\noindent The movement of the sensor introduced also a centrifugal force in the vheicle. In particular, if $\mathbf{p}_{cart}$ is the vector that encode the position of the cart with the respect of the body frame, the Newton's law of motion for the cart in vector form is 
 
-\noindent \textcolor{red}{Other effects?}
+\begin{equation}
+	\mathbf{f}=m_{cart}\mathbf{a}=m_{cart}\frac{d^2\mathbf{p}_{cart}}{dt^2}
+	\label{eq:NewtonForce}
+\end{equation}
+
+\noindent By twice applying the transformation above from the stationary to the rotating frame, the absolute acceleration of the particle can be written as \cite{physics}
+
+\begin{align}
+	\frac{d^2\mathbf{p}_{cart}}{dt^2} &= \frac{\partial}{\partial t}\Big(\frac{d\mathbf{p}_{cart}}{dt}\Big)+\boldsymbol{\omega}\times\Big(\frac{d\mathbf{p}_{cart}}{dt}\Big) \nonumber \\
+	&= \frac{\partial}{\partial t}\Big(\frac{\partial\mathbf{p}_{cart}}{\partial t}+\boldsymbol{\omega}\times\mathbf{p}_{cart}\Big)+\boldsymbol{\omega}\times\Big(\frac{\partial\mathbf{p}_{cart}}{\partial t}+\boldsymbol{\omega}\times\mathbf{p}_{cart}\Big)
+	\label{eq:centrifugalAcceleration}
+\end{align}
+
+\noindent where in this case $\boldsymbol{\omega}$ is the angular velocity of the cart with the respect to the body frame. Expanding expression \eqref{eq:centrifugalAcceleration}, noting that the chain rule applies to differentiation of cross products, that the cross product is distributive over addition, and coupling with equation \eqref{eq:NewtonForce}, we have
+
+\begin{equation}
+	\mathbf{f}=m_{cart}\frac{\partial^2\mathbf{p}_{cart}}{\partial t^2}+\underbrace{m_{cart}\frac{d\boldsymbol{\omega}}{dt}\times\mathbf{p}_{cart}}_{\text{Euler force}}+\underbrace{2m_{cart}\boldsymbol{\omega}\times\frac{\partial\mathbf{p}_{cart}}{\partial t}}_{\text{Coriolis force}}+\underbrace{m_{cart}\boldsymbol{\omega}\times\bigl(\boldsymbol{\omega}\times\mathbf{p}_{cart}\bigl)}_{\text{centrifugal force}}
+\end{equation}
+
+\noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $f$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that reguard the acceleration of the body frame
+
+\begin{equation}
+	\begin{split}
+		\begin{bmatrix}
+			\ddot{\mathbf{x}}_B \\
+			\dot{\boldsymbol{\omega}}_B
+		\end{bmatrix}
+		&=
+		\begin{bmatrix}
+			\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
+			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+		\end{bmatrix}
+		\begin{bmatrix}
+			\vdots \\
+			u_i^2 \\
+			\vdots
+		\end{bmatrix}
+		+ \\
+		&+
+		\begin{bmatrix}
+			\mathbf{0} \\
+			I_{cm}^{-1}\bigl(\boldsymbol{\omega}_B \times I_{cm} \boldsymbol{\omega}_B \bigl)
+		\end{bmatrix} 
+		+
+		\frac{1}{m_{cart}}
+		\begin{bmatrix}
+		\mathbf{f} \\
+		0
+		\end{bmatrix}
+	\end{split}
+	\label{eq:finalModelCart}
+\end{equation}
 
 
 \section{Experimental setup}

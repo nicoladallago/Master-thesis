@@ -122,7 +122,7 @@ The previous controller was derive without the roating platform. To introduce th
 \centering
 	\begin{tikzpicture}[thick,scale=0.85, every node/.style={scale=0.85}]
 		\coordinate (origin)  at (0,    0);
-		\coordinate (traj)    at (1,    1);
+		\coordinate (traj)    at (0.5,    1);
 		\coordinate (control) at (5,    1);
 		\coordinate (mixing)  at (9,    1.5);
 		\coordinate (dynamic) at (13,   1);
@@ -136,8 +136,8 @@ The previous controller was derive without the roating platform. To introduce th
 		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$T^{-1}(\boldsymbol{\beta})$};
 		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Full\\quadrotor\\dynamic};
 
-		\draw[->] ($(TRA.0)+(0, 1)$) -- node[above]{$\mathbf{x}_d$, $\dot{\mathbf{x}}_d$} ($(CON.180)+(0, 1)$);
-		\draw[->] ($(TRA.0)-(0, 1)$) - ++(0.5, 0) -- ++(0.5, 0) |- node[above]{\hspace{10pt}$\psi_d$, $\dot{\psi}_d$} ($(CON.180)$);
+		\draw[->] ($(TRA.0)+(0, 1)$) -- node[above]{$\mathbf{x}_d$, $\dot{\mathbf{x}}_d$, $\ddot{\mathbf{x}}_d$} ($(CON.180)+(0, 1)$);
+		\draw[->] ($(TRA.0)-(0, 1)$) - ++(0.75, 0) -- ++(0.75, 0) |- node[above]{\hspace{15pt}$\psi_d$, $\dot{\psi}_d$, $\ddot{\psi}_d$} ($(CON.180)$);
 		\draw[->] ($(CON.0)+(0, 1)$) - ++(0.75, 0)node[above]{$f$} -- ++(0.75, 0) |- ($(MIX.180)+(0, 0.5)$);
 		\draw[->] ($(CON.0)-(0, 1)$) - ++(0.75, 0) -- ++(0.75, 0) |- node[above]{$\boldsymbol{\tau}$} ($(MIX.180)-(0, 0.5)$);
 		\draw[->] ($(MIX.0)$) -- node[above]{$\mathbf{u}$} ($(DYN.180)$);
