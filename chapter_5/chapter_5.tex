@@ -3,9 +3,9 @@
 
 The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor.
 
-\section{Force and torque position controller}
+\section{Position tracking controller in \texorpdfstring{$SO(3)$}{TEXT}}
 
-In this section, will be introduce a Tracking Control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressiv flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group.
+In this section, will be introduce a tracking control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressiv flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group.
 
 \noindent The \textit{general linear group} of order $3$, $GL(3)$, is a algebraic group composed by all the non singular matrices $A \in \rm I\!R^{3\times 3}$ with matrix product.
 
@@ -70,8 +70,8 @@ In this section, will be introduce a Tracking Control for the vehicle, based on 
 \noindent The final control law is then divide in two contributions, one for the total force and one for the torque
 
 \begin{align}
-	f &= -(k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d)^TR\mathbf{e}_3 \\
-	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}e_{\omega} + \omega\times I_{cm}\omega
+	f &= -(k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d)^TR\mathbf{e}_3 \label{eq:LeeController1} \\
+	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}e_{\omega} + \omega\times I_{cm}\omega \label{eq:LeeController2} 
 \end{align}
 
 \noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentialy stable, if the initial conditions are sufficently small\footnote{see the paper \cite{LeeController} for more details and the prooof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for compute the linear acceleration in the body frame we just need to do 
@@ -86,7 +86,7 @@ In this section, will be introduce a Tracking Control for the vehicle, based on 
 	\dot{\boldsymbol{\omega}}_B = I_{cm}^{-1}\boldsymbol{\tau}
 \end{equation}
 
-\noindent Then, by using the results from section \ref{quadModel}, we can compute the speed of the propeller with
+\noindent Then, by using the results from section \ref{quadModel}, we can do the computation of the matrix that ancode the law from motors' inputs to linear and angular acceleration and obtain
 
 \begin{equation}
 	\begin{bmatrix}
@@ -97,21 +97,19 @@ In this section, will be introduce a Tracking Control for the vehicle, based on 
 	=
 	\underbrace{
 	\begin{bmatrix}
-		\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
-		\dots & I_{cm}^{-1}\Big[ \mathbf{l}_i\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+		\dots   & A_F   & \dots  \\
+		\dots & l_i\times\begin{bmatrix}0 \\ 0 \\ A_F \end{bmatrix}+\begin{bmatrix}0 \\ 0 \\ B_F\end{bmatrix} & \dots
 	\end{bmatrix}^{-1}
 	}_{T^{-1}(\boldsymbol{\beta})}	
 	\cdot
-	\left[
-	\begin{array}{c}
+	\begin{bmatrix}
 		f \\
-		\hline
 		\boldsymbol{\tau}
-	\end{array}
-	\right]
+	\end{bmatrix}
+	\label{eq:mixingMatrix}
 \end{equation}
 
-\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the invers of the estimated parameters. However the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to etimate directly this. A naive approach is simply use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. HOvewer, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
+\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the invers of the estimated parameters, expept that is encoded only one row for the force, since thre propeller are parallel to the frame of the quadrotor. Mowever the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to etimate directly $A_F$ and $B_F$. A naive approach is simply use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. HOvewer, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
 
 
 \subsection{Adding the rotating platform}
@@ -132,9 +130,9 @@ The previous controller was derive without the roating platform. To introduce th
 		\coordinate (outfit3) at (4.55,    0.45);
 
 		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (TRA) at (traj) {Trajectory\\generator};
-		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (CON) at (control) {Position\\controller};
-		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$T^{-1}(\boldsymbol{\beta})$};
-		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Full\\quadrotor\\dynamic};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (CON) at (control) {Position\\controller\\\eqref{eq:LeeController1}\eqref{eq:LeeController2}};
+		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$T^{-1}(\boldsymbol{\beta})$\\\eqref{eq:mixingMatrix}};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic\\\eqref{eq:finalModelCart}};
 
 		\draw[->] ($(TRA.0)+(0, 1)$) -- node[above]{$\mathbf{x}_d$, $\dot{\mathbf{x}}_d$, $\ddot{\mathbf{x}}_d$} ($(CON.180)+(0, 1)$);
 		\draw[->] ($(TRA.0)-(0, 1)$) - ++(0.75, 0) -- ++(0.75, 0) |- node[above]{\hspace{15pt}$\psi_d$, $\dot{\psi}_d$, $\ddot{\psi}_d$} ($(CON.180)$);
@@ -148,7 +146,9 @@ The previous controller was derive without the roating platform. To introduce th
 		\draw[->] (outfit2) |- ($(CON.180)-(0, 1)$);
 		\draw[->] (outfit3) |- ($(CON.180)-(0, 1.05)$);
 		\draw[->] ($(MIX.90)+(0, 0.8)$) -- node[right]{$\gamma$} ($(MIX.90)$);
-
+		%\draw[-] ($(MIX.90)+(0, 0.8)$) -- ($(CON.90)+(0, 0.3)$);
+		%\draw[->] ($(CON.90)+(0, 0.3)$) -- ($(CON.90)$);
+ 
 	\end{tikzpicture}
 	\caption{Block diagram of the control scheme (the subscripts that indicate the appartenence of the frame are omitted).}
 	\label{fig:controlBlock}
