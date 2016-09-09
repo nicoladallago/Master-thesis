@@ -1,0 +1,46 @@
+\documentclass[11pt]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+		group style = {
+			group name = simulation2,
+			group size = 2 by 3,
+			xlabels at = edge bottom,
+			xticklabels at = edge bottom,
+			vertical sep = 30pt
+		},
+		xmin = 0,
+		xmax = 25,
+		xlabel = {$t \hspace{10pt} [s]$},
+		width = 7.5cm,
+		height = 4cm
+		]
+			\nextgroupplot[title = {$x \hspace{10pt} [m]$}, grid=major]
+	 		\addplot[black, dashed, thick] table {../data/simulation_2/x_d.dat};
+	 		\addplot[red, thick] table {../data/simulation_2/x_c.dat};
+	 		\nextgroupplot[title = {$\text{roll} \hspace{10pt} [rad]$}, grid=major]
+	 		\addplot[red, thick] table {../data/simulation_2/roll_c.dat};
+	 		\nextgroupplot[title = {$y \hspace{10pt} [m]$}, grid=major]
+	 		\addplot[black, dashed, thick] table {../data/simulation_2/y_d.dat};
+	 		\addplot[red, thick] table {../data/simulation_2/y_c.dat};
+	 		\nextgroupplot[title = {$\text{pitch} \hspace{10pt} [rad]$}, grid=major]
+	 		\addplot[red, thick] table {../data/simulation_2/pitch_c.dat};
+	 		\nextgroupplot[title = {$z \hspace{10pt} [m]$}, grid=major, legend pos=north east, legend cell align=right, legend style={at={(1.08, -0.65)}, anchor=north}, legend entries={desire trajectory, results}]
+	 		\addplot[black, dashed, thick] table {../data/simulation_2/z_d.dat};
+	 		\addplot[red, thick] table {../data/simulation_2/z_c.dat};
+	 		\nextgroupplot[title = {$\text{yaw} \hspace{10pt} [rad]$}, grid=major]
+	 		\addplot[black, dashed, thick] table {../data/simulation_2/yaw_d.dat};
+	 		\addplot[red, thick] table {../data/simulation_2/yaw_c.dat};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}

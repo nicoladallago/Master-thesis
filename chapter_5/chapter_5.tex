@@ -98,7 +98,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\underbrace{
 	\begin{bmatrix}
 		\dots   & A_F   & \dots  \\
-		\dots & l_i\times\begin{bmatrix}0 \\ 0 \\ A_F \end{bmatrix}+\begin{bmatrix}0 \\ 0 \\ B_F\end{bmatrix} & \dots
+		\dots & \Big(\mathbf{l}_i + \boldsymbol{\Delta l}\Big)\times\begin{bmatrix}0 \\ 0 \\ A_F \end{bmatrix}+\begin{bmatrix}0 \\ 0 \\ B_F\end{bmatrix} & \dots
 	\end{bmatrix}^{-1}
 	}_{T^{-1}(\boldsymbol{\beta})}	
 	\cdot
@@ -156,3 +156,21 @@ The previous controller was derive without the roating platform. To introduce th
 
 
 \subsection{Simulation Results}
+
+In figure \ref{fig:simulation1} is reported a simple example of ttajectory tracking. In particular, the desire trajectory is a step for the desire height $z$ and hovering for the remaining variables. Moreover is illustrate why the cart compensation is important. 
+
+\begin{figure}[h]
+	\centering
+ 	\includestandalone[]{./chapter_5/plots/simulation1}
+ 	\caption{Simulation results to a step input in the desire $z$, then hovering. Without and with the cart compensation. The mass of the moving cart is one third of the real mass. The cart is moving with a constant speed of $6$ rpm, the maximum possible for the engine adopted \cite{Carlos}.}
+ 	\label{fig:simulation1}		
+\end{figure}
+
+\noindent In red are depicted the relut trajectories with the compensation, while, in blue, without the compensation. Note how the results is much more stable with the compensation. Note also that in the simulation the mass of the moving cart is one third of the real mass, this because if we simulate without compensation, the controller is not able to keep the vehicle balance, resulting in a complete loss of control.  
+
+\begin{figure}[h]
+	\centering
+ 	\includestandalone[]{./chapter_5/plots/simulation2}
+ 	\caption{Simulation results to a step input in the desire $z$, then hovering. The cart is moving with a constant speed of $6$ rpm, the maximum possible for the engine adopted \cite{Carlos}.}
+ 	\label{fig:simulation2}		
+\end{figure}
