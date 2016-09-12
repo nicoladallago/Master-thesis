@@ -16,9 +16,25 @@ The overall objective of the Prometheus project is navigation and mapping, for t
 
 \noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is depict in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attached in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attached to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can maps direclty in 3D, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus, where the sensor is also rotating around the UAV. In such a way, the Lidar has three degrees of freedom in the movement and a 3D mapping can be performed. This solution comports, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
 
-\textcolor{red}{Add renders here.}
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.45]{images/render1.png}
+		\caption{Render of the entire vehicle.}
+		\label{subfig:render1}
+	\end{subfigure} 
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.5]{images/render2.png}
+		\caption{Render of the moving cart.}
+		\label{subfig:render2}
+	\end{subfigure}
+	\caption{Renders of the UAV and of the cart.}
+	\label{fig:renders}
+\end{figure}
 
-\noindent In figure [\textcolor{red}{renders}] is possible to see clearly the platform, made of two lightweight rings, and the cart that provides the circular movement of the sensor. An important choice was also the selection of the UAV, that has to guarantee to flight also with the weight of the mechanical structure, sensor and all the electronics needed to fly and control the movement of the cart.
+\noindent In figure \ref{subfig:render1} is possible to see clearly the platform, made of two lightweight rings, and the cart that provides the circular movement of the sensor. An important choice was also the selection of the UAV, that has to guarantee to flight also with the weight of the mechanical structure, sensor and all the electronics needed to fly and control the movement of the cart.
 
 \section{Mathematical model}
 \label{mathematicalModel}
@@ -65,9 +81,9 @@ Is pretty much clear from the previous section that this UAV is different from a
 		
 		% Coordinate frame
 		\coordinate (O) at (0,0,0) node[red, anchor = north]{$O_B$};
-		\draw[ultra thick,->,red] (0,0,0) -- (0,-1.1,0) node[anchor=north west]{$x_B$};
-		\draw[ultra thick,->,red] (0,0,0) -- (1.1,0,0) node[anchor=south west]{$y_B$};
-		\draw[ultra thick,->,red] (0,0,0) -- (0,0,1.1) node[anchor=south]{$z_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (-1,-1,0) node[anchor=north west]{$x_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (-1,1,0) node[anchor=south west]{$y_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,0,1) node[anchor=south]{$z_B$};
 
 		% Rotors arrows
 		\draw [->, ultra thick] (\centers+0.2, 0, \heightpropeller) arc (0:300:0.2);
@@ -81,6 +97,8 @@ Is pretty much clear from the previous section that this UAV is different from a
 
 \noindent A quadrotor helicopter is made of a central frame and four propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrated in figure \ref{fig:quadrtotor}. \newline
 \noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attached to the vehicle.
+
+\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the traslation and rotation of the body frame in respect to the world frame. For rappresent the traslation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduced in the following section.
 
 \begin{figure}[h]
 	\centering
@@ -105,13 +123,9 @@ Is pretty much clear from the previous section that this UAV is different from a
 		\draw[-, dashed, rotate=30] (0, 0, 0) -- (\xbody, \ybody, 0);
 
 	\end{tikzpicture}
-	\caption{Illustration of the world and body frames. \textcolor{red}{Maybe change the inclination}
-}
+	\caption{Illustration of the world and body frames.}
 	\label{fig:frames}
 \end{figure}
-
-\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the traslation and rotation of the body frame in respect to the world frame. For rappresent the traslation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduced in the following section.
-
 	
 \subsection{Quaternion math}
 \label{quaternion}
@@ -728,8 +742,6 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \noindent Another difference in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the detailed CAD model of the entire vehicle, provided in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple piecewise model. 
 
-\noindent \textcolor{red}{Add some graphs as soon as carlos send me the CAD.}
-
 \noindent The movement of the sensor introduced also a centrifugal force in the vheicle. In particular, if $\mathbf{p}_{cart}$ is the vector that encode the position of the cart with the respect of the body frame, the Newton's law of motion for the cart in vector form is 
 
 \begin{equation}
@@ -788,4 +800,13 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \section{Experimental setup}
 
-\textcolor{red}{Description of all the systems, ROS, vicon, etcetera.}
+In this section we are going to introduce all the hardware and the software use in this project. Starting from the hardware, we used a main board develop entirely at LTU, the \textit{KFly}\footnote{https://gitlab.com/korken89/KFly}. 
+
+\begin{wrapfigure}{l}{0.5\textwidth} 
+  	\centering
+    \includegraphics[scale = 0.4]{./images/KFly.png}
+    \caption{KFly board.}
+    \label{fig:KFly}
+\end{wrapfigure} 
+
+\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerfull enough board able to perform all the operations needed during the flight. It is also equipped with differnt sensor, such as an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directily measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. 
