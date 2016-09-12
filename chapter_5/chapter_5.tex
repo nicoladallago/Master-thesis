@@ -62,16 +62,16 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 \noindent The angular velocity error $e_{\omega}$ depends only from the desire yaw, since our trajectory generator compute the desire yaw till the second derivative. However, it can be compute simple by 
 
 \begin{equation}
-	\mathbf{e}_{\omega} = \omega - R^TR_c\omega_c
+	\mathbf{e}_{\omega} = \boldsymbol{\omega} - R^TR_C\hat{\boldsymbol{\omega}}_c
 \end{equation}
 
-\noindent where $\hat{\omega}_c = R_c^T\dot{R}_c$.
+\noindent where $\hat{\boldsymbol{\omega}}_c = R_c^T\dot{R}_c$.
 
 \noindent The final control law is then divide in two contributions, one for the total force and one for the torque
 
 \begin{align}
 	f &= -(k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d)^TR\mathbf{e}_3 \label{eq:LeeController1} \\
-	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}e_{\omega} + \omega\times I_{cm}\omega \label{eq:LeeController2} 
+	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}\boldsymbol{e}_{\omega} + \boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega} \label{eq:LeeController2} 
 \end{align}
 
 \noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentialy stable, if the initial conditions are sufficently small\footnote{see the paper \cite{LeeController} for more details and the prooof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for compute the linear acceleration in the body frame we just need to do 
@@ -166,7 +166,9 @@ In figure \ref{fig:simulation1} is reported a simple example of ttajectory track
  	\label{fig:simulation1}		
 \end{figure}
 
-\noindent In red are depicted the relut trajectories with the compensation, while, in blue, without the compensation. Note how the results is much more stable with the compensation. Note also that in the simulation the mass of the moving cart is one third of the real mass, this because if we simulate without compensation, the controller is not able to keep the vehicle balance, resulting in a complete loss of control.  
+\noindent In red are depicted the relut trajectories with the compensation, while, in blue, without the compensation. Note how the results is much more stable with the compensation. Note also that in the simulation the mass of the moving cart is one third of the real mass, this because if we simulate without compensation, the controller is not able to keep the vehicle balance, resulting in a complete loss of control. 
+
+\noindent In figure \ref{fig:simulation2} is instead depicted a simulation with the full mass of the cart. The control algortithm is the one with the cart compensation and the desire trajectory is again a step imput for the desire height and constant for the other inputs. As is possible to see the control works quite well but some oscillations are again noticible. Those oscillations are come from the engines. It means that we know the position of the cart at the actual time and than apply the control compensation. However the engines apply a delay to the system and this compensation is delayed by the time constant of the motors. 
 
 \begin{figure}[h]
 	\centering
@@ -174,3 +176,5 @@ In figure \ref{fig:simulation1} is reported a simple example of ttajectory track
  	\caption{Simulation results to a step input in the desire $z$, then hovering. The cart is moving with a constant speed of $6$ rpm, the maximum possible for the engine adopted \cite{Carlos}.}
  	\label{fig:simulation2}		
 \end{figure}
+
+\noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the stedy state, however this problems come from the simulated bias of the sensors. These errors are however of the order of the millimiter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
