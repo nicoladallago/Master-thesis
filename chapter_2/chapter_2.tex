@@ -800,13 +800,72 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \section{Experimental setup}
 
-In this section we are going to introduce all the hardware and the software use in this project. Starting from the hardware, we used a main board develop entirely at LTU, the \textit{KFly}\footnote{https://gitlab.com/korken89/KFly}. 
+In this section we are going to introduce all the hardware and the software use in this project. Starting from the hardware, we used a main board develop entirely at LTU, the \textit{KFly}\footnote{\url{https://gitlab.com/korken89/KFly}}. 
 
-\begin{wrapfigure}{l}{0.5\textwidth} 
-  	\centering
-    \includegraphics[scale = 0.4]{./images/KFly.png}
-    \caption{KFly board.}
-    \label{fig:KFly}
-\end{wrapfigure} 
+\begin{figure}[h] 
+	\centering
+   	\includegraphics[scale = 0.4]{./images/KFly.png}
+   	\caption{KFly board.}
+   	\label{fig:KFly}
+\end{figure} 
 
-\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerfull enough board able to perform all the operations needed during the flight. It is also equipped with differnt sensor, such as an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directily measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. 
+\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerfull enough board able to perform all the operations needed during the flight. It is also equipped with differnt sensor, such as an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directily measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and tha base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = 0.6]{./images/XBee.jpg}
+	\caption{XBee communication modules.}
+	\label{fig:XBee}
+\end{figure}
+
+\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250kbps. Like previously said the UAV is provide with a IMU, but to measure directly the pose of the vehicle other sensors are needed. In particular, to test the control with extremily precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the control lab of LTU.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.25]{images/Vicon_camera.jpg}
+		\caption{One Vicon camera.}
+		\label{subfig:vicon1}
+	\end{subfigure} 
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.047]{images/Vicon_PC.jpg}
+		\caption{Rappresentation of objects in the Vicon system.}
+		\label{subfig:vicon2}
+	\end{subfigure}
+	\caption{Vicon motion capture system.}
+	\label{fig:vicon}
+\end{figure}
+
+\noindent The system is compesed by 20 different cameras, mounted in the perimeter of the lab. By applying a number of markers in the object, is possible to track its position and orientation in the space, with a precion down to the tenth of millimeter.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.22]{images/prometheus2.jpg}
+		\label{subfig:prometheus1}
+	\end{subfigure} 
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.2]{images/prometheus5.jpg}
+		\label{subfig:prometheus2}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.3]{images/prometheus4.jpg}
+		\label{subfig:prometheus3}
+	\end{subfigure} 
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[scale = 0.25]{images/prometheus3.jpg}
+		\label{subfig:prometheus4}
+	\end{subfigure}
+	\caption{First prototype of the Prometheus mapping drone.}
+	\label{fig:prometheus}
+\end{figure}
+
+\noindent In figure \ref{fig:prometheus} there are some picture of the first prototype of the Prometheus maping drone. In particular, is possible to see all the electronics and the Vicon markers on top and on the side of the Lidar sensor.
+
+\noindent Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. Instead, for the real application, we choose to use \textit{ROS}, the Robotic Operating System\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowdays in a robotics project and there is a big worldwide comunity. However, the main problem was that the KFly can't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problms with the bandwhidt of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz (100 Hz is quite standard in quadrotor application). A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth, and can run ROS. 

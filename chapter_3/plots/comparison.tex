@@ -1,0 +1,41 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\usetikzlibrary{spy}
+\pgfplotsset{compat = 1.9}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+
+\begin{document}
+    \begin{tikzpicture}[scale=1, spy using outlines={circle, magnification=4, connect spies}]
+        %\draw[help lines,step=.2] (0,0) grid (10, 4);
+        \begin{axis}[
+            grid=major,
+            xmin=0, 
+            xmax=30, 
+            ymin=-2, 
+            ymax=2.5,
+            title = {Simulated $\dot{\omega}_x$},
+            ylabel = {$\dot{\omega}_x \hspace{10pt} [\frac{rad}{s^2}]$},
+            xlabel = {$t \hspace{10pt} [s]$},
+            grid = major,              
+            width = 12cm,
+            height = 8cm,      
+            legend pos=north east,         
+            legend cell align=right,     
+            legend entries={full dynamic, simplified dynamic}
+            ]
+            \addplot[red, thin] table {../data/dw_x_full.dat};
+            \addplot[blue, thin] table {../data/dw_x_simple.dat};      
+        \end{axis}
+        \coordinate (spypoint) at (8.3 ,3.7);
+        \coordinate (magnifyglass) at (3, 1.5);
+        \spy [black, size=3cm] on (spypoint) in node[fill=white] at (magnifyglass);
+	  \end{tikzpicture}
+\end{document} 
