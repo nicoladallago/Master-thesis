@@ -156,7 +156,7 @@ The previous controller was derive without the roating platform. To introduce th
 
 \noindent The effects coming from the centrifugal force are not compensate in this controller, becasue the maximum speed of the cart is sufficiently small to assume that all this effects are neglettable. However, in case we want to take into account those, we just need to add the compensation in the force vector, using the equation \eqref{eq:cartAllForces}.
 
-\subsection{Simulation Results}
+\subsection{Simulation results}
 
 In figure \ref{fig:simulation1} is reported a simple example of ttajectory tracking. In particular, the desire trajectory is a step for the desire height $z$ and hovering for the remaining variables. Moreover is illustrate why the cart compensation is important. 
 
@@ -437,3 +437,5 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 		\mathbf{0}_{3\times 10} & I_3 & \mathbf{0}_{3\times 6}
 	\end{bmatrix}}_{=C} \mathbf{x} + \underbrace{\mathbf{0}_{6\times 4}}_{=D}u_{in}^2
 \end{equation}
+
+\subsection{Simulation results}
