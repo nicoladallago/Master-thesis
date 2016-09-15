@@ -328,19 +328,20 @@ In this section, by recalling what we study in the previous section, is possible
 
 \noindent In figure \ref{fig:polyTrajectory} is reported the first dimension of a generated trajectory evolving over the time. In particular in blue are plotted the trajectory and its first four derivatives, till the snap. Instead in black are plotted the setpoints for the trajectory and the initial and final conditions for each derivative, that are equal to zero. Notice that between setpoints two and three, the trajectory is not as expected, in the sense that first tend to go far from the desired setpoint and than reach it. That's because this is only one dimension of a more complex three dimension trajectory.
 
-\section{Adding corridor constraints}
+\section{Adding corridor constraints in \texorpdfstring{$d$}{TEXT} dimensions}
 
-In this section, corridors constraints will be added in the cost function \eqref{eq:minimizationCost}. For corridor constraints, we mean that the desire trajectory must be inside a corridor, this why for a safe obstacle avoidance and navigation algorithm, the vehicle must respect distance between walls and obstacles. To do this, we first define $\mathbf{u}_i$ as the unit vector along the segment from setpoint $\mathbf{r}_i$ and setpoint $\mathbf{r}_{i+1}$.
+In this section, corridors constraints will be added in the cost function \eqref{eq:minimizationCost}. For corridor constraints, we mean that the desire trajectory must be inside a corridor, this why for a safe obstacle avoidance and navigation algorithm, the vehicle must respect distance between walls and obstacles. To do this, we first define $\mathbf{t}_i$ as the unit vector along the segment from setpoint $\mathbf{r}_i$ and setpoint $\mathbf{r}_{i+1}$.
 
 \begin{equation}
-	\mathbf{u}_i=\frac{\mathbf{r}_{i+1}-\mathbf{r}}{||\mathbf{r}_{i+1}-\mathbf{r}||}
+	\mathbf{t}_i=\frac{\mathbf{r}_{i+1}-\mathbf{r}}{||\mathbf{r}_{i+1}-\mathbf{r}||}
 	\label{eq:unitVector}
 \end{equation}
 
+\noindent Let the constraint $i$ be between setpoint $i$ and $i+1$ and applied to dimensions $a$, $b$, and $c$ (i.e. if the trajectory dimensions are $\begin{bmatrix}\psi & x & y & z \end{bmatrix}^T$, the dimensions $x$, $y$, and $z$ position will be $a=2$, $b=3$, $c=4$).
 \noindent The perpendicular distance vector, $\mathbf{d}_i(t)$, from segment $i$ is defined as
 
 \begin{equation}
-	\mathbf{d}_i(t) = (\mathbf{r}_d(t)-\mathbf{r}_i)-((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{t}_i)\mathbf{u}_i		
+	\mathbf{d}_i(t) = (\mathbf{r}_d(t)-\mathbf{r}_i)-((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{t}_i)\mathbf{t}_i		
 	\label{eq:perpendicularVector}	
 \end{equation}
 
@@ -354,7 +355,7 @@ In this section, corridors constraints will be added in the cost function \eqref
 \noindent The reason to write the constraint like that, is because it can be incorporate into the QP problem by introducing $n_c$ intermediate points as
 
 \begin{equation}
-	\Bigg|x_a\cdot\mathbf{d}_i\Big(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)\Big)\Bigg|\le\delta_i \quad \text{for} \quad j=1,\dots,n_c
+	\Bigg|\mathbf{e}_p\cdot\mathbf{d}_i\Big(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)\Big)\Bigg|\le\delta_i \quad \text{for}\quad p=a,b,c \quad j=1,\dots,n_c
 	\label{eq:intermediatePoints}
 \end{equation}
 
@@ -363,12 +364,19 @@ In this section, corridors constraints will be added in the cost function \eqref
 \noindent To find $A_{ineq}$, we first break down the inequality \eqref{eq:intermediatePoints} into
 
 \begin{align}
-	(x_a\cdot\mathbf{d}_i(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)))\le & \delta_i \\
-	-(x_a\cdot\mathbf{d}_i(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)))\le & \delta_i
+	(\mathbf{e}_p\cdot\mathbf{d}_i(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)))\le & \delta_i \\
+	-(\mathbf{e}_p\cdot\mathbf{d}_i(t_i+\frac{j}{1+n_c}(t_{i+1}-t_i)))\le & \delta_i
 	\label{eq:breakConstraint}
 \end{align}
 
-\noindent This result in a total of $2\cdot2\cdot n_c$ constraints for each corridor constraint. Then by performing some math, the matrix $A_{ineq}$ and the vector $b_{ineq}$ can be deduce \footnote{The formulation of such matrix is very eavy and difficoult to understand, that's why is not report. \textcolor{red}{Or maybe put in a appendix}}.
+\noindent This result in a total of $2\cdot p\cdot n_c$ constraints for each corridor constraint. Then by performing some math, the matrix $A_{ineq}$ and the vector $b_{ineq}$ can be deduce.
+
+\begin{align}
+	\mathbf{d}_i(t) &= (\mathbf{r}_d(t)-\mathbf{r}_i)-\big((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{t}_i\big)\mathbf{t}_i \\
+	&= (\mathbf{r}_d(t)-\mathbf{r}_i)-\Bigg(\sum_{j=1}^{p}((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{e}_j)(\mathbf{t}_i\cdot\mathbf{e}_j)\Bigg)\mathbf{t}_i \nonumber \\
+	&= (\mathbf{r}_d(t)-\mathbf{r}_i)-\Bigg(\sum_{j=1}^{p}\big((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{e}_j\big)\big((\frac{\mathbf{r}_{i+1}-\mathbf{r}_i}{||\mathbf{r}_{i+1}-\mathbf{r}_i||})\cdot\mathbf{e}_j\big)\Bigg)\Bigg(\frac{\mathbf{r}_{i+1}-\mathbf{r}_i}{||\mathbf{r}_{i+1}-\mathbf{r}_i||}\Bigg) \nonumber \\
+	&= (\mathbf{r}_d(t)-\mathbf{r}_i)-\Bigg(\sum_{j=1}^{p}\big((\mathbf{r}_d(t)-\mathbf{r}_i)\cdot\mathbf{e}_j\big)\big(\mathbf{r}_{i+1}-\mathbf{r}_i\big)\cdot\mathbf{e}_j\Bigg)\Bigg(\frac{\mathbf{r}_{i+1}-\mathbf{r}_i}{||\mathbf{r}_{i+1}-\mathbf{r}_i||^2}\Bigg) \nonumber
+\end{align}
 
 \begin{figure}[h]
 	\centering
@@ -376,5 +384,36 @@ In this section, corridors constraints will be added in the cost function \eqref
  	\caption{Setpoints and desire trajectory, with and without corridor constraints between setpoints 2 and 3.}
  	\label{fig:trajectory}		
 \end{figure}
+
+\noindent We can then construct the $A_{ineq}$ matrix and $\mathbf{b}_{ineq}$ vector
+
+\begin{align}
+	A_{inex}\mathbf{c} &\le \mathbf{b}_{ineq} \\
+	\begin{bmatrix}
+		\Big(\mathbf{e}_a\cdot\mathbf{d}_i\big(t_i+\frac{1}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		-\Big(\mathbf{e}_a\cdot\mathbf{d}_i\big(t_i+\frac{1}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		\vdots \\
+		\Big(\mathbf{e}_a\cdot\mathbf{d}_i\big(t_i+\frac{n_c}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		-\Big(\mathbf{e}_a\cdot\mathbf{d}_i\big(t_i+\frac{nc}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		\Big(\mathbf{e}_b\cdot\mathbf{d}_i\big(t_i+\frac{1}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		-\Big(\mathbf{e}_b\cdot\mathbf{d}_i\big(t_i+\frac{1}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		\vdots \\
+		\Big(\mathbf{e}_b\cdot\mathbf{d}_i\big(t_i+\frac{n_c}{1+n_c}(t_{i+1}-t_i)\big)\Big) \\
+		-\Big(\mathbf{e}_b\cdot\mathbf{d}_i\big(t_i+\frac{n_c}{1+n_c}(t_{i+1}-t_i)\big)\Big)
+	\end{bmatrix}
+	&\le
+	\begin{bmatrix}
+		\delta_i \\
+		\delta_i \\
+		\vdots   \\
+		\delta_i \\
+		\delta_i \\
+		\delta_i \\
+		\delta_i \\
+		\vdots   \\
+		\delta_i \\
+		\delta_i
+	\end{bmatrix} \nonumber 
+\end{align}
 
 \noindent In figure \ref{fig:trajectory} are reported examples of trajectories, with and without corridor constraints. For better understanding are reposrt 2D trajectories, but the same example could be made also for 3D trajectories. The corridor constraint is present only between two setpoints, setpoint 2 and setpoint 3. As is possible to see, the trajectory remain in beetween the constraint, but become less smooth in compare to the one without constraints. Moreover, notice that the entire trajectory is different and not only the segment in between the corridor, this is another important advantage of using this technique to generate trajectores. 

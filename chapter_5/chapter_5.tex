@@ -114,7 +114,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 
 \subsection{Adding the rotating platform}
 
-The previous controller was derive without the roating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving COG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provid of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more preciselly solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpretate the system as a piecewise system.
+The previous controller was derive without the roating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving COG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provid of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more preciselly solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpretate the system as a piecewise system. 
 
 \begin{figure}[h]
 \centering
@@ -154,6 +154,7 @@ The previous controller was derive without the roating platform. To introduce th
 	\label{fig:controlBlock}
 \end{figure}
 
+\noindent The effects coming from the centrifugal force are not compensate in this controller, becasue the maximum speed of the cart is sufficiently small to assume that all this effects are neglettable. However, in case we want to take into account those, we just need to add the compensation in the force vector, using the equation \eqref{eq:cartAllForces}.
 
 \subsection{Simulation Results}
 
@@ -178,3 +179,261 @@ In figure \ref{fig:simulation1} is reported a simple example of ttajectory track
 \end{figure}
 
 \noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the stedy state, however this problems come from the simulated bias of the sensors. These errors are however of the order of the millimiter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
+
+
+\section{Model predictive control}
+
+\textit{Model predictive control} (MPC) is an advanced method of process control that has been in use in the process industries in chemical plants and oil refineries since the 1980s. In recent years it has also been used in power system balancing models. Model predictive controllers rely on dynamic models of the process, most often linear empirical models obtained by system identification. The main advantage of MPC is the fact that it allows the current timeslot to be optimized, while keeping future timeslots in account. This is achieved by optimizing a finite time-horizon, but only implementing the current timeslot. MPC has the ability to anticipate future events and can take control actions accordingly. PID and LQR controllers do not have this predictive ability. MPC is nearly universally implemented as a digital control, although there is research into achieving faster response times with specially designed analog circuitry\footnote{\url{https://en.wikipedia.org/wiki/Model_predictive_control}}.
+
+\noindent MPC is based on iterative, finite-horizon optimization of a model. At time $t$ the current plant state is sampled and a cost minimizing control strategy is computed (via a numerical minimization algorithm) for a relatively short time horizon in the future. Model Predictive Control is a multivariable control algorithm that uses:
+
+\begin{itemize}
+	\item an internal dynamic model of the process
+	\item a history of past control moves and
+	\item an optimization cost function $J$ over the receding prediction horizon,
+\end{itemize}
+
+\noindent to calculate the optimum control moves. In particular, we use a state space model like
+
+\begin{equation}
+	\mathbf{x}(t+1) = A\mathbf{x}(t) + B\mathbf{u}(t)
+\end{equation}
+
+\noindent where $\mathbf{x}(t) \in \rm I\!R^n$, $\mathbf{u}(t) \in \rm I\!R^m$ are the state and input vectors, respectively, subject to the constraints 
+
+\begin{equation}
+	\mathbf{x}(t) \in X, \mathbf{u}(t) \in U, \forall t \ge 0
+\end{equation}  
+
+\noindent where the sets $X \subseteq \rm I\!R^n$ and $U \subseteq \rm I\!R^m$ are polyhedra \cite{MPC}.MPC approaches such a constrained regulation problem in the following way. Assume that a full measurement or estimate of the state $\mathbf{x}(t)$ is available at the current time $t$. Then the finite time optimal control problem
+
+\begin{align}
+	&\min_{U_{t\to t+N|t}} &&J_t\big(\mathbf{x}(t), U_{t\to t+N|t}\big)=\sum_{i=1}^N||\mathbf{r}_i-\mathbf{x}_i||^2_{W_x} + \sum_{i=1}^N||\boldsymbol{\Delta}\mathbf{u}||^2_{W_u} \label{eq:MPC} \\
+	&\text{subject to} &&\mathbf{x}_{t+k+1|t}=A\mathbf{x}_{t+k|t}+B\mathbf{u}_{t+k|t}, \quad k=1,\dots,N \nonumber \\
+	& &&\mathbf{x}_{t+k|t} \in X, \quad \mathbf{u}_{t+k|t} \in U, \quad k=1,\dots,N \nonumber \\
+	& &&\mathbf{x}_{t|t}=\mathbf{x}(t) \nonumber
+\end{align}
+
+\noindent where $||\cdot||^2_{W}$ is the square weighted norm, with weight matrix $W$. Now MPC just solve the optimization problem \eqref{eq:MPC} and obtain the corresponding input signal. The prediction of the state will be obtain with a standard Kalman filter\footnote{For further more details, see \cite{MPC}}. In conclusion, the main advantages of MPC for our applications are:
+
+\begin{itemize}
+	\item take into account of all the system, include the motors,
+	\item constraints in the input, in our case $u_{i} \in \begin{bmatrix}0 & 1 \end{bmatrix}$
+\end{itemize}
+
+\noindent while the disvantages are:
+
+\begin{itemize}
+	\item require the linearization of the system, loosing precision.
+	\item more computation effort for the onboard CPU.
+\end{itemize}
+
+\subsection{Linear model}
+
+First of all we need to compute a linear model for our vehicle. In particular, if we use the results from section \ref{linearization} we already have a linear model like
+
+\begin{align}
+	\dot{\boldsymbol{\omega}}_B &= A(\boldsymbol{\beta})\mathbf{u} \label{eq:MPCdyn1} \\
+	\ddot{\mathbf{x}}_B &= L(\beta_1)\mathbf{u} \label{eq:MPCdyn2} \\
+	\dot{u} &= \underbrace{-\frac{1}{\tau}I_4}_{=\Delta_A}\mathbf{u} + \underbrace{\frac{1}{\tau}I_4}_{=\Delta_B}\mathbf{u}_{in}^2 \label{eq:MPCdyn3}
+\end{align}
+
+\noindent Now we need a linear model also for the position and orientation. To do this, we will use the Euler angles instead of the quaternions, because all the math will be more intuitive and clean, however, same results are possible using quaternions. If we denote the orientation in the world frame as $\boldsymbol{\theta}_W = \begin{bmatrix} \phi & \theta & \psi \end{bmatrix}^T$ we have that
+
+\begin{equation}
+	\dot{\boldsymbol{\theta}}_W = T\boldsymbol{\omega}_B
+	\label{eq:thetaDynamic}
+\end{equation}
+
+\noindent where $T$ is the rotation matrix
+
+\begin{equation}
+	T = 
+	\begin{bmatrix}
+		1 & \sin(\phi)\tan(\theta)          & \cos(\phi)\tan(\theta) \\
+		0 & \cos(\phi)                      & -\sin(\phi)            \\
+		0 & \frac{\sin(\phi)}{\cos(\theta)} & \frac{\cos(\phi)}{\cos(\theta)} 
+	\end{bmatrix}
+\end{equation}
+
+\noindent This is a higly non-linear system. To make this linear we chose the approach of the small angles simplification. It means that if we assume that the angles are small enough, we can approximate the trigonometric functions with the Taylor expansion:
+
+\begin{align*}
+	\sin(x) &\approx x \\
+	\cos(x) &\approx 1-\frac{x^2}{2} \\
+	\tan(x) &\approx x \\
+\end{align*}
+
+\noindent More over, we assume that the multiplication between two angles is approximate equal to zero. From this, coupling equation \eqref{eq:thetaDynamic} and the simplifications we have
+
+\begin{equation}
+	\dot{\boldsymbol{\theta}}_W = T\boldsymbol{\omega}_B \approx 
+	\begin{bmatrix}
+		1 & 0      & \theta \\
+		0 & 1      & -\phi  \\
+		0 & \theta & 1 \\ 
+	\end{bmatrix}
+	\begin{bmatrix}
+		\omega_{x,B} \\
+		\omega_{y,B} \\
+		\omega_{z,B}
+	\end{bmatrix} \approx 
+	\begin{bmatrix}
+		\omega_{x,B}+\theta\omega_{z,B} \\
+		\omega_{y,B}-\phi\omega_{z,B}   \\
+		\omega_{z,B}+\phi\omega_{z,B}
+	\end{bmatrix} \approx
+	\begin{bmatrix}
+		\omega_{x,B} \\
+		\omega_{y,B} \\
+		\omega_{z,B}
+	\end{bmatrix}
+	= \boldsymbol{\omega}_B
+	\label{eq:MPCdyn4}
+\end{equation}
+
+\noindent Similar reasoning can be apply to the position in the world frame, that is
+
+\begin{equation}
+	\dot{\mathbf{x}}_W = R\dot{\mathbf{x}}_B
+\end{equation}
+
+\noindent where $R$ is the rotation matrix, (for simplify the notation, $s(x)=\sin(x)$ and $c(x)=\cos(x)$)
+
+\begin{equation*}
+	R = 
+	\begin{bmatrix}
+		c(\psi)c(\theta) & -s(\psi)c(\phi)+c(\psi)s(\theta)s(\psi) & s(\psi)s(\phi)+c(\psi)s(\theta)c(\psi) \\
+		s(\psi)c(\theta) & c(\psi)c(\phi)+s(\psi)s(\theta)s(\psi) & -c(\psi)s(\phi)+s(\psi)s(\theta)c(\psi) \\
+		s(\theta) & c(\phi)s(\theta) & c(\theta)c(\phi)
+	\end{bmatrix}
+\end{equation*} 
+
+\noindent and appling again the small angles approximations, we have
+
+\begin{align}
+	\dot{\mathbf{x}}_W = R\dot{\mathbf{x}}_B &\approx
+	\begin{bmatrix}
+		1 & -\psi & \theta \\
+		\psi & 1 & -\phi \\
+		-\theta & \phi & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		\dot{x}_{x,B} \\
+		\dot{x}_{y,B} \\
+		\dot{x}_{z,B} 
+	\end{bmatrix} \nonumber \\
+	&= 
+	\begin{bmatrix}
+		\dot{x}_{x,B}-\psi\dot{x}_{y,B}+\theta\dot{x}_{z,B} \\
+		\psi\dot{x}_{x,B}+\dot{x}_{y,B}-\phi\dot{x}_{z,B} \\
+		-\theta\dot{x}_{x,B}+\phi\dot{x}_{y,B}+\dot{z}_{x,B}
+	\end{bmatrix}
+	\approx
+	\begin{bmatrix}
+		\dot{x}_{x,B} \\
+		\dot{x}_{y,B} \\
+		\dot{x}_{z,B}
+	\end{bmatrix}
+	= 
+	\dot{\mathbf{x}}_B
+	\label{eq:MPCdyn5}
+\end{align}
+
+\noindent The last simplification, actuallt makes sense if we considder the position error, and not the position, if we assume that the error is suffucuently small. This makes sense, since in our application we have that the trajectory is computed smooth and without any step or artifacts that make the error big. Now, we need to add the gravity term and in particular we have
+
+\begin{align}
+	\ddot{\mathbf{x}}_B = R^T
+	\begin{bmatrix}
+		0 \\
+		0 \\
+		-g
+	\end{bmatrix}
+	+L(\beta_1)\mathbf{u} &\approx
+	\begin{bmatrix}
+		1 & \psi  & -\theta \\
+		-\psi & 1 & \phi \\
+		\theta & -\phi & 1  
+	\end{bmatrix}
+	\begin{bmatrix}
+		0 \\
+		0 \\
+		-g
+	\end{bmatrix}	
+	+L(\beta_1)\mathbf{u} \nonumber \\
+	&=
+	\begin{bmatrix}
+		-\theta g \\
+		\phi g \\
+		-g 
+	\end{bmatrix}
+	+L(\beta_1)\mathbf{u} \nonumber \\
+	&=\underbrace{ 
+	\begin{bmatrix}
+		0 & -g & 0 \\
+		g & 0  & 0 \\
+		0 & 0  & 0
+	\end{bmatrix}}_{A_g} + L(\beta_1)\mathbf{u}+
+	\begin{bmatrix}
+		0 \\
+		0 \\
+		-g
+	\end{bmatrix}
+	\label{eq:MPCdyn6}	
+\end{align}
+
+\noindent Coupling togheter equations \eqref{eq:MPCdyn1}, \eqref{eq:MPCdyn2}, \eqref{eq:MPCdyn3}, \eqref{eq:MPCdyn4}, \eqref{eq:MPCdyn5}, and \eqref{eq:MPCdyn6}, we obtain a linear model for the control of the UAV:
+
+\begin{equation}
+	\underbrace{
+		\begin{bmatrix}
+			\dot{\boldsymbol{\omega}}_B \\
+			\dot{\boldsymbol{\theta}}_W \\
+			\dot{\mathbf{u}}            \\
+			\dot{\mathbf{x}}_W          \\
+			\ddot{\mathbf{x}}_B
+		\end{bmatrix}
+	}_{=\dot{\mathbf{x}}} =
+	\underbrace{
+	\begin{bmatrix}
+		\mathbf{0}_{3\times 3} & \mathbf{0}_{3\times 3} & A(\boldsymbol{\beta})  & \mathbf{0}_{3\times 3} & \mathbf{0}_{3\times 3} \\
+		I_3                    & \mathbf{0}_{3\times 4} & \mathbf{0}_{3\times 4} & \mathbf{0}_{3\times 3} & \mathbf{0}_{3\times 3} \\
+		\mathbf{0}_{4\times 3} & \mathbf{0}_{4\times 3} & \Delta_A               & \mathbf{0}_{4\times 3} & \mathbf{0}_{4\times 3} \\
+		\mathbf{0}_{3\times 3} & \mathbf{0}_{3\times 3} & \mathbf{0}_{3\times 4} & \mathbf{0}_{3\times 3} & I_3                    \\
+		\mathbf{0}_{3\times 3} & A_g                    & L(\beta_1)             & \mathbf{0}_{3\times 3} & \mathbf{0}_{3\times 3}
+	\end{bmatrix}
+	}_{=A}
+	\underbrace{
+		\begin{bmatrix}
+			\boldsymbol{\omega}_B \\
+			\boldsymbol{\theta}_W \\
+			\mathbf{u}            \\ 
+			\mathbf{x}_W          \\
+			\dot{\mathbf{x}}_B
+		\end{bmatrix}
+	}_{=\mathbf{x}} + 
+	\underbrace{
+	\begin{bmatrix}
+		\mathbf{0}_{3\times 4} \\
+		\mathbf{0}_{3\times 4} \\
+		\Delta_B               \\
+		\mathbf{0}_{3\times 4} \\
+		\mathbf{0}_{3\times 4}
+	\end{bmatrix}
+	}_{=B} u_{in}^2
+	+\underbrace{
+	\begin{bmatrix}
+		\mathbf{0}_{15\times 1} \\
+		-g
+	\end{bmatrix}}_{E}
+\end{equation} 
+
+\noindent and if we want to control only the position and orinetation, we can select as \textit{measured output} $\boldsymbol{\theta}_W$
+
+\begin{equation}
+	\underbrace{\boldsymbol{\theta}_W}_{=\mathbf{y}} = 
+	\underbrace{\begin{bmatrix}
+		\mathbf{0}_{3\times 3}  & I_3 & \mathbf{0}_{3\times 10} \\
+		\mathbf{0}_{3\times 10} & I_3 & \mathbf{0}_{3\times 6}
+	\end{bmatrix}}_{=C} \mathbf{x} + \underbrace{\mathbf{0}_{6\times 4}}_{=D}u_{in}^2
+\end{equation}

@@ -761,6 +761,7 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \begin{equation}
 	\mathbf{f}=m_{cart}\frac{\partial^2\mathbf{p}_{cart}}{\partial t^2}+\underbrace{m_{cart}\frac{d\boldsymbol{\omega}}{dt}\times\mathbf{p}_{cart}}_{\text{Euler force}}+\underbrace{2m_{cart}\boldsymbol{\omega}\times\frac{\partial\mathbf{p}_{cart}}{\partial t}}_{\text{Coriolis force}}+\underbrace{m_{cart}\boldsymbol{\omega}\times\bigl(\boldsymbol{\omega}\times\mathbf{p}_{cart}\bigl)}_{\text{centrifugal force}}
+	\label{eq:cartAllForces}
 \end{equation}
 
 \noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $f$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that reguard the acceleration of the body frame
