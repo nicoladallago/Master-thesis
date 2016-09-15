@@ -1,7 +1,7 @@
 \chapter{Control}
 \label{control}
 
-The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor.
+The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor. We chose two different control strategies, that are videly used in the control of quadrotor tyoe UAV \cite{LeeController}, \cite{MPCGeorge}.
 
 \section{Position tracking controller in \texorpdfstring{$SO(3)$}{TEXT}}
 
@@ -23,7 +23,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	SO(3) = \{A \in O(3) : \det[A] = 1\} 
 \end{equation*}
 
-\noindent Belong to this gruop the rotation matrices, and is because the controller will use errors based iìon matrices, we need to keep all the results in the group $SO(3)$.
+\noindent The rotation matrices belong to this gruop, and it is because the controller will use errors based in the rotation matrices, we need to keep all the results in the group $SO(3)$.
 
 \noindent To derive the control law, we first need to define the tracking errors. In particular the position and the velocity tracking errors are given by, respectively
 
@@ -74,19 +74,19 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}\boldsymbol{e}_{\omega} + \boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega} \label{eq:LeeController2} 
 \end{align}
 
-\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentialy stable, if the initial conditions are sufficently small\footnote{see the paper \cite{LeeController} for more details and the prooof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for compute the linear acceleration in the body frame we just need to do 
+\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentialy stable, if the initial conditions are sufficently small\footnote{see the paper \cite{LeeController} for more details and the prooof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for computing the linear acceleration in the body frame we just need to do 
 
 \begin{equation}
 	\ddot{\mathbf{x}}_B = \frac{1}{m}\cdot\begin{bmatrix}0 & 0 & f\end{bmatrix}^T
 \end{equation}
 
-\noindent For the angular acceleration in the body frame, in theory we just need to compute
+\noindent For the angular acceleration in the body frame, we just need to compute
 
 \begin{equation}
 	\dot{\boldsymbol{\omega}}_B = I_{cm}^{-1}\boldsymbol{\tau}
 \end{equation}
 
-\noindent Then, by using the results from section \ref{quadModel}, we can do the computation of the matrix that ancode the law from motors' inputs to linear and angular acceleration and obtain
+\noindent Then, by using the results from section \ref{quadModel}, we can do the computation of the matrix that encode the law from motors' inputs to linear and angular acceleration and obtain
 
 \begin{equation}
 	\begin{bmatrix}
@@ -109,12 +109,10 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\label{eq:mixingMatrix}
 \end{equation}
 
-\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the invers of the estimated parameters, expept that is encoded only one row for the force, since thre propeller are parallel to the frame of the quadrotor. Mowever the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to etimate directly $A_F$ and $B_F$. A naive approach is simply use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. HOvewer, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
+\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the inverse of the estimated parameters, except that is encoded only one row for the force, since thre propellers are parallel to the frame of the quadrotor. Mowever the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to etimate directly $A_F$ and $B_F$. A naive approach is simply to use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. Hovewer, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
 
 
 \subsection{Adding the rotating platform}
-
-The previous controller was derive without the roating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving COG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provid of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more preciselly solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpretate the system as a piecewise system. 
 
 \begin{figure}[h]
 \centering
@@ -154,11 +152,11 @@ The previous controller was derive without the roating platform. To introduce th
 	\label{fig:controlBlock}
 \end{figure}
 
-\noindent The effects coming from the centrifugal force are not compensate in this controller, becasue the maximum speed of the cart is sufficiently small to assume that all this effects are neglettable. However, in case we want to take into account those, we just need to add the compensation in the force vector, using the equation \eqref{eq:cartAllForces}.
+\noindent The previous controller was derive without the roating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving CoG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provided of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more preciselly solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpret the system as a piecewise system. 
+
+\noindent The effects coming from the centrifugal force are not compensate in this controller, becasue the maximum speed of the cart is sufficiently small to assume that all this effects are neglectable. However, in case we want to take into account those, we just need to add the compensation in the force vector, using the equation \eqref{eq:cartAllForces}.
 
 \subsection{Simulation results}
-
-In figure \ref{fig:simulation1} is reported a simple example of ttajectory tracking. In particular, the desire trajectory is a step for the desire height $z$ and hovering for the remaining variables. Moreover is illustrate why the cart compensation is important. 
 
 \begin{figure}[h]
 	\centering
@@ -167,9 +165,11 @@ In figure \ref{fig:simulation1} is reported a simple example of ttajectory track
  	\label{fig:simulation1}		
 \end{figure}
 
-\noindent In red are depicted the relut trajectories with the compensation, while, in blue, without the compensation. Note how the results is much more stable with the compensation. Note also that in the simulation the mass of the moving cart is one third of the real mass, this because if we simulate without compensation, the controller is not able to keep the vehicle balance, resulting in a complete loss of control. 
+\noindent In figure \ref{fig:simulation1} is reported a simple example of trajectory tracking. In particular, the desire trajectory is a step for the desire height $z$ and hovering for the remaining variables. Moreover is illustrate why the cart compensation is important. 
 
-\noindent In figure \ref{fig:simulation2} is instead depicted a simulation with the full mass of the cart. The control algortithm is the one with the cart compensation and the desire trajectory is again a step imput for the desire height and constant for the other inputs. As is possible to see the control works quite well but some oscillations are again noticible. Those oscillations are come from the engines. It means that we know the position of the cart at the actual time and than apply the control compensation. However the engines apply a delay to the system and this compensation is delayed by the time constant of the motors. 
+\noindent In red are depicted the result trajectories with the compensation, while, in blue, without the compensation. Note how the results is much more stable with the compensation. Note also that in the simulation the mass of the moving cart is one third of the real mass, this because if we simulate without compensation, the controller is not able to keep the vehicle balance, resulting in a complete loss of control. 
+
+\noindent In figure \ref{fig:simulation2} is instead depicted a simulation with the full mass of the cart. The control algorithm is the one with the cart compensation and the desire trajectory is again a step imput for the desire height and constant for the other inputs. As is possible to see the control works quite well but some oscillations are again noticeable. Those oscillations come from the engines. It means that we know the position of the cart at the actual time and than apply the control compensation. However the engines apply a delay to the system and this compensation is delayed by the time constant of the motors. 
 
 \begin{figure}[h]
 	\centering
@@ -178,7 +178,7 @@ In figure \ref{fig:simulation1} is reported a simple example of ttajectory track
  	\label{fig:simulation2}		
 \end{figure}
 
-\noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the stedy state, however this problems come from the simulated bias of the sensors. These errors are however of the order of the millimiter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
+\noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the steady state, however this problems come from the simulated bias of the sensors. These errors are in conclusion in the order of the millimiter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
 
 
 \section{Model predictive control}

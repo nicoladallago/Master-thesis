@@ -529,14 +529,14 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 \noindent  where $g$ is the gravity costant, about $9.81$, and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix built from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, once again by using the rotation matrix we obtain
 
 \begin{equation}
-	\dot{\mathbf{x}}_W = R_{\mathbf{q}_W}(\mathbf{q}_W)\cdot\dot{\mathbf{x}}_B
+	\dot{\mathbf{x}}_W = R_{\mathbf{q}_W}(\mathbf{q}_W)\cdot\dot{\mathbf{x}}_{B, g}
 	\label{eq:velocityWorld}
 \end{equation}
 
 \noindent Instead, for the orientation, we use the results from the paragraph \ref{quaternion} and we get
 
 \begin{equation}
-	\dot{\mathbf{q}} = \frac{1}{2}\cdot Q(\boldsymbol{\omega})\cdot\mathbf{q}
+	\dot{\mathbf{q}}_W = \frac{1}{2}\cdot Q(\boldsymbol{\omega})\cdot\mathbf{q}_W
 	\label{eq:orientation}
 \end{equation}
 
@@ -574,10 +574,10 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\draw[->] ($(IN2.0)$) -- node[above]{$\dot{\mathbf{x}}_B$} ($(BTW.180) + (0, 1.1)$);
 		\draw[->] ($(BTW.0) + (0, 1.1)$) -- node[above]{$\dot{\mathbf{x}}_W$} ($(IN3.180)$);
 		\draw[->] ($(BTW.0) - (0, 1.1)$) -- node[above]{$\dot{\mathbf{q}}_W$} ($(IN4.180)$);
-		\draw[->] ($(DYN.0) + (0, 1.1)$) -- node[above]{$\ddot{\mathbf{x}}$} ($(GRA.180) + (0, 0.35)$);
+		\draw[->] ($(DYN.0) + (0, 1.1)$) -- node[above]{$\ddot{\mathbf{x}}_B$} ($(GRA.180) + (0, 0.35)$);
 		\draw[->] ($(DYN.0) - (0, 1.1)$) -- node[above]{$\dot{\boldsymbol{\omega}}_B$} ($(IN1.180)$);
 		\draw[->] ($(IN1.0)$) -- node[above]{$\boldsymbol{\omega}_B$} ($(BTW.180) - (0, 1.1)$);
-		\draw[->] ($(GRA.0)$) - ++(0.5, 0) -- ++(0.5, 0) |- node[above]{$\ddot{\mathbf{x}}_B$}($(IN2.180)$); 
+		\draw[->] ($(GRA.0)$) - ++(0.5, 0) -- ++(0.5, 0) |- node[above]{$\ddot{\mathbf{x}}_{B, g}$}($(IN2.180)$); 
 		\draw[->] ($(IN3.0)$) -- node[above]{$\mathbf{x}_W$} (output1);
 		\draw[->] ($(IN4.0)$) -- node[above]{$\mathbf{q}_W$} (output2);
 		\draw[-] (outfit1) |- (outfit2);
@@ -597,7 +597,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 
 Till now, all the model was designed for a standard quadrotor vehicle, what we want to do in this section is to add the model of the rotating platform, necessary for deduce a controller and simulate it.
 
-\noindent The movement of the platform, introduces a time variant center of gravity, that is simply modelled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be compute.
+\noindent The movement of the platform, introduces a time variant center of gravity (CoG), that is simply modelled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be computed.
 
 
 \begin{figure}[h]
@@ -738,18 +738,18 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 	\label{eq:CoG}
 \end{equation}
 
-\noindent where $m=m_{quad}+m_{cart}$ is the sum of the mass of the quadrotor plus the mass of the moving cart, then the total mass, $\mathbf{p}_{quad}$ is the position of the center of gravity of the quadrotor without the cart with the respect to the origin of the body frame (in general the quadrotor frame is not symmetrical) and $\mathbf{p}_{cart}$ is the position of the CoG of the cart with the respect to the body frame. Then the vectors $\mathbf{l}_i$ are just the distance between the center of the propeller $i$ and $\mathbf{p}$.
+\noindent where $m=m_{quad}+m_{cart}$ is the sum of the mass of the quadrotor plus the mass of the moving cart, i.e. the total mass, $\mathbf{p}_{quad}$ is the position of the center of gravity of the quadrotor without the cart with the respect to the origin of the body frame (in general the quadrotor frame is not symmetrical) and $\mathbf{p}_{cart}$ is the position of the CoG of the cart with the respect to the body frame. Then the vectors $\mathbf{l}_i$ are just the distance between the center of the propeller $i$ and $\mathbf{p}$.
 
 \noindent Another difference in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the detailed CAD model of the entire vehicle, provided in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple piecewise model. 
 
-\noindent The movement of the sensor introduced also a centrifugal force in the vheicle. In particular, if $\mathbf{p}_{cart}$ is the vector that encode the position of the cart with the respect of the body frame, the Newton's law of motion for the cart in vector form is 
+\noindent The movement of the sensor introduces also a centrifugal force in the vehicle. In particular, if $\mathbf{p}_{cart}$ is the vector that encode the position of the cart with the respect of the body frame, the Newton's law of motion for the cart in vector form is 
 
 \begin{equation}
 	\mathbf{f}=m_{cart}\mathbf{a}=m_{cart}\frac{d^2\mathbf{p}_{cart}}{dt^2}
 	\label{eq:NewtonForce}
 \end{equation}
 
-\noindent By twice applying the transformation above from the stationary to the rotating frame, the absolute acceleration of the particle can be written as \cite{physics}
+\noindent By twice applying the transformation above from the stationary to the rotating frame, the absolute acceleration of the cart can be written as \cite{physics}
 
 \begin{align}
 	\frac{d^2\mathbf{p}_{cart}}{dt^2} &= \frac{\partial}{\partial t}\Big(\frac{d\mathbf{p}_{cart}}{dt}\Big)+\boldsymbol{\omega}\times\Big(\frac{d\mathbf{p}_{cart}}{dt}\Big) \nonumber \\
@@ -764,7 +764,7 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 	\label{eq:cartAllForces}
 \end{equation}
 
-\noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $f$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that reguard the acceleration of the body frame
+\noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $\mathbf{f}$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that reguard the acceleration of the body frame
 
 \begin{equation}
 	\begin{split}
@@ -801,7 +801,7 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \section{Experimental setup}
 
-In this section we are going to introduce all the hardware and the software use in this project. Starting from the hardware, we used a main board develop entirely at LTU, the \textit{KFly}\footnote{\url{https://gitlab.com/korken89/KFly}}. 
+In this section we are going to introduce all the hardware and the software use in this project. Starting from the hardware, we used a main board develop entirely at Lule\r{a} University of Technology (LTU), the \textit{KFly}\footnote{\url{https://gitlab.com/korken89/KFly}}. 
 
 \begin{figure}[h] 
 	\centering
@@ -810,16 +810,16 @@ In this section we are going to introduce all the hardware and the software use 
    	\label{fig:KFly}
 \end{figure} 
 
-\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerfull enough board able to perform all the operations needed during the flight. It is also equipped with differnt sensor, such as an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directily measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and tha base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
+\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerfull enough board able to perform all the operations needed during the flight. It is also equipped with differnt sensors, such an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directily measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and the base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = 0.6]{./images/XBee.jpg}
+	\includegraphics[scale = 0.55]{./images/XBee.jpg}
 	\caption{XBee communication modules.}
 	\label{fig:XBee}
 \end{figure}
 
-\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250kbps. Like previously said the UAV is provide with a IMU, but to measure directly the pose of the vehicle other sensors are needed. In particular, to test the control with extremily precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the control lab of LTU.
+\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250kbps. Like previously said the UAV is equiped with a IMU, but to measure directly the pose of the vehicle we need other sensors. In particular, to test the control with extremely precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the Field Robitics Lab (FROST) of LTU.
 
 \begin{figure}[h]
 	\centering
@@ -869,4 +869,4 @@ In this section we are going to introduce all the hardware and the software use 
 
 \noindent In figure \ref{fig:prometheus} there are some picture of the first prototype of the Prometheus maping drone. In particular, is possible to see all the electronics and the Vicon markers on top and on the side of the Lidar sensor.
 
-\noindent Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. Instead, for the real application, we choose to use \textit{ROS}, the Robotic Operating System\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowdays in a robotics project and there is a big worldwide comunity. However, the main problem was that the KFly can't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problms with the bandwhidt of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz (100 Hz is quite standard in quadrotor application). A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth, and can run ROS. 
+\noindent Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. Instead, for the real application, we choose to use \textit{ROS}, the Robotic Operating System\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowdays in robotic projects and there is a big worldwide comunity. However, the main problem was that the KFly couldn't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problems with the bandwhidt of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz (100 Hz is quite standard in quadrotor application). A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth, moreover it can run ROS. 
