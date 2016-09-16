@@ -383,7 +383,12 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 		0 & -g & 0 \\
 		g & 0  & 0 \\
 		0 & 0  & 0
-	\end{bmatrix}}_{=A_g} + L(\beta_1)\mathbf{u}+
+	\end{bmatrix}}_{=A_g} 
+	\begin{bmatrix}
+		\phi \\
+		\theta \\
+		\psi
+	\end{bmatrix} + L(\beta_1)\mathbf{u}+
 	\begin{bmatrix}
 		0 \\
 		0 \\
@@ -438,14 +443,13 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\end{bmatrix}}_{E}
 \end{equation} 
 
-\noindent and if we want to control only the position and orinetation, we can select as \textit{measured output} $\boldsymbol{\theta}_W$
+\noindent and if we want to control only the orinetation, we can select as \textit{measured output} $\boldsymbol{\theta}_W$
 
 \begin{equation}
 	\underbrace{\boldsymbol{\theta}_W}_{=\mathbf{y}} = 
 	\underbrace{\begin{bmatrix}
-		\mathbf{0}_{3\times 3}  & I_3 & \mathbf{0}_{3\times 10} \\
-		\mathbf{0}_{3\times 10} & I_3 & \mathbf{0}_{3\times 6}
-	\end{bmatrix}}_{=C} \mathbf{x} + \underbrace{\mathbf{0}_{6\times 4}}_{=D}u_{in}^2
+		\mathbf{0}_{3\times 3}  & I_3 & \mathbf{0}_{3\times 10}
+	\end{bmatrix}}_{=C} \mathbf{x} + \underbrace{\mathbf{0}_{3\times 4}}_{=D}u_{in}^2
 \end{equation}
 
 \noindent Finally, we need to discretize the system. We used the built-in \textit{MATLAB} software to do this, because it is easier and faster than do this by hands.
@@ -455,3 +459,14 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 The last step of the controller is to add the compensation for the movement of the cart. Again, we take into account only the displacement of the CoG and the changes in the inertia matrix, neglecting the effects from the centrifugal force. We used a \textit{switching MPC} strategy. We design different linear models that correspond to a different position of the cart. Then, during the cart movement, the controller decide wich linear model is closer to the actual position of the cart. Then apply the MPC regurds that specific linear model.
 
 \subsection{Simulation results}
+
+\begin{figure}[h]
+	\centering
+	\includestandalone[]{./chapter_5/plots/MPC_1}
+ 	\caption{Simulation of MPC control for attitude tracking.}
+ 	\label{fig:MPC1}		
+\end{figure}
+
+\noindent In figure \ref{fig:MPC1} we reported an example of trajectory tracking for the orientation and with an MPC controller. This simple example show that in simulation the MPC controller works also with all the simplification and linearization of the system. More important, there are no evidence of delay in the response of the system. This is an expected result, since the main problem of the previous controller was that it doesn't take into accunt of the model of the motors, while MPC does.
+
+

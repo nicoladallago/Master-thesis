@@ -1,0 +1,41 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat = 1.9}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+		group style={
+        	group name = left,
+        	group size = 1 by 3,
+        	xlabels at = edge bottom,
+        	xticklabels at = edge bottom,
+        	ylabels at = edge left, 
+        	yticklabels at = edge left,    
+        	vertical sep = 10pt},
+    xmin = 0,
+    xmax = 30,         
+    xlabel = {$t \hspace{10pt} [s]$},
+		width = 11cm,
+		height = 4.5cm] 
+			\nextgroupplot[title={$\boldsymbol{\theta}_d, \boldsymbol{\theta} \hspace{10pt} [rad]$}, legend entries={$\phi_d$, $\phi$}, grid=major]
+ 			\addplot[red, thick] table {../data/MPC_1/roll_d.dat};
+ 			\addplot[blue, thick] table {../data/MPC_1/roll.dat};
+			\nextgroupplot[legend entries={$\theta_d$, $\theta$}, grid=major]
+ 			\addplot[red, thick] table {../data/MPC_1/pitch_d.dat};
+ 			\addplot[blue, thick] table {../data/MPC_1/pitch.dat};
+     	\nextgroupplot[legend entries={$\psi_d$, $\psi$}, grid=major]
+ 			\addplot[red, thick] table {../data/MPC_1/yaw_d.dat};
+ 			\addplot[blue, thick] table {../data/MPC_1/yaw.dat};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}
