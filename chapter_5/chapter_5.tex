@@ -180,6 +180,16 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 
 \noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the steady state, however this problems come from the simulated bias of the sensors. These errors are in conclusion in the order of the millimiter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
 
+\begin{figure}[h]
+	\centering
+	\hspace{11pt}\includestandalone[]{./chapter_5/plots/simulation3_z}
+ 	\hspace{-5pt}\includestandalone[]{./chapter_5/plots/simulation3_xy}
+ 	\caption{Simulation of trajectory tracking.}
+ 	\label{fig:trajectoryTrackingLee}		
+\end{figure}
+
+\noindent In figure \ref{fig:trajectoryTrackingLee} is instead reported an example of trajectory tracking with a smooth generated trajectory.
+
 
 \section{Model predictive control}
 
@@ -264,7 +274,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\tan(x) &\approx x \\
 \end{align*}
 
-\noindent More over, we assume that the multiplication between two angles is approximate equal to zero. From this, coupling equation \eqref{eq:thetaDynamic} and the simplifications we have
+\noindent Moreover, we assume that the multiplication between two angles is approximate equal to zero. From this, coupling equation \eqref{eq:thetaDynamic} and the simplifications we have
 
 \begin{equation}
 	\dot{\boldsymbol{\theta}}_W = T\boldsymbol{\omega}_B \approx 
@@ -277,7 +287,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 		\omega_{x,B} \\
 		\omega_{y,B} \\
 		\omega_{z,B}
-	\end{bmatrix} \approx 
+	\end{bmatrix} = 
 	\begin{bmatrix}
 		\omega_{x,B}+\theta\omega_{z,B} \\
 		\omega_{y,B}-\phi\omega_{z,B}   \\
@@ -340,7 +350,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\label{eq:MPCdyn5}
 \end{align}
 
-\noindent The last simplification, actuallt makes sense if we considder the position error, and not the position, if we assume that the error is suffucuently small. This makes sense, since in our application we have that the trajectory is computed smooth and without any step or artifacts that make the error big. Now, we need to add the gravity term and in particular we have
+\noindent The last simplification, actualy is true if we consider the position error, and not the position, if we assume that the error is suffucuently small. This makes sense, since in our application we have that the trajectory is computed smooth and without any step or artifacts that make the error big. Now, we need to add the gravity term and in particular we have
 
 \begin{align}
 	\ddot{\mathbf{x}}_B = R^T
@@ -373,7 +383,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 		0 & -g & 0 \\
 		g & 0  & 0 \\
 		0 & 0  & 0
-	\end{bmatrix}}_{A_g} + L(\beta_1)\mathbf{u}+
+	\end{bmatrix}}_{=A_g} + L(\beta_1)\mathbf{u}+
 	\begin{bmatrix}
 		0 \\
 		0 \\
@@ -437,5 +447,11 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 		\mathbf{0}_{3\times 10} & I_3 & \mathbf{0}_{3\times 6}
 	\end{bmatrix}}_{=C} \mathbf{x} + \underbrace{\mathbf{0}_{6\times 4}}_{=D}u_{in}^2
 \end{equation}
+
+\noindent Finally, we need to discretize the system. We used the built-in \textit{MATLAB} software to do this, because it is easier and faster than do this by hands.
+
+\subsection{Adding the rotating platform} 
+
+The last step of the controller is to add the compensation for the movement of the cart. Again, we take into account only the displacement of the CoG and the changes in the inertia matrix, neglecting the effects from the centrifugal force. We used a \textit{switching MPC} strategy. We design different linear models that correspond to a different position of the cart. Then, during the cart movement, the controller decide wich linear model is closer to the actual position of the cart. Then apply the MPC regurds that specific linear model.
 
 \subsection{Simulation results}

@@ -1,4 +1,14 @@
 \chapter{Conclusions and future works}
 \label{conclusions}
 
-write te conclusions
+In conclusion, in this thesis we contribute to the development of the control of the Prometheus mapping drone. 
+
+\noindent We firt derive a methematical model of the vehicle with a different structure from any other commercial UAV. We then select the hardware and software used in the project. 
+
+\noindent We linearize the system under some assumpionts and compute a full estimation of the model using a Kalman filter approach.
+
+\noindent Then we implemented a trajectory generator that smoothly connect the setpoint from navigation or covering alghoritms, adding constraints necessary for indoor application.
+
+\noindent In the end we develop two controller, that are able to track the trajectory previously generated.
+
+\noindent However, this is just a first approch in the control of the Prometheus UAV. During the development of this thesis project, we encounter many problems and differents solution to them. We applied some solutions but in general better performance could be accive if we used other solutions. In particular in the model derivation we didn't take into account other phenomena, like aerodynamics torbulence caused by the so called ground effect, the battery drain, and the deformation of the propellers at different speed. We could also use different strategies for the system identification part, using more complicated alghoritms that maybe work better for the full nonlinear system of the quadrotor. The tragectory generator if from one hand side generates trajectory that are smooth, in the sense that minimize the snap, doesn't take into account the performance of the UAV. If for instance we compute a trajectory to aggressive and infeasible we can and up with a big error in the control and more investigation are need in this case. However, we could compute a trajectory that take into account also the dynamic, for istance by adding other constraints or by using a different cost functions. For the control part,  we add some simplifications in the dynamic of the moving sensors, adding errors in the steady state. We could also compute a mathematical model for the cart only, from the motor signal to the dynamic in the ring, then coupling togheter with the model and obtained a more sofisticated controller. Moreover, in the MPC, we didn't investigate what all the linearization of the rotation matrices actualy comport, and we didn't exploit other solutions, like \textit{non linear MPC}, \textit{adaptive MPC} or swithing MPC also for the rotations. Another interesting solution for the control part, could be to run the system identification online, and take into account also of the varing of the parameters, derive from effects like the battery drain during the fly.
