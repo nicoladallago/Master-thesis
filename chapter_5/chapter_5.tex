@@ -245,7 +245,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 \begin{align}
 	\dot{\boldsymbol{\omega}}_B &= A(\boldsymbol{\beta})\mathbf{u} \label{eq:MPCdyn1} \\
 	\ddot{\mathbf{x}}_B &= L(\beta_1)\mathbf{u} \label{eq:MPCdyn2} \\
-	\dot{u} &= \underbrace{-\frac{1}{\tau}I_4}_{=\Delta_A}\mathbf{u} + \underbrace{\frac{1}{\tau}I_4}_{=\Delta_B}\mathbf{u}_{in}^2 \label{eq:MPCdyn3}
+	\dot{\mathbf{u}} &= \underbrace{-\frac{1}{\tau}I_4}_{=\Delta_A}\mathbf{u} + \underbrace{\frac{1}{\tau}I_4}_{=\Delta_B}\mathbf{u}_{in}^2 \label{eq:MPCdyn3}
 \end{align}
 
 \noindent Now we need a linear model also for the position and orientation. To do this, we will use the Euler angles instead of the quaternions, because all the math will be more intuitive and clean, however, same results are possible using quaternions. If we denote the orientation in the world frame as $\boldsymbol{\theta}_W = \begin{bmatrix} \phi & \theta & \psi \end{bmatrix}^T$ we have that
