@@ -1,0 +1,6 @@
+*.aux
+main.brf
+*.log
+main.out
+*.toc
+main.synctex.gz
