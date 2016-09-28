@@ -1,15 +1,15 @@
 \chapter{Control}
 \label{control}
 
-The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor. We chose two different control strategies, that are videly used in the control of quadrotor tyoe UAV \cite{LeeController}, \cite{MPCGeorge}.
+The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor. We chose two different control strategies, that are widely used in the control of quadrotor type UAV \cite{LeeController}, \cite{MPCGeorge}.
 
 \section{Position tracking controller in \texorpdfstring{$SO(3)$}{TEXT}}
 
-In this section, will be introduce a tracking control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressiv flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group.
+In this section, will be introduce a tracking control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressive flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group.
 
 \noindent The \textit{general linear group} of order $3$, $GL(3)$, is a algebraic group composed by all the non singular matrices $A \in \rm I\!R^{3\times 3}$ with matrix product.
 
-\noindent The \textit{orthogonal group} of order $3$, $O(3)$, is deefine as
+\noindent The \textit{orthogonal group} of order $3$, $O(3)$, is define as
 
 \begin{equation*}
 	O(3) = \{A \in GL(3) : A^TA=I \} \subseteq GL(3)
@@ -17,13 +17,13 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 
 \noindent Is easy to prove that if $A$ belongs to $O(3)$, then $\det[A]=\pm 1$.
 
-\noindent The \textit{special orthogonal grouop} of order $3$, $SO(3)$, is define as
+\noindent The \textit{special orthogonal group} of order $3$, $SO(3)$, is define as
 
 \begin{equation*}
 	SO(3) = \{A \in O(3) : \det[A] = 1\} 
 \end{equation*}
 
-\noindent The rotation matrices belong to this gruop, and it is because the controller will use errors based in the rotation matrices, we need to keep all the results in the group $SO(3)$.
+\noindent The rotation matrices belong to this group, and it is because the controller will use errors based in the rotation matrices, we need to keep all the results in the group $SO(3)$.
 
 \noindent To derive the control law, we first need to define the tracking errors. In particular the position and the velocity tracking errors are given by, respectively
 
@@ -32,13 +32,13 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\mathbf{e}_v &= \dot{\mathbf{x}} - \dot{\mathbf{x}}_d
 \end{align}
 
-\noindent where the subscript $d$ stands for desire. The attitude error is insted define as
+\noindent where the subscript $d$ stands for desire. The attitude error is instead define as
 
 \begin{equation}
 	\mathbf{e}_R = \frac{1}{2}\bigl(R_c^TR-R^TR_C \bigl)^{\vee}
 \end{equation}
 
-\noindent where $R$ is the rotation matrix that encode the actual attitude of the UAV, while $R_c(t) \in SO(3)$ is the computed attitude matrix, that must belongs to the special ortoghonal group. In fact we can define it as
+\noindent where $R$ is the rotation matrix that encode the actual attitude of the UAV, while $R_c(t) \in SO(3)$ is the computed attitude matrix, that must belongs to the special orthogonal group. In fact we can define it as
 
 \begin{align}
 	\mathbf{b}_{1,c} &= \begin{bmatrix} \cos(\psi_d) & \sin(\psi_d) & 0 \end{bmatrix}^T \\
@@ -74,7 +74,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}\boldsymbol{e}_{\omega} + \boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega} \label{eq:LeeController2} 
 \end{align}
 
-\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentialy stable, if the initial conditions are sufficently small\footnote{see the paper \cite{LeeController} for more details and the prooof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for computing the linear acceleration in the body frame we just need to do 
+\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentially stable, if the initial conditions are sufficiently small\footnote{see the paper \cite{LeeController} for more details and the proof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for computing the linear acceleration in the body frame we just need to do 
 
 \begin{equation}
 	\ddot{\mathbf{x}}_B = \frac{1}{m}\cdot\begin{bmatrix}0 & 0 & f\end{bmatrix}^T
@@ -109,7 +109,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\label{eq:mixingMatrix}
 \end{equation}
 
-\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the inverse of the estimated parameters, except that is encoded only one row for the force, since thre propellers are parallel to the frame of the quadrotor. Mowever the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to etimate directly $A_F$ and $B_F$. A naive approach is simply to use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. Hovewer, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
+\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the inverse of the estimated parameters, except that is encoded only one row for the force, since the propellers are parallel to the frame of the quadrotor. However the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to estimate directly $A_F$ and $B_F$. A naive approach is simply to use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. However, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
 
 
 \subsection{Adding the rotating platform}
@@ -148,13 +148,13 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 		%\draw[->] ($(CON.90)+(0, 0.3)$) -- ($(CON.90)$);
  
 	\end{tikzpicture}
-	\caption{Block diagram of the control scheme (the subscripts that indicate the appartenence of the frame are omitted).}
+	\caption{Block diagram of the control scheme (the subscripts that indicate the membership of the frame are omitted).}
 	\label{fig:controlBlock}
 \end{figure}
 
-\noindent The previous controller was derive without the roating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving CoG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provided of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more preciselly solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpret the system as a piecewise system. 
+\noindent The previous controller was derive without the rotating platform. To introduce the compensation for the movement of the cart, first of all we introduce the compensation for the moving CoG. To do this we simply modify the terms $\mathbf{l}_i$ in the matrix $T(\boldsymbol{\beta})$ and then compute the inverse at every iteration. Of course, to do this, we need to know precisely the position $\gamma$ of the cart, this can be done since the motor that drive the cart is provided of encoder \cite{Carlos}. The changing in the inertia matrix are instead compute with the CAD, a more precisely solution could be to compute the system identification with the moving cart or, if if doesn't work, compute the system identification multiple times with different positions of the sensors and then interpret the system as a piecewise system. 
 
-\noindent The effects coming from the centrifugal force are not compensate in this controller, becasue the maximum speed of the cart is sufficiently small to assume that all this effects are neglectable. However, in case we want to take into account those, we just need to add the compensation in the force vector, using the equation \eqref{eq:cartAllForces}.
+\noindent The effects coming from the centrifugal force are not compensate in this controller, because the maximum speed of the cart is sufficiently small to assume that all this effects are neglectable. However, in case we want to take into account those, we just need to add the compensation in the force vector, using the equation \eqref{eq:cartAllForces}.
 
 \subsection{Simulation results}
 
@@ -178,7 +178,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
  	\label{fig:simulation2}		
 \end{figure}
 
-\noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the steady state, however this problems come from the simulated bias of the sensors. These errors are in conclusion in the order of the millimiter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
+\noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the steady state, however this problems come from the simulated bias of the sensors. These errors are in conclusion in the order of the millimeter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
 
 \begin{figure}[h]
 	\centering
@@ -319,7 +319,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\end{bmatrix}
 \end{equation*} 
 
-\noindent and appling again the small angles approximations, we have
+\noindent and applying again the small angles approximations, we have
 
 \begin{align}
 	\dot{\mathbf{x}}_W = R\dot{\mathbf{x}}_B &\approx
@@ -350,7 +350,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\label{eq:MPCdyn5}
 \end{align}
 
-\noindent The last simplification, actualy is true if we consider the position error, and not the position, if we assume that the error is suffucuently small. This makes sense, since in our application we have that the trajectory is computed smooth and without any step or artifacts that make the error big. Now, we need to add the gravity term and in particular we have
+\noindent The last simplification, actually is true if we consider the position error, and not the position, if we assume that the error is sufficiently small. This makes sense, since in our application we have that the trajectory is computed smooth and without any step or artifacts that make the error big. Now, we need to add the gravity term and in particular we have
 
 \begin{align}
 	\ddot{\mathbf{x}}_B = R^T
@@ -397,7 +397,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\label{eq:MPCdyn6}	
 \end{align}
 
-\noindent Coupling togheter equations \eqref{eq:MPCdyn1}, \eqref{eq:MPCdyn2}, \eqref{eq:MPCdyn3}, \eqref{eq:MPCdyn4}, \eqref{eq:MPCdyn5}, and \eqref{eq:MPCdyn6}, we obtain a linear model for the control of the UAV:
+\noindent Coupling together equations \eqref{eq:MPCdyn1}, \eqref{eq:MPCdyn2}, \eqref{eq:MPCdyn3}, \eqref{eq:MPCdyn4}, \eqref{eq:MPCdyn5}, and \eqref{eq:MPCdyn6}, we obtain a linear model for the control of the UAV:
 
 \begin{equation}
 	\underbrace{
@@ -443,7 +443,7 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\end{bmatrix}}_{E}
 \end{equation} 
 
-\noindent and if we want to control only the orinetation, we can select as \textit{measured output} $\boldsymbol{\theta}_W$
+\noindent and if we want to control only the orientation, we can select as \textit{measured output} $\boldsymbol{\theta}_W$
 
 \begin{equation}
 	\underbrace{\boldsymbol{\theta}_W}_{=\mathbf{y}} = 
@@ -452,11 +452,11 @@ First of all we need to compute a linear model for our vehicle. In particular, i
 	\end{bmatrix}}_{=C} \mathbf{x} + \underbrace{\mathbf{0}_{3\times 4}}_{=D}u_{in}^2
 \end{equation}
 
-\noindent Finally, we need to discretize the system. We used the built-in \textit{MATLAB} software to do this, because it is easier and faster than do this by hands.
+\noindent Finally, we need to discretized the system. We used the built-in \textit{MATLAB} software to do this, because it is easier and faster than do this by hands.
 
 \subsection{Adding the rotating platform} 
 
-The last step of the controller is to add the compensation for the movement of the cart. Again, we take into account only the displacement of the CoG and the changes in the inertia matrix, neglecting the effects from the centrifugal force. We used a \textit{switching MPC} strategy. We design different linear models that correspond to a different position of the cart. Then, during the cart movement, the controller decide wich linear model is closer to the actual position of the cart. Then apply the MPC regurds that specific linear model.
+The last step of the controller is to add the compensation for the movement of the cart. Again, we take into account only the displacement of the CoG and the changes in the inertia matrix, neglecting the effects from the centrifugal force. We used a \textit{switching MPC} strategy. We design different linear models that correspond to a different position of the cart. Then, during the cart movement, the controller decide which linear model is closer to the actual position of the cart. Then apply the MPC regards that specific linear model.
 
 \begin{figure}[h]
 	\centering

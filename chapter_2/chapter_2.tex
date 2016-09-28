@@ -6,7 +6,7 @@ In this chapter we will focus in the description of the mechanical model of the 
 \section{Mechanical design}
 \label{mechanicalDesign}
 
-The overall objective of the Prometheus project is navigation and mapping, for these we mean obtain a 3D reconstruction of an unknown indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a quadrotor type UAV, will explore in a autonomus way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
+The overall objective of the Prometheus project is navigation and mapping, for these we mean obtain a 3D reconstruction of an unknown indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a quadrotor type UAV, will explore in a autonomous way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
 
 \begin{SCfigure}[\sidecaptionrelwidth][h]
 	\includegraphics[scale=0.21]{images/lidar_laser.jpg}
@@ -14,7 +14,7 @@ The overall objective of the Prometheus project is navigation and mapping, for t
 	\label{fig:lidar}
 \end{SCfigure}
 
-\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is depict in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attached in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attached to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can maps direclty in 3D, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus, where the sensor is also rotating around the UAV. In such a way, the Lidar has three degrees of freedom in the movement and a 3D mapping can be performed. This solution comports, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
+\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is depict in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attached in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attached to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can maps directly in 3D, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus, where the sensor is also rotating around the UAV. In such a way, the Lidar has three degrees of freedom in the movement and a 3D mapping can be performed. This solution comports, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
 
 \begin{figure}[h]
 	\centering
@@ -39,7 +39,7 @@ The overall objective of the Prometheus project is navigation and mapping, for t
 \section{Mathematical model}
 \label{mathematicalModel}
 
-Is pretty much clear from the previous section that this UAV is different from almost every other vehicle that is possible to buy, this of course require a complete and detailed study to characterize the mathematical model. For characterize the model, is before necessary to provide some definitions, that are also valid for standar commercial quadrotors.
+Is pretty much clear from the previous section that this UAV is different from almost every other vehicle that is possible to buy, this of course require a complete and detailed study to characterize the mathematical model. For characterize the model, is before necessary to provide some definitions, that are also valid for standard commercial quadrotors.
 
 \begin{figure}[h]
 	\centering
@@ -98,7 +98,7 @@ Is pretty much clear from the previous section that this UAV is different from a
 \noindent A quadrotor helicopter is made of a central frame and four propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrated in figure \ref{fig:quadrtotor}. \newline
 \noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attached to the vehicle.
 
-\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the traslation and rotation of the body frame in respect to the world frame. For rappresent the traslation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduced in the following section.
+\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the translation and rotation of the body frame in respect to the world frame. For represent the translation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduced in the following section.
 
 \begin{figure}[h]
 	\centering
@@ -334,7 +334,7 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 
 \phantom{x} % necessary to place the next figure
 
-\subsection{Quadrotor modelling}
+\subsection{Quadrotor modeling}
 \label{quadModel}
 
 We consider first a standard quadrotor, without a rotating platform, like in figure \ref{fig:quadrtotorVectors}. 
@@ -405,7 +405,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{fig:quadrtotorVectors}
 \end{figure}
 
-\noindent In fiure \ref{fig:quadrtotorVectors} are also impres the force vectors $F_i$ generate from each motor-propeller, the torques vectors $\tau_x$, $\tau_y$ and $\tau_z$ about the three axis and the propeller's speed $\Omega_i$. Now, for modeling the rigid body of a multirotor, the standard Newton-Euler kinematics equations can be utilized \cite{Bresciani}.
+\noindent In figure \ref{fig:quadrtotorVectors} are also impressed the force vectors $F_i$ generate from each motor-propeller, the torques vectors $\tau_x$, $\tau_y$ and $\tau_z$ about the three axis and the propeller's speed $\Omega_i$. Now, for modeling the rigid body of a multirotor, the standard Newton-Euler kinematics equations can be utilized \cite{Bresciani}.
 
 \begin{equation}
 	\begin{bmatrix}
@@ -429,7 +429,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:NewtonEuler}
 \end{equation}
 
-\noindent Where $\mathbf{F} = \begin{bmatrix} F_x & F_y & F_z \end{bmatrix}^T$ is the vector of the total force, $\boldsymbol{\tau} = \begin{bmatrix} \tau_x & \tau_y & \tau_z \end{bmatrix}^T$ is the total torque, $m$ is the mass of the quadrtotor, $I_{cm}$ is the matrix of inertia related to the center of mass, $\mathbf{\ddot{x}_B}$ is the acceleration of the quadrotor center of mass related to the body frame and $\boldsymbol{\omega_B} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$ is the rotational rates in the body frame.
+\noindent Where $\mathbf{F} = \begin{bmatrix} F_x & F_y & F_z \end{bmatrix}^T$ is the vector of the total force, $\boldsymbol{\tau} = \begin{bmatrix} \tau_x & \tau_y & \tau_z \end{bmatrix}^T$ is the total torque, $m$ is the mass of the quadrotor, $I_{cm}$ is the matrix of inertia related to the center of mass, $\mathbf{\ddot{x}_B}$ is the acceleration of the quadrotor center of mass related to the body frame and $\boldsymbol{\omega_B} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$ is the rotational rates in the body frame.
 
 \noindent Before deriving the torque relationship, the motors' models from the input signal to the thrust force are needed. In specific, the four input signals are the speed of the propellers $u_i$, map between $0$ (no throttle) and $1$ (full throttle). Then, the thrust for each propeller can be simply derive as follow
 
@@ -456,7 +456,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:propellerDirection2}
 \end{align} 
 
-\noindent Where, in this case, $\mathbf{F}_i(t)$ is the force vector for each propeller and $R_i$ is the rotational matrix encoding the direction of the thrust and torque vector. Then the torque rappresentation is given by
+\noindent Where, in this case, $\mathbf{F}_i(t)$ is the force vector for each propeller and $R_i$ is the rotational matrix encoding the direction of the thrust and torque vector. Then the torque representation is given by
 
 \begin{equation}
 	\boldsymbol{\tau}_i(t) = -\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2u_i(t)^2\mathbf{n}_i
@@ -526,7 +526,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:gravity}
 \end{equation}
 
-\noindent  where $g$ is the gravity costant, about $9.81$, and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix built from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, once again by using the rotation matrix we obtain
+\noindent  where $g$ is the gravity constant, about $9.81$, and $R_{\mathbf{q}_W}(\mathbf{q}_W)$ is the rotation matrix built from equation \eqref{eq:quatRotationMatrix2}. To derive the velocity $\dot{\mathbf{x}}_W$ in the world frame, once again by using the rotation matrix we obtain
 
 \begin{equation}
 	\dot{\mathbf{x}}_W = R_{\mathbf{q}_W}(\mathbf{q}_W)\cdot\dot{\mathbf{x}}_{B, g}
@@ -597,7 +597,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 
 Till now, all the model was designed for a standard quadrotor vehicle, what we want to do in this section is to add the model of the rotating platform, necessary for deduce a controller and simulate it.
 
-\noindent The movement of the platform, introduces a time variant center of gravity (CoG), that is simply modelled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be computed.
+\noindent The movement of the platform, introduces a time variant center of gravity (CoG), that is simply modeled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be computed.
 
 
 \begin{figure}[h]
@@ -764,7 +764,7 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 	\label{eq:cartAllForces}
 \end{equation}
 
-\noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $\mathbf{f}$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that reguard the acceleration of the body frame
+\noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $\mathbf{f}$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that regard the acceleration of the body frame
 
 \begin{equation}
 	\begin{split}
@@ -810,7 +810,7 @@ In this section we are going to introduce all the hardware and the software use 
    	\label{fig:KFly}
 \end{figure} 
 
-\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerfull enough board able to perform all the operations needed during the flight. It is also equipped with differnt sensors, such an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directily measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and the base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
+\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerful enough board able to perform all the operations needed during the flight. It is also equipped with different sensors, such an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directly measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and the base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
 
 \begin{figure}[h]
 	\centering
@@ -819,7 +819,7 @@ In this section we are going to introduce all the hardware and the software use 
 	\label{fig:XBee}
 \end{figure}
 
-\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250kbps. Like previously said the UAV is equiped with a IMU, but to measure directly the pose of the vehicle we need other sensors. In particular, to test the control with extremely precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the Field Robitics Lab (FROST) of LTU.
+\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250 kbps. Like previously said the UAV is equipped with a IMU, but to measure directly the pose of the vehicle we need other sensors. In particular, to test the control with extremely precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the Field Robotics Lab (FROST) of LTU.
 
 \begin{figure}[h]
 	\centering
@@ -839,7 +839,7 @@ In this section we are going to introduce all the hardware and the software use 
 	\label{fig:vicon}
 \end{figure}
 
-\noindent The system is compesed by 20 different cameras, mounted in the perimeter of the lab. By applying a number of markers in the object, is possible to track its position and orientation in the space, with a precion down to the tenth of millimeter.
+\noindent The system is composed by 20 different cameras, mounted in the perimeter of the lab. By applying a number of markers in the object, is possible to track its position and orientation in the space, with a precision down to the tenth of millimeter.
 
 \begin{figure}[h]
 	\centering
@@ -867,6 +867,6 @@ In this section we are going to introduce all the hardware and the software use 
 	\label{fig:prometheus}
 \end{figure}
 
-\noindent In figure \ref{fig:prometheus} there are some picture of the first prototype of the Prometheus maping drone. In particular, is possible to see all the electronics and the Vicon markers on top and on the side of the Lidar sensor.
+\noindent In figure \ref{fig:prometheus} there are some picture of the first prototype of the Prometheus mapping drone. In particular, is possible to see all the electronics and the Vicon markers on top and on the side of the Lidar sensor.
 
-\noindent Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. Instead, for the real application, we choose to use \textit{ROS}, the Robotic Operating System\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowdays in robotic projects and there is a big worldwide comunity. However, the main problem was that the KFly couldn't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problems with the bandwhidt of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz (100 Hz is quite standard in quadrotor application). A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth, moreover it can run ROS. 
+\noindent Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. Instead, for the real application, we choose to use \textit{ROS}, the Robotic Operating System\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowdays in robotic projects and there is a big worldwide community. However, the main problem was that the KFly couldn't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problems with the bandwidth of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz (100 Hz is quite standard in quadrotor application). A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth, moreover it can run ROS. 

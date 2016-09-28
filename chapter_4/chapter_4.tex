@@ -1,13 +1,13 @@
 \chapter{Trajectories generator}
 \label{trajectoriesGenerator}
 
-An important aspect of this project is the path plannig, because the aim is to map and navigate in a enviroment without a priori information and in complete autonomous. The study of path planning alghoritms and the sensors' fusion to obtain the pose of the vehicle is not part of this thesis, however part of this thesis is to generate a trajectory for the UAV based on the output of a path planning algorithm. In particular, usually exploration algorithms provide only setpoints, not full trajectories \cite{potentialField} \cite{visionBasedMAV}. Is then necessary to provide a tool to generate possible trajectories with constraints in the enviroment and in the dynamic of the vehicle. In this project we implemented the solution proposed in the works \cite{minimumSnap} and \cite{polyTraj}, where the authors, after providing model and control, generate a trajectory composed by piecewise polynomial functions.
+An important aspect of this project is the path planing, because the aim is to map and navigate in a environment without a priori information and in complete autonomous. The study of path planning algorithms and the sensors' fusion to obtain the pose of the vehicle is not part of this thesis, however part of this thesis is to generate a trajectory for the UAV based on the output of a path planning algorithm. In particular, usually exploration algorithms provide only setpoints, not full trajectories \cite{potentialField} \cite{visionBasedMAV}. Is then necessary to provide a tool to generate possible trajectories with constraints in the environment and in the dynamic of the vehicle. In this project we implemented the solution proposed in the works \cite{minimumSnap} and \cite{polyTraj}, where the authors, after providing model and control, generate a trajectory composed by piecewise polynomial functions.
 
 
 \section{Trajectoy definition}
 \label{trajDefinition}
 
-In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is defined as a position in the space, $\mathbf{x}_d$, and a yaw angle, $\psi_d$, since in the next section we will control four degrees of freedom of the UAV, the position in the space and the yaw angle. We consider the problem of navigate through $m$ setpoints at specific time. A trivial trajectory is one that interpolate the setpoints using straight lines. However, such trajectory is inefficient because it require the quadrotor to come to a stop st each setpoint. This method generates trjectories that smoothly transition throught the setpoints at given times. We write down a trajectory as piecewise polynomial functions of order $n$ over $m$ time intervals
+In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is defined as a position in the space, $\mathbf{x}_d$, and a yaw angle, $\psi_d$, since in the next section we will control four degrees of freedom of the UAV, the position in the space and the yaw angle. We consider the problem of navigate through $m$ setpoints at specific time. A trivial trajectory is one that interpolate the setpoints using straight lines. However, such trajectory is inefficient because it require the quadrotor to come to a stop st each setpoint. This method generates trajectories that smoothly transition through the setpoints at given times. We write down a trajectory as piecewise polynomial functions of order $n$ over $m$ time intervals
 
 \begin{equation}
 	\sigma_d(t)=
@@ -20,7 +20,7 @@ In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is defined as a positio
 	\label{eq:defTraj}
 \end{equation}
 
-\noindent where $\sigma_{d,i,j}$ is the coefficient of orden $i$ of the trajectory piece $j$ and $t_k$ is the time that the vehicle has to reach setpoint $k$; $i \in \begin{bmatrix}0 & n\end{bmatrix}$, $j \in \begin{bmatrix}1 & m\end{bmatrix}$, $k \in \begin{bmatrix}1 & m\end{bmatrix}$. The interest is then to minimize a cost function which can be written using these piecewise polynomial.
+\noindent where $\sigma_{d,i,j}$ is the coefficient of order $i$ of the trajectory piece $j$ and $t_k$ is the time that the vehicle has to reach setpoint $k$; $i \in \begin{bmatrix}0 & n\end{bmatrix}$, $j \in \begin{bmatrix}1 & m\end{bmatrix}$, $k \in \begin{bmatrix}1 & m\end{bmatrix}$. The interest is then to minimize a cost function which can be written using these piecewise polynomial.
 
 \begin{alignat}{3}
 	\min\qquad & \int_{t_0}^{t_m}\mu_{\mathbf{x}} \Bigg|\Bigg|\frac{d^{k_{\mathbf{x}}}\mathbf{x}_d}{dt^{k_{\mathbf{x}}}} \Bigg|\Bigg|^2 + \mu_{\psi}\Bigg(\frac{d^{k_{\psi}}\psi_d}{dt^{k_{\psi}}}\Bigg)^2dt \\
@@ -32,7 +32,7 @@ In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is defined as a positio
 	\label{eq:minimizationCost}
 \end{alignat}
 
-\noindent where $\mu_{\mathbf{x}}$ and $\mu_{\psi}$ are constants that make the integrand nondimensional. Here $\boldsymbol{\sigma}_d = \begin{bmatrix} x_d & y_d & z_d & \psi_d\end{bmatrix}^T$ and $\boldsymbol{\sigma}_{d,i}=\begin{bmatrix}x_{d,i} & y_{d,i} & z_{d,i} & \psi_{d,i}\end{bmatrix}^T$. We also assume that $t_0=0$ without loss of generality. The first constraint indicates that the result trajectory has to pass through the desire setpoints, while the rest of the constraints impose that all the derivatives at the initial and final point have to be zero (is also possible to set them to a specific value if necessary). By using the same choice of \cite{minimumSnap2}, we decide to minimize the snap for the position ($k_{\mathbf{x}}=4$) and the second derivative of the yaw angle ($k_{\psi}=2$). Now we want to formulate the trajectory generation problem as an optimization of a functional but in a finite dimensional setting. This will keep the computational effort very small to guarantee a real time application. In order to to this, we first write the constants $\boldsymbol{\sigma}_{d,i,j} =\begin{bmatrix}x_{d,i,j} & y_{d,i,j} & z_{d,i,j} & \psi_{d,i,j}\end{bmatrix}^T$ as a $4\cdot n\cdot m\times 1$ vector $\mathbf{c}$ with decision variables $\{x_{d,i,j} , y_{d,i,j} , z_{d,i,j} , \psi_{d,i,j}, i \in \begin{bmatrix}0 & n\end{bmatrix}, j \in \begin{bmatrix}0 & m\end{bmatrix}\}$. The trajectory generation preoblem \eqref{eq:minimizationCost} can be written in the form of a quadratic program (QP):
+\noindent where $\mu_{\mathbf{x}}$ and $\mu_{\psi}$ are constants that make the integrand nondimensional. Here $\boldsymbol{\sigma}_d = \begin{bmatrix} x_d & y_d & z_d & \psi_d\end{bmatrix}^T$ and $\boldsymbol{\sigma}_{d,i}=\begin{bmatrix}x_{d,i} & y_{d,i} & z_{d,i} & \psi_{d,i}\end{bmatrix}^T$. We also assume that $t_0=0$ without loss of generality. The first constraint indicates that the result trajectory has to pass through the desire setpoints, while the rest of the constraints impose that all the derivatives at the initial and final point have to be zero (is also possible to set them to a specific value if necessary). By using the same choice of \cite{minimumSnap2}, we decide to minimize the snap for the position ($k_{\mathbf{x}}=4$) and the second derivative of the yaw angle ($k_{\psi}=2$). Now we want to formulate the trajectory generation problem as an optimization of a functional but in a finite dimensional setting. This will keep the computational effort very small to guarantee a real time application. In order to to this, we first write the constants $\boldsymbol{\sigma}_{d,i,j} =\begin{bmatrix}x_{d,i,j} & y_{d,i,j} & z_{d,i,j} & \psi_{d,i,j}\end{bmatrix}^T$ as a $4\cdot n\cdot m\times 1$ vector $\mathbf{c}$ with decision variables $\{x_{d,i,j} , y_{d,i,j} , z_{d,i,j} , \psi_{d,i,j}, i \in \begin{bmatrix}0 & n\end{bmatrix}, j \in \begin{bmatrix}0 & m\end{bmatrix}\}$. The trajectory generation problem \eqref{eq:minimizationCost} can be written in the form of a quadratic program (QP):
 
 \begin{alignat}{2}
 	\min\qquad & \mathbf{c}^TH\mathbf{c} + f^T\mathbf{c} \\
@@ -44,7 +44,7 @@ In this work, a \textit{setpoint} $\boldsymbol{\sigma}_d$is defined as a positio
 \noindent where the objective function will incorporate the minimization of the functional while the constraint can be used to satisfy constraints in the trajectory and it derivatives. A specification of an initial condition, final condition, or intermediate condition on any derivative of the trajectory (e.g. $\frac{d^kx_d}{dt^k}$) can be written as a row of the constraints $A_{eq}\mathbf{c} = \mathbf{b}_{eq}$. If conditions do not need to be
 specified exactly then they can be represented with the inequality constraint $A\mathbf{c}\le \mathbf{b}$.
 
-\noindent Moreover, to simplify the problem, can be notice that in the cost function of equation \eqref{eq:minimizationCost}, the four dimensions are indipendent, this means that the problem can be split in four different problems for each dimension. In such a way, the construction of the quadratic problem vectors and matrices will be considerable more simple. Furthermore, is possible to assume that each setpoint starts from $t_0=0$ and ends to $t_j=1$. This because if we define a new time varible such as
+\noindent Moreover, to simplify the problem, can be notice that in the cost function of equation \eqref{eq:minimizationCost}, the four dimensions are independent, this means that the problem can be split in four different problems for each dimension. In such a way, the construction of the quadratic problem vectors and matrices will be considerable more simple. Furthermore, is possible to assume that each setpoint starts from $t_0=0$ and ends to $t_j=1$. This because if we define a new time variable such as
 
 \begin{equation}
 	\tau = \frac{t-t_{j-1}}{t_j-t_{j-1}}
@@ -80,7 +80,7 @@ To make the derivation simpler, is better to start the optimization problem with
 	\label{eq:oneSetpoint}
 \end{alignat}
 
-\noindent We can instead look for the non-dimensionalized trajectory $x(\tau)=c_n\tau^n+c_{n-1}\tau^{n-1}+\dots+c_1\tau+c_0$ where $\tau=\frac{t-t_0}{t_1-t_0}$. Note that this makes $\tau$ range from $0$ to $1$. Let $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$.We can wite the cost function $J$ in term of the non-dimensionalized trajectory $x(\tau)$:
+\noindent We can instead look for the non-dimensionalized trajectory $x(\tau)=c_n\tau^n+c_{n-1}\tau^{n-1}+\dots+c_1\tau+c_0$ where $\tau=\frac{t-t_0}{t_1-t_0}$. Note that this makes $\tau$ range from $0$ to $1$. Let $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$.We can write the cost function $J$ in term of the non-dimensionalized trajectory $x(\tau)$:
 
 \begin{align}
 	J &= \int_{t_0}^{t_1}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt \\
@@ -108,7 +108,7 @@ To make the derivation simpler, is better to start the optimization problem with
 	& i=0,\dots,n,\qquad j=0,\dots,n \nonumber
 \end{align}
 
-\noindent However, $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$. Reflecting $H'$ from equation \eqref{eq:Htranspose} horizontally and vertcally will give the desire $H$ for the form of $\mathbf{c}$ we desire. The function to minimize is then $\Bigg(\frac{1}{(t_1-t_0)^{2k}}H_{(0,1)}\Bigg)$.
+\noindent However, $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$. Reflecting $H'$ from equation \eqref{eq:Htranspose} horizontally and vertically will give the desire $H$ for the form of $\mathbf{c}$ we desire. The function to minimize is then $\Bigg(\frac{1}{(t_1-t_0)^{2k}}H_{(0,1)}\Bigg)$.
 
 \noindent To find $A$
 
@@ -202,7 +202,7 @@ In this section, by recalling what we study in the previous section, is possible
 	\text{subject to} \qquad & A\mathbf{c}=\mathbf{b} \nonumber
 \end{alignat}
 
-\noindent To find $H$, we recall that for each $\mathbf{c}'_z=\begin{bmatrix}c_{z,0} & c_{z,1} & \dots & c_{z,n-1} & c_{z,n} \end{bmatrix}^T$, where $z=1,\dots,m$, $H'_{(0,1)}$ is given by equation \eqref{eq:Htranspose}. Since $\mathbf{c}_z=\begin{bmatrix}c_{z,n} & c_{z,n-1} & \dots & c_{z,1} & c_{z,0}\end{bmatrix}^T$, refletting $H'$ horizzontally and vertically will give the desire $H$ for the form of $\mathbf{c}_k$. Is then possible to create the block diagonal matrix $H$ 
+\noindent To find $H$, we recall that for each $\mathbf{c}'_z=\begin{bmatrix}c_{z,0} & c_{z,1} & \dots & c_{z,n-1} & c_{z,n} \end{bmatrix}^T$, where $z=1,\dots,m$, $H'_{(0,1)}$ is given by equation \eqref{eq:Htranspose}. Since $\mathbf{c}_z=\begin{bmatrix}c_{z,n} & c_{z,n-1} & \dots & c_{z,1} & c_{z,0}\end{bmatrix}^T$, reflecting $H'$ horizontally and vertically will give the desire $H$ for the form of $\mathbf{c}_k$. Is then possible to create the block diagonal matrix $H$ 
 
 \begin{equation}
 	H = 
@@ -246,7 +246,7 @@ In this section, by recalling what we study in the previous section, is possible
 
 \noindent Like before, we just omit rows where a condition is unconstrained. Also, note that except for constraints at $t_0$ and $t_m$, every other constraint must be include twice. The equation for $A[i,j](t)$ is the same of \eqref{eq:matrixA}
 
-\noindent We must also take into account for constraints that ensure that when the trajectory switches from one piece to another at the sepoints, position and all the derivative lower than $k$ remain continuous, for a smooth path. In other words, is require that
+\noindent We must also take into account for constraints that ensure that when the trajectory switches from one piece to another at the setpoints, position and all the derivative lower than $k$ remain continuous, for a smooth path. In other words, is require that
 
 \begin{align}
 	A_{cont}\mathbf{c} &= \mathbf{b}_{cont} \\
@@ -416,4 +416,4 @@ In this section, corridors constraints will be added in the cost function \eqref
 	\end{bmatrix} \nonumber 
 \end{align}
 
-\noindent In figure \ref{fig:trajectory} are reported examples of trajectories, with and without corridor constraints. For better understanding are reposrt 2D trajectories, but the same example could be made also for 3D trajectories. The corridor constraint is present only between two setpoints, setpoint 2 and setpoint 3. As is possible to see, the trajectory remain in beetween the constraint, but become less smooth in compare to the one without constraints. Moreover, notice that the entire trajectory is different and not only the segment in between the corridor, this is another important advantage of using this technique to generate trajectores. 
+\noindent In figure \ref{fig:trajectory} are reported examples of trajectories, with and without corridor constraints. For better understanding are report 2D trajectories, but the same example could be made also for 3D trajectories. The corridor constraint is present only between two setpoints, setpoint 2 and setpoint 3. As is possible to see, the trajectory remain in between the constraint, but become less smooth in compare to the one without constraints. Moreover, notice that the entire trajectory is different and not only the segment in between the corridor, this is another important advantage of using this technique to generate trajectories. 

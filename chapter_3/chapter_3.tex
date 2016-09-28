@@ -3,7 +3,7 @@
 
 In this chapter,is about to be addressed an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
 
-\section{System simplification and linear approxmation}
+\section{System simplification and linear approximation}
 \label{linearization}
 
 Starting from the model deducted in section \ref{quadModel}
@@ -57,7 +57,7 @@ Starting from the model deducted in section \ref{quadModel}
 	\label{fig:comparisonOmega}
 \end{figure}
 
-\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orinetation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required. Another non linearity is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the square of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics. In conclusion, the approximate linear model is
+\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orientation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficiently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required. Another non linearity is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the square of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics. In conclusion, the approximate linear model is
 
 \begin{gather}
 	\begin{bmatrix}
@@ -128,7 +128,7 @@ From the simplified model of equations \eqref{eq:linearModel1} and \eqref{eq:lin
 
 A Kalman filter approach is chose for this project since it has good result in this kind of applications. Of course, better performances can be obtained with specific strategies for non linear systems \cite{parameterIdentification}, but these methods are in general much more complicated and require much more computational effort, especially if is necessary to estimate the parameters online.  
 
-\noindent Now, is possible to use the standard Kalman filter equations \cite{KalmanFilter} to develop an online identification alghoritm as follow.
+\noindent Now, is possible to use the standard Kalman filter equations \cite{KalmanFilter} to develop an online identification algorithm as follow.
 
 \noindent The augmented state $\mathbf{x}_{est}$ is
 
@@ -141,7 +141,7 @@ A Kalman filter approach is chose for this project since it has good result in t
 	\label{eq:augmentedState}
 \end{equation} 
 
-\noindent The initial values of $\boldsymbol{\omega}_B$ and $\mathbf{u}_{in}$ are know, so the state is initialized with these. Moreover, due to the parameters $\boldsymbol{\beta}$ and $\tau$ having a constraint to being positive, they are implemented as $\exp(\boldsymbol{\beta})$ and $\exp(\tau)$ to force positive results from the estimation, while the $\boldsymbol{\Delta l}$ are constrained to be within the propellers (the length of the arms is set to be equal to one, since the correct length is not necessary for the identification) wich is implemented using a zero centered logistic function
+\noindent The initial values of $\boldsymbol{\omega}_B$ and $\mathbf{u}_{in}$ are know, so the state is initialized with these. Moreover, due to the parameters $\boldsymbol{\beta}$ and $\tau$ having a constraint to being positive, they are implemented as $\exp(\boldsymbol{\beta})$ and $\exp(\tau)$ to force positive results from the estimation, while the $\boldsymbol{\Delta l}$ are constrained to be within the propellers (the length of the arms is set to be equal to one, since the correct length is not necessary for the identification) which is implemented using a zero centered logistic function
 
 \begin{equation}
 	\frac{2}{1-\exp(-\Delta l)} -1
@@ -248,7 +248,7 @@ A Kalman filter approach is chose for this project since it has good result in t
  	\label{fig:omegaKalman}		
 \end{figure}
 
-\noindent The estimator needs to be setup with specific process and measurement covariance $Q$ and $R$, and the starting state covariance $P_0$. The values for $Q$ and $P_0$ where found simply with a trial and error procedure, while $R$ was taken from the noise densities of the measured signals. In particular we measured a steady state position of the quadrotor, record the acceleration in the z axis $\ddot{x}_{B,z}$ and the angular rate $\boldsymbol{\omega}_B$, then by analyzing these data, a noise variance was extracted. Moreover, since in the augmented state $\mathbf{x}_{est}$ is present also an estimation of the angular rate $\hat{\boldsymbol{\omega}}$, to evaluate the quality of the estimation was also compare it with the measured angular rate. In this case the initial values of the state $\mathbf{x}_{est}$ were chose to be considerably different from a real value, just to show the performace of the etimator.
+\noindent The estimator needs to be setup with specific process and measurement covariance $Q$ and $R$, and the starting state covariance $P_0$. The values for $Q$ and $P_0$ where found simply with a trial and error procedure, while $R$ was taken from the noise densities of the measured signals. In particular we measured a steady state position of the quadrotor, record the acceleration in the z axis $\ddot{x}_{B,z}$ and the angular rate $\boldsymbol{\omega}_B$, then by analyzing these data, a noise variance was extracted. Moreover, since in the augmented state $\mathbf{x}_{est}$ is present also an estimation of the angular rate $\hat{\boldsymbol{\omega}}$, to evaluate the quality of the estimation was also compare it with the measured angular rate. In this case the initial values of the state $\mathbf{x}_{est}$ were chose to be considerably different from a real value, just to show the performance of the estimator.
 
 \begin{figure}[h]
 	\centering
@@ -258,6 +258,6 @@ A Kalman filter approach is chose for this project since it has good result in t
 	\label{fig:betaTauKalman}
 \end{figure}
 
-\noindent As is possible to see in figure \ref{fig:omegaKalman}, the estimation of the angular rate works pretty well from the begining for all the three axis. In figure \ref{fig:betaTauKalman} are instead plotted the estimations of all parameters $\boldsymbol{\beta}$ and $\tau$. The identification was performed with the cart fixed in one position. Is possible to see that for almost all parameters there is convergence after about 15 seconds, while for the parameter $\frac{B_F}{I_{zz}}$ is necessary more time. This can be explain by observing the angular rate, in particular note that $\omega_z$ is almost zero for about the first 10 seconds, due to the particular trajectory of the vehicle. Of course, is not possible to perform system identification without excitation of the system and thats why the parameters depending on $\omega_z$ require more time to converge.
+\noindent As is possible to see in figure \ref{fig:omegaKalman}, the estimation of the angular rate works pretty well from the beginning for all the three axis. In figure \ref{fig:betaTauKalman} are instead plotted the estimations of all parameters $\boldsymbol{\beta}$ and $\tau$. The identification was performed with the cart fixed in one position. Is possible to see that for almost all parameters there is convergence after about 15 seconds, while for the parameter $\frac{B_F}{I_{zz}}$ is necessary more time. This can be explain by observing the angular rate, in particular note that $\omega_z$ is almost zero for about the first 10 seconds, due to the particular trajectory of the vehicle. Of course, is not possible to perform system identification without excitation of the system and thats why the parameters depending on $\omega_z$ require more time to converge.
 
-\noindent In conclusion the alghoritm has been shown to work quite well, and for this application is not then necessary to use more sopisticated techniques.
+\noindent In conclusion the algorithm has been shown to work quite well, and for this application is not then necessary to use more sophisticated techniques.
