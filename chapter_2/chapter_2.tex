@@ -1,12 +1,12 @@
 \chapter{Design and model}
 \label{designModel}
 
-In this chapter we will focus in the description of the mechanical model of the UAV and the sensor system and, from these, a mathematical model will be derived, necessary for build and simulate a control law, and to perform system identification.
+In this chapter we will focus in the description of the mechanical model of the UAV and the sensor system and, from these, a mathematical model will be derived, necessary for build and simulate a control law, and to perform system identification. In the end, we'll also describe the hardware and software used for the accomplish of this thesis.
 
 \section{Mechanical design}
 \label{mechanicalDesign}
 
-The overall objective of the Prometheus project is navigation and mapping, for these we mean obtain a 3D reconstruction of an unknown indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a quadrotor type UAV, will explore in a autonomous way. Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of Light Detection And Ranging, (sometimes Light Imaging, Detection, And Ranging). 
+The overall objective of the Prometheus project is navigation and mapping, for these we mean obtain a 3D reconstruction of an unknown indoor physical environment, using a 360 degrees \textit{Lidar} laser scanner, which, coupled to a quadrotor type UAV, will explore in a autonomous way. 
 
 \begin{SCfigure}[\sidecaptionrelwidth][h]
 	\includegraphics[scale=0.21]{images/lidar_laser.jpg}
@@ -14,7 +14,7 @@ The overall objective of the Prometheus project is navigation and mapping, for t
 	\label{fig:lidar}
 \end{SCfigure}
 
-\noindent Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications \footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is depict in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attached in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attached to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can maps directly in 3D, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus, where the sensor is also rotating around the UAV. In such a way, the Lidar has three degrees of freedom in the movement and a 3D mapping can be performed. This solution comports, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
+\noindent Lidar is a surveying technology that measures distance by illuminating a target with a laser light. Lidar is an acronym of \textit{Light Detection And Ranging}, (sometimes \textit{Light Imaging, Detection, And Ranging}). Lidar is popularly used as a technology to make high-resolution maps, with applications in geodesy, geomatics, archeology, geography, geology, geomorphology, seismology, forestry, atmospheric physics and so on. What is known as Lidar is sometimes simply referred to as laser scanning or 3D scanning, with terrestrial, airborne and mobile applications\footnote{\url{https://en.wikipedia.org/wiki/Lidar}}. The specific Lidar laser scanner used in this project is depict in figure \ref{fig:lidar}, where is possible to see the rotating structure moved by a motor attached in the bottom of the frame. However, this sensor is only able to perform 2D mapping and, attached to a drone, make it practically impossible to perform a complete 3D mapping. To solve this problem, several approaches could be adopted, such as use a more complicated and more expensive sensor, that can maps directly in 3D, or just by simply use more than one Lidar. However, the solution adopted in this project is again inspired from the movie Prometheus, where the sensor is also rotating around the UAV. In such a way, the Lidar has three degrees of freedom in the movement and a 3D mapping can be performed. This solution comports, of course,the usage of only one laser scanner, but require a rotating structure that can move the sensor.
 
 \begin{figure}[h]
 	\centering
@@ -96,9 +96,8 @@ Is pretty much clear from the previous section that this UAV is different from a
 \end{figure}
 
 \noindent A quadrotor helicopter is made of a central frame and four propellers that are attach to the frame with respectively four arms. Moreover, the propellers' rotation direction must be opposite in pairs, like illustrated in figure \ref{fig:quadrtotor}. \newline
-\noindent Furthermore, is necessary to define two frames, the world fixed frame and the body frame attached to the vehicle.
-
-\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the translation and rotation of the body frame in respect to the world frame. For represent the translation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used quaternions \cite{quaternion}, that will be introduced in the following section.
+\noindent Furthermore, is necessary to define two frames, the \textit{world fixed frame} and the \textit{body frame} attached to the vehicle.
+\noindent In figure \ref{fig:frames} is possible to see the two frames, the world frame, in black, is fixed to a point and it can't be moved, the body frame, in blue, instead is attached to the quadrotor and can move with six degrees of freedom, that are position and orientation. In this, we are interesting in knowing the translation and rotation of the body frame in respect to the world frame. For represent the translation, a three dimension vector $\mathbf{x}$ is enough, that actually indicate the position of the quadrotor in the space. Instead, for the rotation, we used \textit{quaternions} \cite{quaternion}, that will be introduced in the following section.
 
 \begin{figure}[h]
 	\centering
@@ -140,7 +139,7 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 	\label{eq:quatDef}
 \end{equation}
 
-\noindent The quaternion units from $q_1$ to $q_3$ are called the vector part of the quaternion, while $q_0$ is the scalar part \cite{EmilQuaternion}. Multiplication of two quaternions $\mathbf{p}$ and $\mathbf{q}$, is being performed by the Kronecker product, denoted as $\otimes$. If $\mathbf{p}$ represents one rotation and $\mathbf{q}$ represents another rotation, then $\mathbf{p} \otimes \mathbf{q}$ represents the combined rotation.
+\noindent The quaternion units from $q_1$ to $q_3$ are called the vector part of the quaternion, while $q_0$ is the scalar part \cite{EmilQuaternion}. Multiplication of two quaternions $\mathbf{p}$ and $\mathbf{q}$, is being performed by the \textit{Kronecker product}, denoted as $\otimes$. If $\mathbf{p}$ represents one rotation and $\mathbf{q}$ represents another rotation, then $\mathbf{p} \otimes \mathbf{q}$ represents the combined rotation.
 
 \begin{align}
 	\mathbf{p} \otimes \mathbf{q} &=
@@ -186,7 +185,7 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 	\label{eq:quatNorm}
 \end{equation}
 
-\noindent If the norm of the quaternion is equal to $1$, then the quaternion is called unit quaternion. The complex conjugate of a quaternion has the same definition as normal complex numbers.
+\noindent If the norm of the quaternion is equal to $1$, then the quaternion is called \textit{unit quaternion}. The complex conjugate of a quaternion has the same definition as normal complex numbers.
 
 \begin{equation}
 	\mathbf{q}^* = 
@@ -203,37 +202,37 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 	\label{eq:quatInverse}
 \end{equation}
 
-\noindent The time derivative of the unit quaternion is the vector of quaternion rates \cite{quaternion2}. It requires some algebraic manipulation but is important to notice that the quaternion rates, $\dot{\mathbf{q}}$, are related to the angular velocity $\boldsymbol{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$. It can be represented in two ways:
+\noindent The time derivative of the unit quaternion is the vector of \textit{quaternion rates} \cite{quaternion2}. It requires some algebraic manipulation but is important to notice that the quaternion rates, $\dot{\mathbf{q}}$, are related to the angular velocity $\boldsymbol{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$. It can be represented in two ways:
 
 \begin{itemize}
 		
-	\item as in equation \eqref{eq:quatDerivative1} in case that the angular velocity is in the world frame
+	\item as in equation \eqref{eq:quatDerivative1} in case that the angular velocity is in the world frame (subscript $W$)
 	\begin{equation}
-		\dot{\mathbf{q}}_{\boldsymbol{w}}(\mathbf{q}, \boldsymbol{w}) = \frac{1}{2}\mathbf{q}\otimes
+		\dot{\mathbf{q}}_{\boldsymbol{\omega}_W}(\mathbf{q}, \boldsymbol{\omega}_W) = \frac{1}{2}\mathbf{q}\otimes
 		\begin{bmatrix}
 			0 \\
-			\boldsymbol{\omega}
+			\boldsymbol{\omega}_W
 		\end{bmatrix}
 		= \frac{1}{2}Q(\mathbf{q})
 		\begin{bmatrix}
 			0 \\
-			\boldsymbol{\omega}
+			\boldsymbol{\omega}_W
 		\end{bmatrix}
 		\label{eq:quatDerivative1}
 	\end{equation}
 
-	\item as in equation \eqref{eq:quatDerivative2} if the angular velocity vector is in the body frame of reference.
+	\item as in equation \eqref{eq:quatDerivative2} if the angular velocity vector is in the body frame of reference (subscript $B$).
 
 	\begin{equation}
-		\dot{\mathbf{q}}_{\boldsymbol{w}'}(\mathbf{q}, \boldsymbol{w}') = \frac{1}{2}
+		\dot{\mathbf{q}}_{\boldsymbol{\omega}_B}(\mathbf{q}, \boldsymbol{\omega}_B) = \frac{1}{2}
 		\begin{bmatrix}
 			0 \\
-			\boldsymbol{\omega}'
+			\boldsymbol{\omega}_B
 		\end{bmatrix}
 		\otimes \mathbf{q} = \frac{1}{2}\bar{Q}(\mathbf{q})
 		\begin{bmatrix}
 			0 \\
-			\boldsymbol{\omega}'
+			\boldsymbol{\omega}_B
 		\end{bmatrix}
 		\label{eq:quatDerivative2}
 	\end{equation}
@@ -251,23 +250,23 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 	\label{eq:quatRotateVector}
 \end{equation}
 
-\noindent Unit quaternion can be use also to represents rotation matrixes. Consider a vector $\mathbf{v}$ in the world frame. If $\mathbf{v}'$ is the same vector in the body coordinates, the the following relations hold
+\noindent Unit quaternion can be use also to represents \textit{rotation matrices}. Consider a vector $\mathbf{v}_W$ in the world frame. If $\mathbf{v}_B$ is the same vector in the body coordinates, then the following relations hold
 
 \begin{align}
 	\begin{bmatrix}
 		0 \\
-		\mathbf{v}'
+		\mathbf{v}_B
 	\end{bmatrix}
 	&= \mathbf{q} \cdot
 	\begin{bmatrix}
 		0 \\
-		\mathbf{v}
+		\mathbf{v}_W
 	\end{bmatrix}
 	\cdot \mathbf{q}^* \\
 	&= \bar{Q}(\mathbf{q})^T Q(\mathbf{q})
 	\begin{bmatrix}
 		0 \\
-		\mathbf{v}
+		\mathbf{v}_W
 	\end{bmatrix} \\
 	&=
 	\begin{bmatrix}
@@ -276,7 +275,7 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 	\end{bmatrix}
 	\begin{bmatrix}
 		0 \\
-		\mathbf{v}
+		\mathbf{v}_W
 	\end{bmatrix}
 	\label{eq:quatRotationMatrix1}
 \end{align}
@@ -296,8 +295,8 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 \noindent That is,
 
 \begin{align}
-	\mathbf{v}' &= R_{\mathbf{q}}(\mathbf{q})\mathbf{v} \\
-	\mathbf{v} &= R_{\mathbf{q}}(\mathbf{q})^T\mathbf{v}'
+	\mathbf{v}_B &= R_{\mathbf{q}}(\mathbf{q})\mathbf{v}_W \\
+	\mathbf{v}_W &= R_{\mathbf{q}}(\mathbf{q})^T\mathbf{v}_B
 	\label{eq:quatRotationMatrix3}
 \end{align}
 
@@ -308,7 +307,7 @@ A quaternion is a hyper complex number of rank 4, which can be represented as fo
 	\label{eq:quatRotationMatrix4}
 \end{equation}
 
-\noindent Finally, for representing quaternion rotations in a more intuitive manner, the conversion from Euler angles (roll $\phi$, pith $\theta$ and yaw $\psi$) to quaternion and viceversa can be performed by utilizing the following two equations respectively.
+\noindent Finally, for representing quaternion rotations in a more intuitive manner, the conversion from Euler angles (roll $\phi$, pitch $\theta$ and yaw $\psi$) to quaternion and vice versa can be performed by utilizing the following two equations respectively.
 
 \begin{gather}
 	q = 
@@ -390,10 +389,10 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\draw [<-, ultra thick] (0.2, -\centers, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_1$};
 
 		% Force arrows
-		\draw[ultra thick,->,blue] (0, \centers, \heightpropeller) -- (0, \centers, \heightpropeller+0.4) node[anchor=east]{$F_3$};
-		\draw[ultra thick,->,blue] (\centers, 0, \heightpropeller) -- (\centers, 0, \heightpropeller+0.4) node[anchor=east]{$F_4$};
-		\draw[ultra thick,->,blue] (0, -\centers, \heightpropeller) -- (0, -\centers, \heightpropeller+0.4) node[anchor=east]{$F_1$};
-		\draw[ultra thick,->,blue] (-\centers, 0, \heightpropeller) -- (-\centers, 0, \heightpropeller+0.4) node[anchor=east]{$F_2$};
+		\draw[ultra thick,->,blue] (0, \centers, \heightpropeller) -- (0, \centers, \heightpropeller+0.4) node[anchor=east]{$f_3$};
+		\draw[ultra thick,->,blue] (\centers, 0, \heightpropeller) -- (\centers, 0, \heightpropeller+0.4) node[anchor=east]{$f_4$};
+		\draw[ultra thick,->,blue] (0, -\centers, \heightpropeller) -- (0, -\centers, \heightpropeller+0.4) node[anchor=east]{$f_1$};
+		\draw[ultra thick,->,blue] (-\centers, 0, \heightpropeller) -- (-\centers, 0, \heightpropeller+0.4) node[anchor=east]{$f_2$};
 
 		% Torque arrows
         \draw[->, ultra thick, canvas is zy plane at x=\centers+0.6, orange] (0.15, 0, 0) arc (0:360:0.15) node[anchor=south east]{$\tau_y$};
@@ -405,11 +404,11 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{fig:quadrtotorVectors}
 \end{figure}
 
-\noindent In figure \ref{fig:quadrtotorVectors} are also impressed the force vectors $F_i$ generate from each motor-propeller, the torques vectors $\tau_x$, $\tau_y$ and $\tau_z$ about the three axis and the propeller's speed $\Omega_i$. Now, for modeling the rigid body of a multirotor, the standard Newton-Euler kinematics equations can be utilized \cite{Bresciani}.
+\noindent In figure \ref{fig:quadrtotorVectors} are also impressed the force vectors $F_i$ generate from each motor-propeller, the torques vectors $\tau_x$, $\tau_y$ and $\tau_z$ about the three axis and the propeller's speed $\Omega_i$. Now, for modeling the rigid body of a multirotor, the standard \textit{Newton-Euler kinematics} equations can be utilized \cite{Bresciani}.
 
 \begin{equation}
 	\begin{bmatrix}
-		\mathbf{F} \\
+		\mathbf{f} \\
 		\boldsymbol{\tau}
 	\end{bmatrix}
 	=
@@ -429,16 +428,16 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:NewtonEuler}
 \end{equation}
 
-\noindent Where $\mathbf{F} = \begin{bmatrix} F_x & F_y & F_z \end{bmatrix}^T$ is the vector of the total force, $\boldsymbol{\tau} = \begin{bmatrix} \tau_x & \tau_y & \tau_z \end{bmatrix}^T$ is the total torque, $m$ is the mass of the quadrotor, $I_{cm}$ is the matrix of inertia related to the center of mass, $\mathbf{\ddot{x}_B}$ is the acceleration of the quadrotor center of mass related to the body frame and $\boldsymbol{\omega_B} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$ is the rotational rates in the body frame.
+\noindent Where $\mathbf{f} = \begin{bmatrix} f_x & f_y & f_z \end{bmatrix}^T$ is the vector of the total force, $\boldsymbol{\tau} = \begin{bmatrix} \tau_x & \tau_y & \tau_z \end{bmatrix}^T$ is the total torque, $m$ is the mass of the quadrotor, $I_{cm}$ is the matrix of inertia related to the center of mass, $\mathbf{\ddot{x}_B}$ is the acceleration of the quadrotor center of mass related to the body frame and $\boldsymbol{\omega_B} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T$ is the rotational rates in the body frame.
 
 \noindent Before deriving the torque relationship, the motors' models from the input signal to the thrust force are needed. In specific, the four input signals are the speed of the propellers $u_i$, map between $0$ (no throttle) and $1$ (full throttle). Then, the thrust for each propeller can be simply derive as follow
 
 \begin{equation}
-	F_i(t) = A_{F,i} \Omega_i^2 = A_{F,i}\Omega_{max, i}^2 u_i(t)^2
+	f_i(t) = a_{f,i} \Omega_i^2 = a_{f,i}\Omega_{max, i}^2 u_i(t)^2
 	\label{eq:motorThrust}
 \end{equation}
 
-\noindent where $A_{F,i} \in \rm I\!R_+$ are the thrust constants of the motor-propeller combination, $\Omega_{max, i} \in \rm I\!R_+$ are the maximum rotational speed of the motors and $u_i(t)$ are the motors' signals. What is missing in equation \eqref{eq:motorThrust} is the model of the DC motors and in particular, a map between the input signal $u_i(t)$ and the control signal $u_{in,i}(t)$. To keep the model simple but still accurate \footnote{\url{http://pi19404.github.io/pyVision/2015/04/10/25/}}, the motor has been modeled like a delay, like in equation \eqref{eq:motorDelay}.
+\noindent where $a_{f,i} \in \rm I\!R_+$ are the thrust constants of the motor-propeller combination, $\Omega_{max, i} \in \rm I\!R_+$ are the maximum rotational speed of the motors and $u_i(t)$ are the motors' signals. What is missing in equation \eqref{eq:motorThrust} is the model of the DC motors and in particular, a map between the input signal $u_i(t)$ and the control signal $u_{in,i}(t)$. To keep the model simple but still accurate\footnote{\url{http://pi19404.github.io/pyVision/2015/04/10/25/}}, the motor has been modeled like a delay, like in equation \eqref{eq:motorDelay}.
 
 \begin{equation}
 	u_i(t) \approx \frac{1}{\tau_i s+1}u_{in.i}(t)
@@ -448,7 +447,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 \noindent This approach is very common \cite{motor}, since all the parameters of a motor are not provide from datasheet, especially from cheap motors that is possible to find quite often in a commercial quadrotor. Furthermore, to represent the direction of the thrust from a motor it should be considered that 
 
 \begin{align}
-	\mathbf{F}_i(t) &= A_{F,i} \Omega_{max,i}^2u_i(t)\mathbf{n}_i \label{eq:propellerDirection1} \\
+	\mathbf{f}_i(t) &= a_{f,i} \Omega_{max,i}^2u_i(t)\mathbf{n}_i \label{eq:propellerDirection1} \\
 	\mathbf{n}_i &= R_i \cdot 
 	\begin{bmatrix} 
 		0 & 0 & 1 
@@ -456,26 +455,26 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:propellerDirection2}
 \end{align} 
 
-\noindent Where, in this case, $\mathbf{F}_i(t)$ is the force vector for each propeller and $R_i$ is the rotational matrix encoding the direction of the thrust and torque vector. Then the torque representation is given by
+\noindent Where, in this case, $\mathbf{f}_i(t)$ is the force vector for each propeller and $R_i$ is the rotational matrix encoding the direction of the thrust and torque vector. Then the torque representation is given by
 
 \begin{equation}
-	\boldsymbol{\tau}_i(t) = -\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2u_i(t)^2\mathbf{n}_i
+	\boldsymbol{\tau}_i(t) = -\sgn(\Omega_i)b_{f,i}\Omega_{max,i}^2u_i(t)^2\mathbf{n}_i
 	\label{eq:motorTorque}
 \end{equation}
 
-\noindent where $B_{F,i} \in \rm I\!R_+$ is the torque constant.
+\noindent where $b_{f,i} \in \rm I\!R_+$ is the torque constant.
 
-\noindent Now, by defining the vector $\mathbf{l}_i = \begin{bmatrix} l_{x,i} & l_{y,i} & l_{z,i} \end{bmatrix}^T$ the distance between the center of mass and the position where the propeller $i$ is attached, combining equations \eqref{eq:propellerDirection1}, \eqref{eq:propellerDirection2} and \eqref{eq:motorTorque} is possible to obtain equation \eqref{eq:forceTorque} as in the work \cite{modelIdentification}.
+\noindent Now, by defining the vector $\mathbf{l}_i = \begin{bmatrix} l_{x,i} & l_{y,i} & l_{z,i} \end{bmatrix}^T$ the distance between the \textit{center of mass} and the position where the propeller $i$ is attached, combining equations \eqref{eq:propellerDirection1}, \eqref{eq:propellerDirection2} and \eqref{eq:motorTorque} is possible to obtain equation \eqref{eq:forceTorque} as in the work \cite{modelIdentification}.
 
 \begin{equation}
 	\begin{bmatrix}
-		\mathbf{F}_{total} \\
+		\mathbf{f}_{total} \\
 		\boldsymbol{\tau}_{total}
 	\end{bmatrix}
 	=
 	\begin{bmatrix}
-		\sum\limits_{i=1}^{4} \mathbf{F}_i(u_i^2) \\
-		\sum\limits_{i=1}^{4} \mathbf{l}_i \times \mathbf{F}_i(u_i^2) + \boldsymbol{\tau}_i(u_i^2)
+		\sum\limits_{i=1}^{4} \mathbf{f}_i(u_i^2) \\
+		\sum\limits_{i=1}^{4} \mathbf{l}_i \times \mathbf{f}_i(u_i^2) + \boldsymbol{\tau}_i(u_i^2)
 	\end{bmatrix}
 	\label{eq:forceTorque}
 \end{equation}
@@ -490,8 +489,8 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\end{bmatrix}
 		&=
 		\begin{bmatrix}
-			\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
-			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+			\dots & \frac{a_{f,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
+			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times a_{f,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)b_{f,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
 		\end{bmatrix}
 		\begin{bmatrix}
 			\vdots \\
@@ -513,7 +512,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 	\label{eq:finalModel2}
 \end{equation}
 
-\noindent Where $\boldsymbol{\Delta l}$ is the offset vector of the center of gravity (CoG) in the body frame of reference. From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those from the body frame and integrate to obtain the position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ of the quadrotor with the respect to the world frame. Then, by adding the gravity term we have
+\noindent Where $\boldsymbol{\Delta l}$ is the offset vector of the \textit{center of gravity} (\textit{CoG}) in the body frame of reference. From the model \eqref{eq:finalModel1} the linear and angular accelerations are given, is then necessary to convert those from the body frame and integrate to obtain the position $\mathbf{x}_W$ and orientation $\mathbf{q}_W$ of the quadrotor with the respect to the world frame. Then, by adding the gravity term we have
 
 \begin{equation}
 	\ddot{\mathbf{x}}_{B, g} = R_{\mathbf{q}_W}(\mathbf{q}_W)^T \cdot
@@ -586,7 +585,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 		\draw[->] (outfit4) |- ($(DYN.180) - (0, 0.75)$);
 
 	\end{tikzpicture}
-	\caption{Block diagram of the quadrotor's dynamic.}
+	\caption{Block diagram of the quadrotor dynamic.}
 	\label{fig:quadDynBlock}
 \end{figure}
 
@@ -597,7 +596,7 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 
 Till now, all the model was designed for a standard quadrotor vehicle, what we want to do in this section is to add the model of the rotating platform, necessary for deduce a controller and simulate it.
 
-\noindent The movement of the platform, introduces a time variant center of gravity (CoG), that is simply modeled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be computed.
+\noindent The movement of the platform, introduces a time variant center of gravity, that is simply modeled with time variant vectors $\mathbf{l}_i(t)$, that identify the displacement of the center of the propeller $i$ with the respect of the CoG. If we know precisely the position of the CoG of the quadrotor (without the moving cart) and the position of the CoG of the cart, the result position can be computed.
 
 
 \begin{figure}[h]
@@ -740,12 +739,12 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \noindent where $m=m_{quad}+m_{cart}$ is the sum of the mass of the quadrotor plus the mass of the moving cart, i.e. the total mass, $\mathbf{p}_{quad}$ is the position of the center of gravity of the quadrotor without the cart with the respect to the origin of the body frame (in general the quadrotor frame is not symmetrical) and $\mathbf{p}_{cart}$ is the position of the CoG of the cart with the respect to the body frame. Then the vectors $\mathbf{l}_i$ are just the distance between the center of the propeller $i$ and $\mathbf{p}$.
 
-\noindent Another difference in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the detailed CAD model of the entire vehicle, provided in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple piecewise model. 
+\noindent Another difference in using the rotating platform is that the moment of inertia $I_{cm}$ is not constant, but depend from the position $\gamma$ of the cart, like in figure \ref{fig:quadrotorRingSide}. This problem can be solved by using the detailed \textit{CAD model} of the entire vehicle, provided in \cite{Carlos}. From this is possible to deduce the inertia for various position, and then create a simple piecewise model. 
 
 \noindent The movement of the sensor introduces also a centrifugal force in the vehicle. In particular, if $\mathbf{p}_{cart}$ is the vector that encode the position of the cart with the respect of the body frame, the Newton's law of motion for the cart in vector form is 
 
 \begin{equation}
-	\mathbf{f}=m_{cart}\mathbf{a}=m_{cart}\frac{d^2\mathbf{p}_{cart}}{dt^2}
+	\mathbf{f}_{cart}=m_{cart}\mathbf{a}_{cart}=m_{cart}\frac{d^2\mathbf{p}_{cart}}{dt^2}
 	\label{eq:NewtonForce}
 \end{equation}
 
@@ -760,11 +759,11 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 \noindent where in this case $\boldsymbol{\omega}$ is the angular velocity of the cart with the respect to the body frame. Expanding expression \eqref{eq:centrifugalAcceleration}, noting that the chain rule applies to differentiation of cross products, that the cross product is distributive over addition, and coupling with equation \eqref{eq:NewtonForce}, we have
 
 \begin{equation}
-	\mathbf{f}=m_{cart}\frac{\partial^2\mathbf{p}_{cart}}{\partial t^2}+\underbrace{m_{cart}\frac{d\boldsymbol{\omega}}{dt}\times\mathbf{p}_{cart}}_{\text{Euler force}}+\underbrace{2m_{cart}\boldsymbol{\omega}\times\frac{\partial\mathbf{p}_{cart}}{\partial t}}_{\text{Coriolis force}}+\underbrace{m_{cart}\boldsymbol{\omega}\times\bigl(\boldsymbol{\omega}\times\mathbf{p}_{cart}\bigl)}_{\text{centrifugal force}}
+	\mathbf{f}_{cart}=m_{cart}\frac{\partial^2\mathbf{p}_{cart}}{\partial t^2}+\underbrace{m_{cart}\frac{d\boldsymbol{\omega}}{dt}\times\mathbf{p}_{cart}}_{\text{Euler force}}+\underbrace{2m_{cart}\boldsymbol{\omega}\times\frac{\partial\mathbf{p}_{cart}}{\partial t}}_{\text{Coriolis force}}+\underbrace{m_{cart}\boldsymbol{\omega}\times\bigl(\boldsymbol{\omega}\times\mathbf{p}_{cart}\bigl)}_{\text{centrifugal force}}
 	\label{eq:cartAllForces}
 \end{equation}
 
-\noindent That describe the so called Euler, Coriolis and centrifugal force of the moving platform. To add this to the main model, we just simply need to sum up the vector $\mathbf{f}$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that regard the acceleration of the body frame
+\noindent That describe the so called \textit{Euler, Coriolis and centrifugal force} of the moving platform. To add this to the main model, we just simply need to sum up the vector $\mathbf{f}_{cart}$, divide by $m_{cart}$ to the equation \eqref{eq:finalModel1}, in the first three rows of the matrix, that regard the acceleration of the body frame
 
 \begin{equation}
 	\begin{split}
@@ -791,7 +790,7 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 		+
 		\frac{1}{m_{cart}}
 		\begin{bmatrix}
-		\mathbf{f} \\
+		\mathbf{f}_{cart} \\
 		\mathbf{0}
 		\end{bmatrix}
 	\end{split}
@@ -801,25 +800,27 @@ Till now, all the model was designed for a standard quadrotor vehicle, what we w
 
 \section{Experimental setup}
 
-In this section we are going to introduce all the hardware and the software use in this project. Starting from the hardware, we used a main board develop entirely at Lule\r{a} University of Technology (LTU), the \textit{KFly}\footnote{\url{https://gitlab.com/korken89/KFly}}. 
+In this section we are going to introduce all the hardware and the software use in this project. 
+
+\noindent Starting from the hardware, we used a main board develop entirely at Lule\r{a} University of Technology (LTU), the \textit{KFly}\footnote{\url{https://gitlab.com/korken89/KFly}}. In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerful enough board able to perform all the operations needed during the flight.
 
 \begin{figure}[h] 
 	\centering
-   	\includegraphics[scale = 0.4]{./images/KFly.png}
+   	\includegraphics[scale = 0.45]{./images/KFly.png}
    	\caption{KFly board.}
    	\label{fig:KFly}
 \end{figure} 
 
-\noindent In figure \ref{fig:KFly} is reported a picture of the KFly board. It is a small ($36\times 36$ mm) but powerful enough board able to perform all the operations needed during the flight. It is also equipped with different sensors, such an accelerometer and a gyroscope sensors, a magnetometer and a pressure sensors. With the accelerometer is possible to directly measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a Inertial Measurement Unit (IMU). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and the base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
+\noindent It is also equipped with different sensors, such an \textit{accelerometer} and a \textit{gyroscope} sensors, a \textit{magnetometer} and a \textit{pressure} sensors. With the accelerometer is possible to directly measured the acceleration in the body frame, while with the gyroscope is possible to directly measured the angular velocity. These two, combined with the magnetometer form a \textit{Inertial Measurement Unit} (\textit{IMU}). It is also equipped with 8 outputs (we will used 4 of them to control the motors) and 4 expansion connectors (3 UARTs and 1 CAN port) for the programming, communication, etcetera. For the communication between the vehicle and the base station, we used te \textit{XBee Pro} modules\footnote{\url{http://www.digi.com/lp/xbee}}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = 0.55]{./images/XBee.jpg}
+	\includegraphics[scale = 0.6]{./images/XBee.jpg}
 	\caption{XBee communication modules.}
 	\label{fig:XBee}
 \end{figure}
 
-\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250 kbps. Like previously said the UAV is equipped with a IMU, but to measure directly the pose of the vehicle we need other sensors. In particular, to test the control with extremely precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the Field Robotics Lab (FROST) of LTU.
+\noindent They have a built-in antenna, capable of a transmission range of theoretically 1000 meters. Moreover they have a maximum data rate of 250 kbps. Like previously said the UAV is equipped with a IMU, but to measure directly the pose of the vehicle we need other sensors. In particular, to test the control with extremely precision, we used a motion capture system. More precisely we used a \textit{Vicon}\footnote{\url{https://www.vicon.com/}} motion capture in the Field Robotics Lab (FROST) of LTU. The system is composed by 20 different cameras, mounted in the perimeter of the lab. By applying a number of markers in the object, is possible to track its position and orientation in the space, with a precision down to the tenth of millimeter.
 
 \begin{figure}[h]
 	\centering
@@ -832,14 +833,12 @@ In this section we are going to introduce all the hardware and the software use 
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[scale = 0.047]{images/Vicon_PC.jpg}
-		\caption{Rappresentation of objects in the Vicon system.}
+		\caption{Representation of objects in the Vicon system.}
 		\label{subfig:vicon2}
 	\end{subfigure}
 	\caption{Vicon motion capture system.}
 	\label{fig:vicon}
-\end{figure}
-
-\noindent The system is composed by 20 different cameras, mounted in the perimeter of the lab. By applying a number of markers in the object, is possible to track its position and orientation in the space, with a precision down to the tenth of millimeter.
+\end{figure} 
 
 \begin{figure}[h]
 	\centering
@@ -867,6 +866,4 @@ In this section we are going to introduce all the hardware and the software use 
 	\label{fig:prometheus}
 \end{figure}
 
-\noindent In figure \ref{fig:prometheus} there are some picture of the first prototype of the Prometheus mapping drone. In particular, is possible to see all the electronics and the Vicon markers on top and on the side of the Lidar sensor.
-
-\noindent Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. Instead, for the real application, we choose to use \textit{ROS}, the Robotic Operating System\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowdays in robotic projects and there is a big worldwide community. However, the main problem was that the KFly couldn't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problems with the bandwidth of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz (100 Hz is quite standard in quadrotor application). A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth, moreover it can run ROS. 
+\noindent In figure \ref{fig:prometheus} there are some picture of the first prototype of the Prometheus mapping drone. In particular, is possible to see all the electronics and the Vicon markers on top and on the side of the Lidar sensor. These where useful during the test phase of the 3D mapping algorithm, in the third part of this project. Moving to the software part, all the simulations are made in a \textit{MATLAB} and \textit{SIMULINK} environment. This provided a fast and easy implementation of the control and system identification algorithms. Moreover, MATLAB is very useful for data analyzing after each flight. Instead, for the real application, we choose to use \textit{ROS}, the \textit{Robotic Operating System}\footnote{\url{http://www.ros.org/}} and then to rewrote all the code in \textit{C++}. ROS is an open source project that is a collection of software frameworks for robot software development, providing operating system-like functionality on a heterogeneous computer cluster. ROS provides standard operating system services such as hardware abstraction, low-level device control, implementation of commonly used functionality, message-passing between processes, and package management. It is very popular nowadays in robotic projects and there is a big worldwide community. However, due to its simplicity, the main problem was that the KFly couldn't run ROS onboard. We solve this problem by using a laptop with ROS install to run the control system, then send the control inputs to the KFly via XBee. By using this strategy we encounter problems with the bandwidth of the XBee, reaching its saturation limit, if we run the control algorithm at more than 50 Hertz, while the desire control rate was about 100 Hertz. A possible solution could be to use another low cost board, such as the \textit{Odroid c2}\footnote{\url{http://www.hardkernel.com/main/main.php}}, that can use high speed wi-fi link for the communication, and then practically unlimited bandwidth. Another important feature of the Odroid, is that it can run ROS onboard. This is extremely important in real world scenario, because run the control algorithm in remote could be very dangerous in case of signal lost, radio interference or other problems, and it can end up in a catastrophic failure of the entire system. In conclusion, ROS and the boards where powerful enough to run al the software in the loop, without any slowdown due to the workload of the control algorithm. This was achieved by using simple but efficacy solutions, as we will se in the next sections.   
