@@ -508,6 +508,8 @@ The last step of the controller is to add the compensation for the movement of t
  	\label{fig:MPC1}		
 \end{figure}
 
-\noindent In figure \ref{fig:MPC1} we reported an example of trajectory tracking for the orientation and with an MPC controller. This simple example show that in simulation the MPC controller works also with all the simplification and linearization of the system. More important, there are no evidence of delay in the response of the system. This is an expected result, since the main problem of the previous controller was that it doesn't take into accunt of the model of the motors, while MPC does.
+\noindent In figure \ref{fig:MPC1} we reported an example of trajectory tracking for the orientation and with an MPC controller. This simple example show that in simulation the MPC controller works also with all the simplification and linearization of the system. More important, there are no evidence of delay in the response of the system. This is an expected result, since the main problem of the previous controller was that it doesn't take into account of the model of the motors, while MPC does.
+
+\noindent For what concern the position control, instead, apart from the $z$ axis, the control in $x$ and $y$ doesn't work as well as the previous attitude control. This is probably due to the aggressive simplification made during the linearization of the system in equation \eqref{eq:MPCdyn5}. Further more studies are needed to solve this problem.     
 
 
