@@ -4,3 +4,4 @@ main.brf
 main.out
 *.toc
 main.synctex.gz
+*.gz

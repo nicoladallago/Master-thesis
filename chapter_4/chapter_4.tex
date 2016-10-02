@@ -63,7 +63,7 @@ specified exactly then they can be represented with the inequality constraint $A
 	\frac{d}{dt}x(t) &= \frac{d}{dt}x(\tau) \\
 	&= \frac{d}{d\tau}\frac{d\tau}{dt}x(\tau) \\
 	&= \frac{1}{t_j-t_{j-1}}\frac{d}{d\tau}x(\tau) \\
-	&... \\
+	&\hspace{7pt} \vdots \\
 	\frac{d^k}{dt^k}x(t) &= \frac{1}{(t_j-t_{j-1})^k}\frac{d^k}{d\tau^k}x(\tau)
 \end{align*}
 
@@ -80,7 +80,7 @@ To make the derivation simpler, is better to start the optimization problem with
 	\label{eq:oneSetpoint}
 \end{alignat}
 
-\noindent We can instead look for the non-dimensionalized trajectory $x(\tau)=c_n\tau^n+c_{n-1}\tau^{n-1}+\dots+c_1\tau+c_0$ where $\tau=\frac{t-t_0}{t_1-t_0}$. Note that this makes $\tau$ range from $0$ to $1$. Let $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$.We can write the cost function $J$ in term of the non-dimensionalized trajectory $x(\tau)$:
+\noindent We can instead look for the non-dimensionalized trajectory $x(\tau)=c_n\tau^n+c_{n-1}\tau^{n-1}+\dots+c_1\tau+c_0$ where $\tau=\frac{t-t_0}{t_1-t_0}$. Note that this makes $\tau$ range from $0$ to $1$. Let $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$. We can write the cost function $J$ in term of the non-dimensionalized trajectory $x(\tau)$:
 
 \begin{align}
 	J &= \int_{t_0}^{t_1}\Bigg|\Bigg|\frac{d^kx(t)}{dt}\Bigg|\Bigg|^2dt \\
@@ -108,7 +108,7 @@ To make the derivation simpler, is better to start the optimization problem with
 	& i=0,\dots,n,\qquad j=0,\dots,n \nonumber
 \end{align}
 
-\noindent However, $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$. Reflecting $H'$ from equation \eqref{eq:Htranspose} horizontally and vertically will give the desire $H$ for the form of $\mathbf{c}$ we desire. The function to minimize is then $\Bigg(\frac{1}{(t_1-t_0)^{2k}}H_{(0,1)}\Bigg)$.
+\noindent However, $\mathbf{c}=\begin{bmatrix}c_n & c_{n-1} & \dots & c_1 & c_0\end{bmatrix}^T$. Reflecting $H'$ from equation \eqref{eq:Htranspose} horizontally and vertically will give the desire $H$ for the form of $\mathbf{c}$ we desire. The function to minimize is then $\mathbf{c}^T\Bigg(\frac{1}{(t_1-t_0)^{2k}}H_{(0,1)}\Bigg)\mathbf{c}$.
 
 \noindent To find $A$
 

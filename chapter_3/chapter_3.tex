@@ -16,8 +16,8 @@ Starting from the model deducted in section \ref{quadModel}
 		\end{bmatrix}
 		&=
 		\begin{bmatrix}
-			\dots & \frac{A_{F,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
-			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times A_{F,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)B_{F,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
+			\dots & \frac{a_{f,i}\Omega_{max,i}^2\mathbf{n}_i}{m} & \dots \\
+			\dots & I_{cm}^{-1}\Big[ (\mathbf{l}_i+\boldsymbol{\Delta l})\times a_{f,i}\Omega^2_{max,i}\mathbf{n}_i-\sgn(\Omega_i)b_{f,i}\Omega_{max,i}^2\mathbf{n}_i\Big] & \dots
 		\end{bmatrix}
 		\begin{bmatrix}
 			\vdots \\
@@ -42,13 +42,13 @@ Starting from the model deducted in section \ref{quadModel}
 \noindent we need to do some simplification. In particular, by assuming that all engines have the same parameters, is possible to rewrite these parameters as follows
 
 \begin{align}
-	A_{F,i}\Omega_{max,i}^2 &\approx A_F \\
-	B_{F,i}\Omega_{max,i}^2 &\approx B_F \\
+	a_{f,i}\Omega_{max,i}^2 &\approx a_f \\
+	b_{f,i}\Omega_{max,i}^2 &\approx b_f \\
 	\tau_i &\approx \tau
 	\label{eq:simplification}
 \end{align}
 
-\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily seen simply by simulating the mathematical model with and without the term, the differences are very small. 
+\noindent Moreover the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}_B\bigl)$ can be neglected \cite{modelIdentification}. This can be easily seen simply by simulating the mathematical model with and without the term, the differences are very small, as depicted in figure \ref{fig:comparisonOmega}. 
 
 \begin{figure}[h]
 	\centering
@@ -57,7 +57,9 @@ Starting from the model deducted in section \ref{quadModel}
 	\label{fig:comparisonOmega}
 \end{figure}
 
-\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orientation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficiently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required. Another non linearity is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the square of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics. In conclusion, the approximate linear model is
+\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orientation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficiently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required. 
+
+\noindent Another non linearity is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the square of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics. In conclusion, the approximate linear model is
 
 \begin{gather}
 	\begin{bmatrix}
@@ -66,8 +68,8 @@ Starting from the model deducted in section \ref{quadModel}
 	\end{bmatrix}
 	=
 	\begin{bmatrix}
-		\dots & \frac{A_F \mathbf{e}_3}{m} & \dots \\
-		\dots & I_{cm}^{-1}\Big[(\mathbf{l}_i+\boldsymbol{\Delta l})\times A_F\mathbf{e}_3-\sgn(\Omega_i)B_F\mathbf{e}_3\Big] & \dots 
+		\dots & \frac{a_f \mathbf{e}_3}{m} & \dots \\
+		\dots & I_{cm}^{-1}\Big[(\mathbf{l}_i+\boldsymbol{\Delta l})\times a_f\mathbf{e}_3-\sgn(\Omega_i)b_f\mathbf{e}_3\Big] & \dots 
 	\end{bmatrix}
 	\begin{bmatrix}
 		\vdots \\
@@ -90,7 +92,7 @@ From the simplified model of equations \eqref{eq:linearModel1} and \eqref{eq:lin
 \begin{equation}
 	\boldsymbol{\beta} =
 	\begin{bmatrix}
-		\frac{A_F}{m} & \frac{A_F}{I_{xx}} & \frac{A_F}{I_{yy}} & \frac{A_F}{I_{zz}} & \frac{B_F}{I_{zz}} & \Delta l_x & \Delta l_y 
+		\frac{a_f}{m} & \frac{a_f}{I_{xx}} & \frac{a_f}{I_{yy}} & \frac{a_f}{I_{zz}} & \frac{b_f}{I_{zz}} & \Delta l_x & \Delta l_y 
 	\end{bmatrix}^T, \hspace{10pt} \tau
 	\label{eq:parameters}
 \end{equation}
@@ -111,7 +113,7 @@ From the simplified model of equations \eqref{eq:linearModel1} and \eqref{eq:lin
 	\label{eq:linearCompact}
 \end{equation}
 
-\noindent Under the assumption of the sampling rate to be much faster than the dynamics \footnote{in this case, thanks to the performance of the onboard electronics, the sampling rate is equal to $222$ Herz.}, equation \eqref{eq:linearModel2} is implemented as discrete-time first order system, and the parameters are modeled as integrated white noise, which gives the following prediction equations
+\noindent Under the assumption of the sampling rate to be much faster than the dynamics\footnote{In this case, thanks to the performance of the onboard electronics, the sampling rate is equal to $222$ Hertz.}, equation \eqref{eq:linearModel2} is implemented as discrete-time first order system, and the parameters are modeled as integrated white noise, which gives the following prediction equations
 
 \begin{align}
 	\boldsymbol{\omega}_{k} &= \boldsymbol{\omega}_{k-1}+\Delta t A(\boldsymbol{\beta}_{k-1})\mathbf{u}_{k-1} \\
@@ -144,11 +146,11 @@ A Kalman filter approach is chose for this project since it has good result in t
 \noindent The initial values of $\boldsymbol{\omega}_B$ and $\mathbf{u}_{in}$ are know, so the state is initialized with these. Moreover, due to the parameters $\boldsymbol{\beta}$ and $\tau$ having a constraint to being positive, they are implemented as $\exp(\boldsymbol{\beta})$ and $\exp(\tau)$ to force positive results from the estimation, while the $\boldsymbol{\Delta l}$ are constrained to be within the propellers (the length of the arms is set to be equal to one, since the correct length is not necessary for the identification) which is implemented using a zero centered logistic function
 
 \begin{equation}
-	\frac{2}{1-\exp(-\Delta l)} -1
+	\frac{2}{1-\exp(-\boldsymbol{\Delta l})} -1
 	\label{eq:logisticFunction}
 \end{equation}
 
-\noindent With the augmented state is possible to write a new state space system in discrete time with matrix $A_{est}$ \footnote{For notation, $\mathbf{0}_{a\times b}$ is equal to a zero matrix with $a$ rows and $b$ columns,$\mathbf{1}_{a\times b}$ is equal to a ones matrix with $a$ rows and $b$ columns,$I_a$ is the identity matrix of dimension $a\times a$, and the vector $\mathbf{x}_{est,a:b}$ are the entries from $a$ to $b$ of the augmented state (is implicit that is consider at time $k$)}
+\noindent With the augmented state is possible to write a new state space system in discrete time with matrix $A_{est}$\footnote{For notation, $\mathbf{0}_{a\times b}$ is equal to a zero matrix with $a$ rows and $b$ columns,$\mathbf{1}_{a\times b}$ is equal to a ones matrix with $a$ rows and $b$ columns,$I_a$ is the identity matrix of dimension $a\times a$, and the vector $\mathbf{x}_{est,a:b}$ are the entries from $a$ to $b$ of the augmented state (is implicit that is consider at time $k$)}
 
 \begin{align*}
 	A_{\boldsymbol{\omega}, \mathbf{u}_{in}} &= 
@@ -258,6 +260,6 @@ A Kalman filter approach is chose for this project since it has good result in t
 	\label{fig:betaTauKalman}
 \end{figure}
 
-\noindent As is possible to see in figure \ref{fig:omegaKalman}, the estimation of the angular rate works pretty well from the beginning for all the three axis. In figure \ref{fig:betaTauKalman} are instead plotted the estimations of all parameters $\boldsymbol{\beta}$ and $\tau$. The identification was performed with the cart fixed in one position. Is possible to see that for almost all parameters there is convergence after about 15 seconds, while for the parameter $\frac{B_F}{I_{zz}}$ is necessary more time. This can be explain by observing the angular rate, in particular note that $\omega_z$ is almost zero for about the first 10 seconds, due to the particular trajectory of the vehicle. Of course, is not possible to perform system identification without excitation of the system and thats why the parameters depending on $\omega_z$ require more time to converge.
+\noindent As is possible to see in figure \ref{fig:omegaKalman}, the estimation of the angular rate works pretty well from the beginning for all the three axis. In figure \ref{fig:betaTauKalman} are instead plotted the estimations of all parameters $\boldsymbol{\beta}$ and $\tau$. The identification was performed with the cart fixed in one position. Is possible to see that for almost all parameters there is convergence after about $15$ seconds, while for the parameter $\frac{b_f}{I_{zz}}$ is necessary more time. This can be explain by observing the angular rate, in particular note that $\omega_z$ is almost zero for about the first 10 seconds, due to the particular trajectory of the vehicle. Of course, is not possible to perform system identification without excitation of the system and thats why the parameters depending on $\omega_z$ require more time to converge.
 
 \noindent In conclusion the algorithm has been shown to work quite well, and for this application is not then necessary to use more sophisticated techniques.

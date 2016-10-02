@@ -15,7 +15,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	O(3) = \{A \in GL(3) : A^TA=I \} \subseteq GL(3)
 \end{equation*}
 
-\noindent Is easy to prove that if $A$ belongs to $O(3)$, then $\det[A]=\pm 1$.
+\noindent It is easy to prove that if $A$ belongs to $O(3)$, then $\det[A]=\pm 1$.
 
 \noindent The \textit{special orthogonal group} of order $3$, $SO(3)$, is define as
 
@@ -74,7 +74,9 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\boldsymbol{\tau} &= -k_R\mathbf{e}_R - k_{\omega}\boldsymbol{e}_{\omega} + \boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega} \label{eq:LeeController2} 
 \end{align}
 
-\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentially stable, if the initial conditions are sufficiently small\footnote{see the paper \cite{LeeController} for more details and the proof}. Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for computing the linear acceleration in the body frame we just need to do 
+\noindent where $k_R$ and $k_{\omega}$ are again positive control gains. As is possible to see, this controller is very simple to implement and can be prove that the control is exponentially stable, if the initial errors are sufficiently small\footnote{see the paper \cite{LeeController} for more details and the proof}. 
+
+\noindent Of course the control law is not complete, because what we can control are the inputs to the motors and not the force and torques. So for computing the linear acceleration in the body frame we just need to do 
 
 \begin{equation}
 	\ddot{\mathbf{x}}_B = \frac{1}{m}\cdot\begin{bmatrix}0 & 0 & f\end{bmatrix}^T
@@ -97,8 +99,8 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	=
 	\underbrace{
 	\begin{bmatrix}
-		\dots   & A_F   & \dots  \\
-		\dots & \Big(\mathbf{l}_i + \boldsymbol{\Delta l}\Big)\times\begin{bmatrix}0 \\ 0 \\ A_F \end{bmatrix}+\begin{bmatrix}0 \\ 0 \\ B_F\end{bmatrix} & \dots
+		\dots   & a_f   & \dots  \\
+		\dots & \Big(\mathbf{l}_i + \boldsymbol{\Delta l}\Big)\times\begin{bmatrix}0 \\ 0 \\ a_f \end{bmatrix}+\begin{bmatrix}0 \\ 0 \\ b_f\end{bmatrix} & \dots
 	\end{bmatrix}^{-1}
 	}_{T^{-1}(\boldsymbol{\beta})}	
 	\cdot
@@ -109,7 +111,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\label{eq:mixingMatrix}
 \end{equation}
 
-\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the inverse of the estimated parameters, except that is encoded only one row for the force, since the propellers are parallel to the frame of the quadrotor. However the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to estimate directly $A_F$ and $B_F$. A naive approach is simply to use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. However, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
+\noindent where the matrix $T^{-1}(\boldsymbol{\beta})$ is the inverse of the estimated parameters, except that is encoded only one row for the force, since the propellers are parallel to the frame of the quadrotor. However the problem is in the computation of the inverse of the inertia matrix, since the estimated parameters are coupled with the component of the inertia and is not possible to estimate directly $a_f$ and $b_f$. A naive approach is simply to use the inertia computed with the CAD model. Of course, this approach will add errors, since the CAD doesn't provide a perfect data. However, this inverse will be multiply with $k_R$ and $k_{\omega}$ and then just a simple retuning of the parameters will be necessary. Instead, the term $I_{cm}^{-1}\bigl(\boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}\bigl)$ as said in section \ref{linearization} is very small and will not introduce significant errors.
 
 
 \subsection{Adding the rotating platform}
@@ -180,26 +182,26 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 
 \noindent This delay is very clear especially in the $y$ position, since the moving part is in the $y$ and $z$ axis. A solution for this problem could be to estimate the position of the cart in advance with an accurate model of this. Others problems are some bias errors in the steady state, however this problems come from the simulated bias of the sensors. These errors are in conclusion in the order of the millimeter, and no solutions are provide in this thesis, but is a direction for a future work in this project.
 
-\begin{figure}[h]
+\noindent In figure \ref{fig:trajectoryTrackingLee} is instead reported an example of trajectory tracking with a smooth generated trajectory.
+
+\begin{figure}[h!]
 	\centering
 	\hspace{11pt}\includestandalone[]{./chapter_5/plots/simulation3_z}
- 	\hspace{-5pt}\includestandalone[]{./chapter_5/plots/simulation3_xy}
- 	\caption{Simulation of trajectory tracking.}
- 	\label{fig:trajectoryTrackingLee}		
+	\hspace{-5pt}\includestandalone[]{./chapter_5/plots/simulation3_xy}
+	\caption{Simulation of trajectory tracking.}
+	\label{fig:trajectoryTrackingLee}		
 \end{figure}
-
-\noindent In figure \ref{fig:trajectoryTrackingLee} is instead reported an example of trajectory tracking with a smooth generated trajectory.
 
 
 \section{Model predictive control}
 
-\textit{Model predictive control} (MPC) is an advanced method of process control that has been in use in the process industries in chemical plants and oil refineries since the 1980s. In recent years it has also been used in power system balancing models. Model predictive controllers rely on dynamic models of the process, most often linear empirical models obtained by system identification. The main advantage of MPC is the fact that it allows the current timeslot to be optimized, while keeping future timeslots in account. This is achieved by optimizing a finite time-horizon, but only implementing the current timeslot. MPC has the ability to anticipate future events and can take control actions accordingly. PID and LQR controllers do not have this predictive ability. MPC is nearly universally implemented as a digital control, although there is research into achieving faster response times with specially designed analog circuitry\footnote{\url{https://en.wikipedia.org/wiki/Model_predictive_control}}.
+\textit{Model predictive control} (MPC) is an advanced method of process control that has been in use in the process industries in chemical plants and oil refineries since the 1980s. In recent years it has also been used in power system balancing models. Model predictive controllers rely on dynamic models of the process, most often linear empirical models obtained by system identification. The main advantage of MPC is the fact that it allows the current timeslot to be optimized, while keeping future timeslots in account. This is achieved by optimizing a finite time-horizon, but only implementing the current timeslot. MPC has the ability to anticipate future events and can take control actions accordingly. PID, LQR and the previously studied controllers do not have this predictive ability. MPC is nearly universally implemented as a digital control, although there is research into achieving faster response times with specially designed analog circuitry\footnote{\url{https://en.wikipedia.org/wiki/Model_predictive_control}}.
 
 \noindent MPC is based on iterative, finite-horizon optimization of a model. At time $t$ the current plant state is sampled and a cost minimizing control strategy is computed (via a numerical minimization algorithm) for a relatively short time horizon in the future. Model Predictive Control is a multivariable control algorithm that uses:
 
 \begin{itemize}
-	\item an internal dynamic model of the process
-	\item a history of past control moves and
+	\item an internal dynamic model of the process,
+	\item a history of past control moves,
 	\item an optimization cost function $J$ over the receding prediction horizon,
 \end{itemize}
 
@@ -215,7 +217,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	\mathbf{x}(t) \in X, \mathbf{u}(t) \in U, \forall t \ge 0
 \end{equation}  
 
-\noindent where the sets $X \subseteq \rm I\!R^n$ and $U \subseteq \rm I\!R^m$ are polyhedra \cite{MPC}.MPC approaches such a constrained regulation problem in the following way. Assume that a full measurement or estimate of the state $\mathbf{x}(t)$ is available at the current time $t$. Then the finite time optimal control problem
+\noindent where the sets $X \subseteq \rm I\!R^n$ and $U \subseteq \rm I\!R^m$ are polyhedra \cite{MPC}. MPC approaches such a constrained regulation problem in the following way. Assume that a full measurement or estimate of the state $\mathbf{x}(t)$ is available at the current time $t$. Then the finite time optimal control problem
 
 \begin{align}
 	&\min_{U_{t\to t+N|t}} &&J_t\big(\mathbf{x}(t), U_{t\to t+N|t}\big)=\sum_{i=1}^N||\mathbf{r}_i-\mathbf{x}_i||^2_{W_x} + \sum_{i=1}^N||\boldsymbol{\Delta}\mathbf{u}||^2_{W_u} \label{eq:MPC} \\
@@ -224,7 +226,7 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 	& &&\mathbf{x}_{t|t}=\mathbf{x}(t) \nonumber
 \end{align}
 
-\noindent where $||\cdot||^2_{W}$ is the square weighted norm, with weight matrix $W$. Now MPC just solve the optimization problem \eqref{eq:MPC} and obtain the corresponding input signal. The prediction of the state will be obtain with a standard Kalman filter\footnote{For further more details, see \cite{MPC}}. In conclusion, the main advantages of MPC for our applications are:
+\noindent where $||\cdot||^2_{W}$ is the square weighted norm, with weight matrix $W$, and $\boldsymbol{\Delta}\mathbf{u}$ is the output rate. Now MPC just solve the optimization problem \eqref{eq:MPC} and obtain the corresponding input signal. The prediction of the state will be obtain with a standard Kalman filter\footnote{For further more details, see \cite{MPC}}. In conclusion, the main advantages of MPC for our applications are:
 
 \begin{itemize}
 	\item take into account of all the system, include the motors,
@@ -501,15 +503,14 @@ The last step of the controller is to add the compensation for the movement of t
 
 \subsection{Simulation results}
 
+\noindent In figure \ref{fig:MPC1} we reported an example of trajectory tracking for the orientation with an MPC controller. This simple example show that in simulation the MPC controller works also with all the simplification and linearization of the system. More important, there are no evidence of delay in the response of the system. This is an expected result, since the main problem of the previous controller was that it doesn't take into account of the model of the motors, while MPC does. Moreover, the MPC has been shown to work without an heavy workload in the CPU, and then an onboard implementation is feasible. 
+
+\noindent For what concern the position control, instead, apart from the $z$ axis, the control in $x$ and $y$ doesn't work as well as the previous attitude control. This is probably due to the aggressive simplification made during the linearization of the system in equation \eqref{eq:MPCdyn5}. Further more studies are needed to solve this problem. A possible solution for this problem could be to use a switching MPC also for the position or couple MPC with another controller. In particular, we tried to couple MPC with the previous non-linear controller in $SO(3)$. This solution is actually working but not as good as expected. In fact, if fe use only the non-linear controller, without MPC, we can obtain better results. 
+
 \begin{figure}[h]
 	\centering
 	\includestandalone[]{./chapter_5/plots/MPC_1}
- 	\caption{Simulation of MPC control for attitude tracking.}
- 	\label{fig:MPC1}		
+	\caption{Simulation of MPC control for attitude tracking.}
+	\label{fig:MPC1}		
 \end{figure}
-
-\noindent In figure \ref{fig:MPC1} we reported an example of trajectory tracking for the orientation and with an MPC controller. This simple example show that in simulation the MPC controller works also with all the simplification and linearization of the system. More important, there are no evidence of delay in the response of the system. This is an expected result, since the main problem of the previous controller was that it doesn't take into account of the model of the motors, while MPC does.
-
-\noindent For what concern the position control, instead, apart from the $z$ axis, the control in $x$ and $y$ doesn't work as well as the previous attitude control. This is probably due to the aggressive simplification made during the linearization of the system in equation \eqref{eq:MPCdyn5}. Further more studies are needed to solve this problem.     
-
 
