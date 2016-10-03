@@ -1,0 +1,74 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tikz-3dplot}
+\pgfplotsset{compat = 1.9}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+
+\begin{document}
+	\tdplotsetmaincoords{60}{-135} % 60 -135
+					
+	\def \semiaxis  {0.8}			    	% from center to propeller (diag)
+	\def \centers {\semiaxis}		        % x and y of centers
+	\def \body {\semiaxis / 5}				% half diagonal of body
+	\def \height {0.05}						% half height of body
+	\def \propeller {0.3}					% radius of propeller
+	\def \innerpropeller {0.05}				% radius inner circle propeller
+	\def \heightpropeller {0.05}			% height propeller plane
+					
+	\begin{tikzpicture}[scale=4,tdplot_main_coords]
+					
+		% axis
+		\draw[line width=3pt] (-\centers, 0, 0) -- (\centers, 0, 0);	
+		\draw[line width=3pt] (0, \centers, 0) -- (0, -\centers, 0);
+					
+		% propellers
+		\tdplotdrawarc[thick, fill=gray] {(0, \centers, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(\centers, 0, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(0, -\centers, \heightpropeller)}{\propeller}{0}{360}{}{}
+		\tdplotdrawarc[thick, fill=gray] {(-\centers, 0, \heightpropeller)}{\propeller}{0}{360}{}{}
+					
+		% center propellers
+		\tdplotdrawarc[fill] {(0, \centers, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(\centers, 0, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(0, -\centers, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+		\tdplotdrawarc[fill] {(-\centers, 0, \heightpropeller)}{\innerpropeller}{0}{360}{}{}
+					
+		% body
+		\fill (\body,\body,\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- cycle;
+		\fill (\body,\body,-\height) -- (\body,-\body,-\height) -- (-\body,-\body,-\height) -- (-\body,\body,-\height) -- cycle; % down
+		\fill (-\body,-\body,-\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % back
+		\fill (\body,\body,-\height) -- (\body,\body,\height) -- (\body,-\body,\height) -- (\body,-\body,-\height) -- cycle; % front
+		\fill (\body,-\body,-\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,-\body,-\height) -- cycle; % left
+		\fill (\body,\body,-\height) -- (\body,\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % right
+					
+		% Coordinate frame
+		\coordinate (O) at (0,0,0) node[red, anchor=east]{$O_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,-1.6,0) node[anchor=south west]{$x_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (1.6,0,0) node[anchor=east]{$y_B$};
+		\draw[ultra thick,->,red] (0,0,0) -- (0,0,1.4) node[anchor=south]{$z_B$};
+					
+		% Rotors arrows
+		\draw [->, ultra thick] (\centers+0.2, 0, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_4$};
+		\draw [->, ultra thick] (-\centers+0.2, 0, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_2$};
+		\draw [<-, ultra thick] (0.2, \centers, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_3$};
+		\draw [<-, ultra thick] (0.2, -\centers, \heightpropeller) arc (0:300:0.2) node[anchor=south west]{$\Omega_1$};
+					
+		% Force arrows
+		\draw[ultra thick,->,blue] (0, \centers, \heightpropeller) -- (0, \centers, \heightpropeller+0.4) node[anchor=east]{$f_3$};
+		\draw[ultra thick,->,blue] (\centers, 0, \heightpropeller) -- (\centers, 0, \heightpropeller+0.4) node[anchor=east]{$f_4$};
+		\draw[ultra thick,->,blue] (0, -\centers, \heightpropeller) -- (0, -\centers, \heightpropeller+0.4) node[anchor=east]{$f_1$};
+		\draw[ultra thick,->,blue] (-\centers, 0, \heightpropeller) -- (-\centers, 0, \heightpropeller+0.4) node[anchor=east]{$f_2$};
+					
+		% Torque arrows
+		\draw[->, ultra thick, canvas is zy plane at x=\centers+0.6, orange] (0.15, 0, 0) arc (0:360:0.15) node[anchor=south east]{$\tau_y$};
+		\draw[->, ultra thick, canvas is zx plane at y=-\centers-0.6, orange] (0.15, 0, 0) arc (0:360:0.15) node[anchor=south east]{$\tau_x$};
+		\draw[->, ultra thick, orange] (0.15, 0, 0.6) arc (0:360:0.15) node[anchor=south east]{$\tau_z$};
+	
+	\end{tikzpicture}
+\end{document}

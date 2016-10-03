@@ -440,14 +440,14 @@ We consider first a standard quadrotor, without a rotating platform, like in fig
 \noindent where $a_{f,i} \in \rm I\!R_+$ are the thrust constants of the motor-propeller combination, $\Omega_{max, i} \in \rm I\!R_+$ are the maximum rotational speed of the motors and $u_i(t)$ are the motors' signals. What is missing in equation \eqref{eq:motorThrust} is the model of the DC motors and in particular, a map between the input signal $u_i(t)$ and the control signal $u_{in,i}(t)$. To keep the model simple but still accurate\footnote{\url{http://pi19404.github.io/pyVision/2015/04/10/25/}}, the motor has been modeled like a delay, like in equation \eqref{eq:motorDelay}.
 
 \begin{equation}
-	u_i(t) \approx \frac{1}{\tau_i s+1}u_{in.i}(t)
+	u_i(t) \approx \frac{1}{\tau_i s+1}u_{in,i}(t)
 	\label{eq:motorDelay}
 \end{equation}
 
 \noindent This approach is very common \cite{motor}, since all the parameters of a motor are not provide from datasheet, especially from cheap motors that is possible to find quite often in a commercial quadrotor. Furthermore, to represent the direction of the thrust from a motor it should be considered that 
 
 \begin{align}
-	\mathbf{f}_i(t) &= a_{f,i} \Omega_{max,i}^2u_i(t)\mathbf{n}_i \label{eq:propellerDirection1} \\
+	\mathbf{f}_i(t) &= a_{f,i} \Omega_{max,i}^2u_i(t)^2\mathbf{n}_i \label{eq:propellerDirection1} \\
 	\mathbf{n}_i &= R_i \cdot 
 	\begin{bmatrix} 
 		0 & 0 & 1 

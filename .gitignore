@@ -5,3 +5,5 @@ main.out
 *.toc
 main.synctex.gz
 *.gz
+*.nav
+beamer/main.snm
