@@ -1,0 +1,47 @@
+\documentclass[11pt]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+
+	\begin{tikzpicture}
+	\coordinate (origin)  at (0, 0);
+	\coordinate (mpc2)    at (8, 0);
+	\coordinate (dots)    at (9.1, 2);
+	\coordinate (mpc1)    at (8, 3);
+	\coordinate (switch)  at (4, 1.5);
+	\coordinate (dynamic) at (5.5, 5.5);
+	\coordinate (traj)    at (13, 1.25);
+	
+	\node[draw, minimum width=2.5cm, minimum height=1.5cm, anchor=south west, align=center] (MPC1) at (mpc1) {MPC $1$};
+	\node[anchor=south west, align=center] (DOTS) at (dots) {$\vdots$};
+	\node[draw, minimum width=2.5cm, minimum height=1.5cm, anchor=south west, align=center] (MPC2) at (mpc2) {MPC $n$};
+	\node[draw, minimum width=1.5cm, minimum height=1.5cm, anchor=south west, align=center] (SWI) at (switch) {Switch};
+	\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic};
+	\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (TRA) at (traj) {Trajectory\\generator};
+	
+	\draw[->] ($(DYN.0)$) -- node[above]{$\mathbf{y}$} ($(DYN.0)+(5,0)$);
+	\draw[->] ($(DYN.0)+(3.5,0)$) |- ($(MPC1.0)+(0,0.3)$);
+	\draw[dashed] ($(DYN.0)+(3.5,-2.5)$) -- ($(DYN.0)+(3.5,-5.5)$); 
+	\draw[->] ($(DYN.0)+(3.5,-5.5)$) |- ($(MPC2.0)+(0,0.3)$);
+	\draw[-] ($(TRA.180)$) -- node[above]{ref} ($(TRA.180)+(-1,0)$);
+	\draw[->] ($(TRA.180)+(-1,0)$) |- ($(MPC1.0)+(0,-0.3)$);
+	\draw[dashed] ($(TRA.180)+(-1,0)$) -- ($(TRA.180)+(-1,-1.5)$);
+	\draw[->] ($(TRA.180)+(-1,-1.3)$) |- ($(MPC2.0)+(0,-0.3)$);
+	\draw[-] ($(MPC1.180)$) -- node[above]{$\mathbf{u}_{in,1}$} ($(MPC1.180)+(-1.25,0)$);
+	\draw[->] ($(MPC1.180)+(-1.25,0)$) |- ($(SWI.0)+(0,0.5)$); 
+	\draw[-] ($(MPC2.180)$) -- node[above]{$\mathbf{u}_{in,n}$} ($(MPC2.180)+(-1.25,0)$);
+	\draw[->] ($(MPC2.180)+(-1.25,0)$) |- ($(SWI.0)+(0,-0.5)$); 
+	\draw[-] ($(SWI.180)$) -- node[above]{$\mathbf{u}_{in}$} ($(SWI.180)+(-2,0)$);
+	\draw[->] ($(SWI.180)+(-2,0)$) |- ($(DYN.180)$);
+	\draw[->] ($(SWI.270)+(0,-1.5)$) -- node[right]{$\textcolor{blue}{\gamma}$}($(SWI.270)$);
+	\end{tikzpicture}
+	
+\end{document}

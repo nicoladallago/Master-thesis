@@ -24,6 +24,7 @@
 \DeclareMathOperator*{\asin}{asin}              % Asin
 \DeclareMathOperator*{\sgn}{sgn}                % Sgn
 \DeclareMathOperator*{\diag}{diag}              % Diag
+\DeclareMathOperator*{\subjectto}{subject\hspace{2pt}to}
 
 \setbeamercovered{dynamic}
 
@@ -248,7 +249,7 @@
 			\begin{column}{.5\textwidth}
 				\centering
 				\begin{figure}
-					\includestandalone[scale=0.8]{data/identification}
+					\includestandalone[scale=0.8]{plots/identification}
 				\end{figure}
 			\end{column}
 			\begin{column}{.5\textwidth}
@@ -265,8 +266,206 @@
 	\section{Generatore di traiettorie}
 	
 	\begin{frame}{Generatore di traiettorie}
-				
+		\centering
+		\begin{columns}
+			\begin{column}{.5\textwidth}
+				\centering
+				\begin{block}{Definizione traiettorie}
+					Polinomi di grado $n$ su $m$ waypoints.
+					\footnotesize
+					\begin{equation*}
+						\sigma_d(t)=
+						\begin{cases}
+							\sum\limits_{i=0}^{n}\sigma_{d,i,1}t^i & t_0 \le t < t_1 \\
+							\sum\limits_{i=0}^{n}\sigma_{d,i,2}t^i & t_1 \le t < t_2 \\
+							\vdots \\
+							\sum\limits_{i=0}^{n}\sigma_{d,i,m}t^i & t_{m-1} \le t < t_m \\
+						\end{cases}
+					\end{equation*}
+				\end{block}
+			\end{column}
+			\begin{column}{.5\textwidth}
+				\centering
+				Minimizzare funzione costo
+				\tiny
+				\begin{alignat}{3}
+					\min\qquad & \int_{t_0}^{t_m}\mu_{\mathbf{x}} \Bigg|\Bigg|\frac{d^{k_{\mathbf{x}}}\mathbf{x}_d}{dt^{k_{\mathbf{x}}}} \Bigg|\Bigg|^2 + \mu_{\psi}\Bigg(\frac{d^{k_{\psi}}\psi_d}{dt^{k_{\psi}}}\Bigg)^2dt \nonumber \\
+					\subjectto\qquad & \boldsymbol{\sigma}_d(t_i) = \boldsymbol{\sigma}_{d,i}, \quad i=0,\dots ,m \nonumber \\
+					& \frac{d^px_d}{dt^p}\Big|_{t=t_j}=0, \quad j=0,m; \quad p=1,\dots ,k_r \nonumber \\
+					& \frac{d^py_d}{dt^p}\Big|_{t=t_j}=0, \quad j=0,m; \quad p=1,\dots ,k_r \nonumber \\
+					& \frac{d^pz_d}{dt^p}\Big|_{t=t_j}=0, \quad j=0,m; \quad p=1,\dots ,k_r \nonumber \\
+					& \frac{d^p\psi_d}{dt^p}\Big|_{t=tj}=0, \quad j=0,m; \quad p=1,\dots ,k_{\psi} \nonumber
+				\end{alignat}
+			\end{column}
+		\end{columns} 		
+	\end{frame}
+	
+	\begin{frame}
+		\centering 
+		\begin{columns}
+			\begin{column}{.45\textwidth}
+				\centering
+				Riscrittura della funzione costo
+				\begin{alignat}{2}
+					\min\qquad & \mathbf{c}^TH\mathbf{c} + f^T\mathbf{c} \nonumber \\
+					\subjectto \qquad & A\mathbf{c} \le \mathbf{b} \nonumber \\
+					& A_{eq}\mathbf{c} = \mathbf{b}_{eq} \nonumber
+				\end{alignat}
+			\end{column}
+			\begin{column}{.1\textwidth}
+				\centering
+				\begin{equation*}
+					\Rightarrow
+				\end{equation*}
+			\end{column}
+			\begin{column}{.45\textwidth}
+				\centering
+				Problema quadratico di programmazione matematica, veloce
+			\end{column}
+		\end{columns}
+		\begin{figure}
+			\includestandalone[scale=0.5]{plots/trajectory}
+		\end{figure}
 	\end{frame}
 
-
+	
+	\section{Controllo}
+	
+	\begin{frame}{Controllo}
+		\centering
+		\begin{columns}
+			\begin{column}{.45\textwidth}
+				\setlength\abovedisplayskip{-10pt}
+				\centering
+				\begin{block}{Definizione degli errori}
+					\begin{align*}
+						\mathbf{e}_x &= \mathbf{x} - \mathbf{x}_d \\ 
+						\mathbf{e}_v &= \dot{\mathbf{x}} - \dot{\mathbf{x}}_d \\
+						\mathbf{e}_R &= \frac{1}{2}\bigl(R_c^TR-R^TR_C \bigl)^{\vee} \\
+						\mathbf{e}_{\omega} &= \boldsymbol{\omega} - R^TR_C\hat{\boldsymbol{\omega}}_c
+					\end{align*}
+					$R_C$ è tale che $R_C \in SO(3)$
+				\end{block}
+			\end{column}
+			\begin{column}{.55\textwidth}
+				\centering
+				\begin{block}{Contributo di forza}
+					\setlength\abovedisplayskip{-10pt}
+					\begin{equation*}
+						f = -(k_x\mathbf{e}_x+k_v\mathbf{e}_v-g\mathbf{e}_3-\ddot{\mathbf{x}}_d)^TR\mathbf{e}_3
+					\end{equation*}
+				\end{block}
+				\begin{block}{Contributo di momento torcente}
+					\setlength\abovedisplayskip{-10pt}
+					\begin{equation*}
+						\boldsymbol{\tau} = -k_R\mathbf{e}_R - k_{\omega}\boldsymbol{e}_{\omega} + \boldsymbol{\omega}\times I_{cm}\boldsymbol{\omega}
+					\end{equation*}
+				\end{block}
+			\end{column}
+		\end{columns}
+		\begin{figure}
+			\includestandalone[scale=0.65]{standalone/controller}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Risultati}
+		\centering
+		\begin{figure}
+			\includestandalone[scale=0.65]{plots/control}
+		\end{figure}
+	\end{frame}
+	
+	
+	\section{Conclusioni e sviluppi futuri}
+		
+	\begin{frame}{Conclusioni e sviluppi futuri}
+		\centering
+		\begin{block}{Conclusioni}
+			\begin{itemize}
+				\item System identification del modello semplificato
+				\item Generatore di traiettorie
+				\item Controllo con compensazione del movimento del sensore
+			\end{itemize}
+		\end{block}
+		\begin{block}{Sviluppi futuri}
+			\begin{itemize}
+				\item System identification per il modello non lineare
+				\item Imporre vincoli basati sulla dinamica dell'UAV nelle traiettorie
+				\item Controllo in grado di prevedere la dinamica, come MPC
+			\end{itemize}
+		\end{block}
+	\end{frame}
+	
+	
+	\section{}
+	
+	\begin{frame}
+		\centering
+		\Huge
+		\textbf{\textcolor{red}{Grazie per l'attenzione!}}
+	\end{frame}
+	
+	
+	\section{Appendici}
+	
+	\begin{frame}{Prometheus mapping drone}
+		\centering
+		\begin{columns}
+			\begin{column}{.5\textwidth}
+				\centering
+				\begin{figure}
+					\includegraphics[scale=0.17]{images/prometheus1.jpg} \\
+					\vspace{5pt}
+					\includegraphics[scale=0.17]{images/prometheus2.jpg}
+				\end{figure}
+			\end{column}
+			\begin{column}{.5\textwidth}
+				\centering
+				\begin{figure}
+					\includegraphics[scale=0.2]{images/prometheus3.jpg}
+				\end{figure}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+	\begin{frame}{Model Predictive Control (MPC)}
+		\centering
+		\begin{block}{Definizione}
+			\setlength\abovedisplayskip{-10pt}
+			\begin{align}
+				&\min_{U_{t\to t+N|t}} &&J_t=\sum_{i=1}^N||\mathbf{r}_i-\mathbf{x}_i||^2_{W_x} + \sum_{i=1}^N||\boldsymbol{\Delta}\mathbf{u}||^2_{W_u} \label{eq:MPC} \nonumber \\
+				&\subjectto &&\mathbf{x}_{t+k+1|t}=A\mathbf{x}_{t+k|t}+B\mathbf{u}_{t+k|t}, \quad & k=1,\dots,N \nonumber \\
+				& &&\mathbf{x}_{t+k|t} \in X, \quad \mathbf{u}_{t+k|t} \in U, \quad & k=1,\dots,N \nonumber \\
+				& &&\mathbf{x}_{t|t}=\mathbf{x}(t) \nonumber
+			\end{align}
+		\end{block}
+		\begin{columns}
+			\begin{column}{.5\textwidth}
+				\centering
+				Pro:
+				\begin{itemize}
+					\item Include modello motori
+					\item Vincoli negli ingressi
+				\end{itemize}
+			\end{column}
+			\begin{column}{.5\textwidth}
+				\centering
+				Contro:
+				\begin{itemize}
+					\item Linearizzazione del modello
+					\item Complessità computazionale
+				\end{itemize}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+	\begin{frame}
+		\centering Modello lineare più approsimazione piccoli angoli 
+		\begin{block}{Switching MPC}
+			\begin{figure}
+				\includestandalone[scale=0.65]{standalone/switchingMPC}
+			\end{figure}
+		\end{block}
+	\end{frame}
+	
 \end{document}

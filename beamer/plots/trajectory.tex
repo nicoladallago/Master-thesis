@@ -1,0 +1,54 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat = 1.9}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{filecontents}{corridor_right.txt}
+	X    Y
+	0.57  0
+	0.77  0.3  
+\end{filecontents}
+
+\begin{filecontents}{corridor_left.txt}
+	X    Y
+	0.43  0
+	0.63  0.3  
+\end{filecontents}
+
+\begin{document}
+	
+	\begin{tikzpicture}[scale=1]
+		%\draw[help lines,step=.2] (0,0) grid (7,4);
+		\begin{axis}[
+		grid=major,
+  		xmin=0, 
+  		xmax=1.4, 
+  		ymin=-0.05, 
+  		ymax=0.45,
+  		%title = {Trajectory generator},
+  		xlabel = {$x \hspace{10pt} [m]$},
+  		ylabel = {$y \hspace{10pt} [m]$},
+  		grid = major,              
+  		width = 14cm,
+		height = 10cm,  		
+  		%legend pos=north east,         
+  		%legend cell align=right,
+  		%legend style={at={(0.5,-0.2)},anchor=north},     
+  		%legend entries={setpoints, trivial trajectory, witout corridor constraints, with corridor constraints, corridor width}
+		]
+			\addplot[black, only marks, mark=*,ultra thick] table {../data/des_pos.dat};
+			\addplot[black, dashed, ultra thick] table {../data/des_pos.dat};
+			\addplot[blue, ultra thick] table {../data/traj.dat};
+			\addplot[red, ultra thick] table {../data/traj_corr.dat};
+			\addplot[orange, dashed, ultra thick] table {corridor_right.txt};
+			\addplot[orange, dashed, ultra thick] table {corridor_left.txt};
+		\end{axis}
+	\end{tikzpicture}
+\end{document}		
