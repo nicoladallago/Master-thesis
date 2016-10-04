@@ -1,0 +1,33 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+    	group style={
+        	group name = left,
+        	group size = 1 by 2,
+        	xlabels at = edge bottom,
+        	xticklabels at = edge bottom,
+        	ylabels at = edge left, 
+        	yticklabels at = edge left,    
+        	vertical sep = 30pt},
+      	xmin = 0,
+      	xmax = 33,         
+      	xlabel = {$t \hspace{10pt} [s]$},
+		width = 7.5cm,
+		height = 4cm] 
+			\nextgroupplot[title = {$\frac{a_f}{I_{yy}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
+			\addplot[blue, ultra thick] table {../data/beta_3.dat};
+			\nextgroupplot[title = {$\Delta l_x \hspace{10pt} [m]$}, grid=major]
+			\addplot[blue, ultra thick] table {../data/beta_6.dat};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}

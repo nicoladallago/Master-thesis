@@ -197,7 +197,75 @@
 	\section{System identification}
 	
 	\begin{frame}{System identification}
-		
+		\centering
+		\begin{columns}
+			\begin{column}{.4\textwidth}
+				\centering
+				\begin{block}{Semplificazioni}
+					\setlength\abovedisplayskip{-10pt}
+					\begin{align*}
+						a_{f,i}\Omega_{max,i}^2 &\approx a_f \\
+						b_{f,i}\Omega_{max,i}^2 &\approx b_f \\
+						\tau_i &\approx \tau
+					\end{align*}
+				\end{block}
+			\end{column}
+			\begin{column}{.6\textwidth}
+				\centering
+				\begin{block}{Linearizzazione}
+					\begin{itemize}
+						\item $I_{cm}^{-1}\bigl(\boldsymbol{\omega}_B \times I_{cm} \boldsymbol{\omega}_B \bigl) \approx 0$
+						\item muovere il quadrato degli ingressi al modello del motore
+					\end{itemize}
+				\end{block}
+			\end{column}
+		\end{columns}
+		\centering
+		Definisco nuovo stato aumentato
+		\tiny
+		\begin{equation*}
+			\mathbf{x}_{est}=
+			\begin{bmatrix}
+				\boldsymbol{\omega}_B & \mathbf{u}_{in} & \boldsymbol{\beta} & \tau
+			\end{bmatrix}^T
+			\in \rm I\!R^{15}, \quad \boldsymbol{\beta}=
+			\begin{bmatrix}
+				\frac{a_f}{m} & \frac{a_f}{I_{xx}} & \frac{a_f}{I_{yy}} & \frac{a_f}{I_{zz}} & \frac{b_f}{I_{zz}} & \Delta l_x & \Delta l_y 
+			\end{bmatrix}^T
+		\end{equation*}
+		\normalsize
+		\begin{gather*}
+			\Downarrow \\
+			\text{Discretizzazione} \\
+			\Downarrow \\
+			\text{Filtro di Kalman}
+		\end{gather*}
+	\end{frame}
+	
+	\begin{frame}{Risultati}
+		\centering
+		\begin{columns}
+			\begin{column}{.5\textwidth}
+				\centering
+				\begin{figure}
+					\includestandalone[scale=0.8]{data/identification}
+				\end{figure}
+			\end{column}
+			\begin{column}{.5\textwidth}
+				\centering
+				\begin{itemize}
+					\item Carrello non in movimento
+					\item Identificazione dei parametri anche con condizioni iniziali molto sbagliate
+				\end{itemize}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+	
+	\section{Generatore di traiettorie}
+	
+	\begin{frame}{Generatore di traiettorie}
+				
 	\end{frame}
 
 
