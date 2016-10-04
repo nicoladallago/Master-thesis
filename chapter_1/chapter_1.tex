@@ -4,7 +4,7 @@
 \renewcommand{\thepage}{\arabic{page}} 			% arabic enumeration
 \setcounter{page}{1}                   			% set page number 1
 
-In these last years, a growing interest has been shown in robotics. In fact, several industries (automotive, medical, manufacturing, space, etc.), require robots to replace men in dangerous, repetitive or onerous situations. A wide area of this research is dedicated to \textit{Unmanned Aerial Vehicle} (\textit{UAV}) and especially the one of having the capability of \textit{Vertical TakeOff and Landing} (\textit{VTOL}) \cite{largeQuadrotor}. This kind of vehicle can be use in a variety of different scenario, for its reasonable price, small dimensions and great sensors capability. In particular, nowadays intensive research as been accomplish in the area of environment monitoring and exploration, perform with different strategies and sensors.
+In these last years, robotics have increased its interest towards the world. In fact, several industries (automotive, medical, manufacturing, space, etc.), require robots to replace men in dangerous, repetitive or onerous situations. A wide area of this research is dedicated to \textit{Unmanned Aerial Vehicle} (\textit{UAV}) and especially the one capable of \textit{Vertical TakeOff and Landing} (\textit{VTOL}) \cite{largeQuadrotor}. This kind of vehicle can be use in a variety of different scenarios, because of its reasonable price, small dimensions and great sensors capability. In particular, nowadays intensive research has been accomplished in the area of environment monitoring and exploration, performed with different strategies and sensors.
 
 \begin{SCfigure}[\sidecaptionrelwidth][h]
 	\includegraphics[scale=0.4]{images/fukushima.jpg}
@@ -12,7 +12,7 @@ In these last years, a growing interest has been shown in robotics. In fact, sev
 	\label{fig:application}
 \end{SCfigure}  
 
-\noindent Many types of UAVs have been developed over the last years, in particular the \textit{quadrotor} type \cite{Aalborg}. The aim of this thesis is to contribute the develop of the so called \textit{Prometheus mapping drone}, a fully autonomous vertical takeoff and landing vehicle, able to perform indoor environment exploration and mapping. To do this, we were inspired from the film Prometheus, where drones are able to map an indoor cave. Of course, due to technology and budget limitations, the vehicle will not have the same performance, but will have in theory the same capabilities. As previously said, this thesis is only a part of the project, that has been divided in three main parts:
+\noindent Many types of UAVs have been developed over the last years, in particular the \textit{quadrotor} type \cite{Aalborg}. The aim of this thesis is to contribute the develop of the so called \textit{Prometheus mapping drone}, a fully autonomous vertical takeoff and landing vehicle, able to perform indoor environment exploration and mapping. To do this, we were inspired from the film Prometheus, where drones are able to map an indoor cave. Obviously, due to technology and budget limitations, the vehicle will not have the same performance, but it would have the same capabilities. As previously said, this thesis is only a part of the project, that has been divided in three main parts:
 
 \begin{itemize}
 	\item mechanical design and building of the UAV \cite{Carlos};
@@ -20,7 +20,7 @@ In these last years, a growing interest has been shown in robotics. In fact, sev
 	\item usage of the sensors, mapping and navigation algorithms.
 \end{itemize}
 
-\noindent This thesis will focus on the second point, mathematical model, system identification and control, but briefly introductions will give also in the other two points, in particular in the mechanical design, necessary for develop a mathematical model. 
+\noindent This thesis will focus on the second point, mathematical model, system identification and control. Despite this, briefly introductions of the other two points will be given, particularly in the mechanical design, necessary to develop a mathematical model. 
 
 \begin{SCfigure}[\sidecaptionrelwidth][h]
 	\includegraphics[scale=0.6]{images/prometheus_film.jpg}
@@ -36,12 +36,12 @@ In these last years, a growing interest has been shown in robotics. In fact, sev
 
 \noindent In details, this thesis is divided in different chapters.
 
-\noindent In chapter \ref{designModel} we will discuss about the mechanical design of the UAV, the sensors used and the reasons for it. From this, a mathematical model will be derived, complete with all the notation and math needed to describe the dynamic of the vehicle. Of course, reasonable simplifications will be perform on the way. Then we will describe the experimental setup, with all the hardware and software used for this project.
+\noindent In chapter \ref{designModel} we will discuss about the mechanical design of the UAV, the sensors used and the reasons behind the choice of them. From this, a mathematical model will be derived and presented, complete with all the notations and math needed to describe the dynamic of the vehicle. Of course, reasonable simplifications will be performed on the way. Then, the thesis will describe the experimental setup, with all the hardware and software used for this project.
 
-\noindent In chapter \ref{systemIdentification} we will perform the system identification of the parameters of the UAV. Before doing it, we will do simplification of the system, just to reduce the number of the parameters and especially to linearize it. The reason to linearize the system, by introducing some errors, is because we choose to use a standard Kalman filter approach to the system identification problem. With this approach we will see that all the parameters will be estimated.
+\noindent In chapter \ref{systemIdentification} the system identification of the parameters of the UAV will be presented. Before this, some simplification of the system will be shown, just to reduce the number of the parameters and especially in order to linearize it. The reason to linearize the system, by introducing some errors, is done in order to use a standard Kalman filter approach to the system identification problem. 
 
-\noindent In chapter \ref{trajectoriesGenerator} a trajectories generator algorithm will be describe. This is necessary because usually, path finding and navigation algorithms provide only waypoints and not full trajectory that smoothly connect the different waypoints. We will describe a trajectory generator that smoothly connects waypoints till the fourth derivative of the position, the so called snap. Moreover, corridor constraints will be added to the problem. A corridor constraint takes into account that the trajectory must be inside a virtual corridor between two waypoints. This because if we not impose any constraints we can end up with a trajectory that actually connects different waypoints, but maybe hits a wall. This is extremely important, since our main goal is to operate the vehicle in a indoor environment. 
+\noindent In chapter \ref{trajectoriesGenerator} a trajectories generator algorithm will be described. This is necessary because, usually, path finding and navigation algorithms provide only waypoints and not full trajectory that smoothly connect the different waypoints. The thesis will describe a trajectory generator that smoothly connects waypoints till the fourth derivative of the position, the so called snap. Moreover, corridor constraints will be added to the problem. A corridor constraint takes into account that the trajectory must be inside a virtual corridor between two waypoints. This because if we not impose any constraints we can end up with a trajectory that actually connects different waypoints, but maybe could hit a wall. This is extremely important, since our main goal is to operate the vehicle in a indoor environment. 
 
 \noindent In chapter \ref{control} we will talk about the control of the vehicle. For control we mean that the UAV must follow the desire trajectory in the space with the minimum error. This control will take into account also the particular structure of the drone. It will be derive from the mathematical model describes previously. Moreover we will compare two different strategies, that are both widely used in the control of UAV.
 
-\noindent In the end, in chapter \ref{conclusions} we will draw the conclusions of this work. Moreover, we will describe also future possible works, that start from some consideration of this thesis. 
+\noindent In the end, in chapter \ref{conclusions} we will draw the conclusions of this work. Moreover, we will describe also future possible works, that could start from some consideration of this thesis. 
