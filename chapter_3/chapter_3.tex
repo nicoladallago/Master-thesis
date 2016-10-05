@@ -1,7 +1,7 @@
 \chapter{System identification}
 \label{systemIdentification}
 
-In this chapter,is about to be addressed an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
+In this chapter, is about to be addressed an important part of this project. Since the model of the previous chapter is depending from many parameters, is necessary to identificate them, to be able to design an appropriate controller. A Kalman Filter approach will be used, based from the work \cite{modelIdentification}.
 
 \section{System simplification and linear approximation}
 \label{linearization}
@@ -57,7 +57,7 @@ Starting from the model deducted in section \ref{quadModel}
 	\label{fig:comparisonOmega}
 \end{figure}
 
-\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orientation of the circular structure, we obtain a inertia matrix almost diagonal; what makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficiently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required. 
+\noindent Another simplification, is that the inertia matrix $I_{cm}$ is a diagonal matrix, $I_{cm} = \diag(\allowbreak I_{xx}, I_{yy}, I_{zz})$. This is generally true in a standard quadrotor but is not so immediate for the vehicle of this project. However, if we align the $x$ axis with the orientation of the circular structure, we obtain a inertia matrix almost diagonal. What makes the matrix "less diagonal" is the position of the cart. However, the mass of the sensor is not sufficiently big to modify enough the matrix and this assumption is valid also here. Of course, in different applications, where the mass of the quadrotor and the mass of the sensor are more similar, a different approach is required. 
 
 \noindent Another non linearity is in the inputs, since the model require the square of these. A solution of this problem proposed in \cite{modelIdentification} is to rewrite equation \eqref{eq:finalModel2a} with the square of the control inputs. This effectively moves the squared control signal from the force and torque equations to the input. This representation keeps the static relationship but will affect the dynamics of the first order system, but is assumed that a first order system still captures the majority of the dynamics. In conclusion, the approximate linear model is
 

@@ -1,0 +1,36 @@
+\documentclass[11pt]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots} 
+\pgfplotsset{compat=1.9}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	\begin{tikzpicture}
+		\begin{groupplot}[
+		group style = {
+			group name = simulation3_xyz,
+			group size = 1 by 2,
+			%xlabels at = edge bottom,
+			%xticklabels at = edge bottom,
+			vertical sep = 50pt
+		},
+		xlabel = {$t \hspace{10pt} [s]$},
+		width = 14cm
+		]
+			\nextgroupplot[grid=major, xmin = 0, xmax = 30, ymin=-0.2, ymax=1.1, xlabel = {$t \hspace{10pt} [s]$}, ylabel = {$z \hspace{10pt} [m]$}, height = 6cm]
+			\addplot[black, only marks, mark=*,ultra thick] table {../data/simulation_3/des_pos_z.dat};
+			\addplot[blue, ultra thick] table {../data/simulation_3/z_d.dat};
+			\addplot[red, ultra thick] table {../data/simulation_3/z_c.dat};
+			
+			\nextgroupplot[grid=major, xmin=0, xmax=4.2, ymin=-0.2, ymax=1.3, xlabel = {$x \hspace{10pt} [m]$},	ylabel = {$y \hspace{10pt} [m]$}, grid = major, width = 14cm, height = 9cm, legend pos=north east, legend cell align=right, legend style={at={(0.5,-0.2)},anchor=north}, legend entries={setpoints, generated trajectory, control output}]
+			\addplot[black, only marks, mark=*,ultra thick] table {../data/simulation_3/des_pos.dat};
+			\addplot[blue, ultra thick] table {../data/simulation_3/xy_d.dat};
+			\addplot[red, ultra thick] table {../data/simulation_3/xy_c.dat};
+		\end{groupplot}
+	\end{tikzpicture}
+\end{document}

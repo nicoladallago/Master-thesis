@@ -3,27 +3,26 @@
 
 The last important step of this work, is to derive a control law, able to track the desire trajectory and to compensate for the movement of the sensor. We chose two different control strategies, that are widely used in the control of quadrotor type UAV \cite{LeeController}, \cite{MPCGeorge}.
 
-\section{Position tracking controller in \texorpdfstring{$SO(3)$}{TEXT}}
+\section{Position tracking controller in \texorpdfstring{$SE(3)$}{TEXT}}
 
-In this section, will be introduce a tracking control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressive flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group.
-
-\noindent The \textit{general linear group} of order $3$, $GL(3)$, is a algebraic group composed by all the non singular matrices $A \in \rm I\!R^{3\times 3}$ with matrix product.
-
-\noindent The \textit{orthogonal group} of order $3$, $O(3)$, is define as
+In this section, will be introduce a tracking control for the vehicle, based on the work \cite{LeeController}. We will use this control because it has been show to work well in many different applications, from precision flights, to fast and aggressive flights. In particular, starting from the model of the UAV, we will derive a position tracking control, based on $SO(3)$ group. The \textit{general linear group} of order $3$, $GL(3)$, is a algebraic group composed by all the non singular matrices $A \in \rm I\!R^{3\times 3}$ with matrix product. The \textit{orthogonal group} of order $3$, $O(3)$, is define as
 
 \begin{equation*}
 	O(3) = \{A \in GL(3) : A^TA=I \} \subseteq GL(3)
 \end{equation*}
 
-\noindent It is easy to prove that if $A$ belongs to $O(3)$, then $\det[A]=\pm 1$.
-
-\noindent The \textit{special orthogonal group} of order $3$, $SO(3)$, is define as
+\noindent It is easy to prove that if $A$ belongs to $O(3)$, then $\det[A]=\pm 1$. The \textit{special orthogonal group} of order $3$, $SO(3)$, is define as
 
 \begin{equation*}
 	SO(3) = \{A \in O(3) : \det[A] = 1\} 
 \end{equation*}
 
-\noindent The rotation matrices belong to this group, and it is because the controller will use errors based in the rotation matrices, we need to keep all the results in the group $SO(3)$.
+\noindent The rotation matrices belong to this group, and it is because the controller will use errors based in the rotation matrices, we need to keep all the results in the group $SO(3)$. Finally, the \textit{special Euclidean group} of order $3$, $SE(3)$, is just define as $R \in SO(3)$, $T \in \rm I\!R^{3}$
+
+\begin{align*}
+	A : &\rm I\!R^{3} \to \rm I\!R^{3} \\
+	    & \mathbf{x} \mapsto \mathbf{y}=R\mathbf{x} + T	
+\end{align*}
 
 \noindent To derive the control law, we first need to define the tracking errors. In particular the position and the velocity tracking errors are given by, respectively
 
@@ -160,10 +159,10 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 
 \subsection{Simulation results}
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
  	\includestandalone[]{./chapter_5/plots/simulation1}
- 	\caption{Simulation results to a step input in the desire $z$, then hovering. Without and with the cart compensation. The mass of the moving cart is one third of the real mass. The cart is moving with a constant speed of $6$ rpm, the maximum possible for the engine adopted \cite{Carlos}.}
+ 	\caption{Simulation results to a step input in the desire $z$, then hovering. Without and with the cart compensation.}
  	\label{fig:simulation1}		
 \end{figure}
 
@@ -186,8 +185,9 @@ In this section, will be introduce a tracking control for the vehicle, based on 
 
 \begin{figure}[h!]
 	\centering
-	\hspace{11pt}\includestandalone[]{./chapter_5/plots/simulation3_z}
-	\hspace{-5pt}\includestandalone[]{./chapter_5/plots/simulation3_xy}
+	%\includestandalone[]{./chapter_5/plots/simulation3_z}
+	%\includestandalone[]{./chapter_5/plots/simulation3_xy}
+	\includestandalone[]{./chapter_5/plots/simulation3_xyz}
 	\caption{Simulation of trajectory tracking.}
 	\label{fig:trajectoryTrackingLee}		
 \end{figure}
@@ -505,12 +505,12 @@ The last step of the controller is to add the compensation for the movement of t
 
 \noindent In figure \ref{fig:MPC1} we reported an example of trajectory tracking for the orientation with an MPC controller. This simple example show that in simulation the MPC controller works also with all the simplification and linearization of the system. More important, there are no evidence of delay in the response of the system. This is an expected result, since the main problem of the previous controller was that it doesn't take into account of the model of the motors, while MPC does. Moreover, the MPC has been shown to work without an heavy workload in the CPU, and then an onboard implementation is feasible. 
 
-\noindent For what concern the position control, instead, apart from the $z$ axis, the control in $x$ and $y$ doesn't work as well as the previous attitude control. This is probably due to the aggressive simplification made during the linearization of the system in equation \eqref{eq:MPCdyn5}. Further more studies are needed to solve this problem. A possible solution for this problem could be to use a switching MPC also for the position or couple MPC with another controller. In particular, we tried to couple MPC with the previous non-linear controller in $SO(3)$. This solution is actually working but not as good as expected. In fact, if fe use only the non-linear controller, without MPC, we can obtain better results. 
-
 \begin{figure}[h]
 	\centering
 	\includestandalone[]{./chapter_5/plots/MPC_1}
 	\caption{Simulation of MPC control for attitude tracking.}
 	\label{fig:MPC1}		
 \end{figure}
+
+\noindent For what concern the position control, instead, apart from the $z$ axis, the control in $x$ and $y$ doesn't work as well as the previous attitude control. This is probably due to the aggressive simplification made during the linearization of the system in equation \eqref{eq:MPCdyn5}. Further more studies are needed to solve this problem. A possible solution for this problem could be to use a switching MPC also for the position or couple MPC with another controller. In particular, we tried to couple MPC with the previous non-linear controller in $SO(3)$. This solution is actually working but not as good as expected. In fact, if fe use only the non-linear controller, without MPC, we can obtain better results. 
 
