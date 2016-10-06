@@ -99,11 +99,6 @@
 		Cinematica di Newton-Eulero
 		\begin{equation*}
 			\begin{bmatrix}
-				\mathbf{f}        \\
-				\boldsymbol{\tau}
-			\end{bmatrix}
-			=
-			\begin{bmatrix}
 				m \cdot I_{3} & \mathbf{0} \\
 				\mathbf{0}^T          & I_{cm}
 			\end{bmatrix}
@@ -115,6 +110,11 @@
 			\begin{bmatrix}
 				\mathbf{0}                                                      \\
 				\boldsymbol{\omega_B} \times I_{cm} \cdot \boldsymbol{\omega_B}
+			\end{bmatrix}
+			=
+			\begin{bmatrix}
+				\mathbf{f}        \\
+				\boldsymbol{\tau}
 			\end{bmatrix}
 		\end{equation*}
 		\begin{columns}
@@ -153,17 +153,18 @@
 			\begin{column}{.4\textwidth}
 				\centering
 				\begin{figure}
-					\includestandalone[scale=0.5]{standalone/quadrotor_cart2}
+					\includestandalone[scale=0.55]{standalone/quadrotor_cart2}
 				\end{figure}					
 			\end{column}
 			\begin{column}{.4\textwidth}
 				\centering
 				\begin{figure}
-					\includestandalone[scale=0.5]{standalone/quadrotor_cart}
+					\includestandalone[scale=0.55]{standalone/quadrotor_cart}
 				\end{figure}					
 			\end{column}
 		\end{columns}
 		\begin{block}{Dinamica complessiva}
+			\setlength\abovedisplayskip{0pt}
 			\tiny
 			\begin{equation*}
 			\begin{split}
@@ -201,7 +202,7 @@
 	\end{frame}
 
 
-	\section{System identification}
+	\section{Identificazione di sistema}
 	
 	\begin{frame}{Identificazione del sistema con filtrto di Kalman esteso}
 		\centering
@@ -249,7 +250,7 @@
 		\end{gather*}
 	\end{frame}
 	
-	\begin{frame}{Risultati}
+	\begin{frame}{Risultati sperimentali}
 		\centering
 		\begin{columns}
 			\begin{column}{.5\textwidth}
@@ -275,7 +276,7 @@
 	\begin{frame}{Generatore di traiettorie}
 		\centering 
 		\begin{columns}
-			\begin{column}{.45\textwidth}
+			\begin{column}{.4\textwidth}
 				\centering
 				Minimizzare funzione costo
 				\begin{alignat}{2}
@@ -290,9 +291,13 @@
 					\Rightarrow
 				\end{equation*}
 			\end{column}
-			\begin{column}{.45\textwidth}
+			\begin{column}{.5\textwidth}
 				\centering
-				Problema quadratico di programmazione matematica
+				\begin{itemize}
+					\item Problema quadratico di programmazione matematica 
+					\item Vincoli nei waypoints iniziali e finali
+					\item Vincoli di sicurezza
+				\end{itemize}
 			\end{column}
 		\end{columns}
 		\begin{figure}
@@ -340,7 +345,7 @@
 		\end{figure}
 	\end{frame}
 	
-	\begin{frame}{Risultati}
+	\begin{frame}{Risultati in simulazione}
 		\centering
 		\begin{figure}
 			\includestandalone[scale=0.65]{plots/control}
