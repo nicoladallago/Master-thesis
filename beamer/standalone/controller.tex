@@ -25,7 +25,7 @@
 
 		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (TRA) at (traj) {Trajectory\\generator};
 		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (CON) at (control) {Position\\controller};
-		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$\textcolor{blue}{T^{-1}(\boldsymbol{\beta})}$};
+		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$\textcolor{blue}{T^{-1}(\boldsymbol{\beta})}$\\\textcolor{blue}{Compensazione}\\\textcolor{blue}{sensore}};
 		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic};
 
 		\draw[->] ($(TRA.0)+(0, 1)$) -- node[above]{$\mathbf{x}_d$, $\dot{\mathbf{x}}_d$, $\ddot{\mathbf{x}}_d$} ($(CON.180)+(0, 1)$);

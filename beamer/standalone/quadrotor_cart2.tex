@@ -1,0 +1,57 @@
+\documentclass[11pt, preview]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tikz-3dplot}
+\pgfplotsset{compat = 1.9}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+
+\begin{document}
+		\tdplotsetmaincoords{0}{45}%
+		\tdplotsetrotatedcoords{0}{0}{-45}%
+		\def \semiaxis  {0.8}					% from center to propeller (diag)
+		\def \centers {\semiaxis}		        % x and y of centers
+		\def \body {\semiaxis / 5}				% half diagonal of body
+		\def \height {0.05}						% half height of body
+		\def \propeller {0.3}					% radius of propeller
+		\def \innerpropeller {0.05}				% radius inner circle propeller
+		\def \heightpropeller {0.05}			% height propeller plane
+		\def \ring {0.8}                        % ring radious	
+		\begin{tikzpicture}[scale=4,tdplot_main_coords]
+			% axis
+			\draw[line width=2pt] (-\centers, 0, 0) -- (\centers, 0, 0);	
+			\draw[line width=2pt] (0, \centers, 0) -- (0, -\centers, 0);
+			% propellers
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(0, \centers, 0)}{\propeller}{0}{360}{}{}%
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(\centers, 0, 0)}{\propeller}{0}{360}{}{}%
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(0, -\centers, 0)}{\propeller}{0}{360}{}{}%
+			\tdplotdrawarc[thick, fill=gray, opacity=0.4] {(-\centers, 0, 0)}{\propeller}{0}{360}{}{}%
+			% center propellers
+			\tdplotdrawarc[fill] {(0, \centers, 0)}{\innerpropeller}{0}{360}{}{}%
+			\tdplotdrawarc[fill] {(\centers, 0, 0)}{\innerpropeller}{0}{360}{}{}%
+			\tdplotdrawarc[fill] {(0, -\centers, 0)}{\innerpropeller}{0}{360}{}{}%
+			\tdplotdrawarc[fill] {(-\centers, 0, 0)}{\innerpropeller}{0}{360}{}{}%
+			% body
+			\fill[opacity=0.2] (\body,\body,\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- cycle;
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,-\body,-\height) -- (-\body,-\body,-\height) -- (-\body,\body,-\height) -- cycle; % down
+			\fill[opacity=0.2] (-\body,-\body,-\height) -- (-\body,-\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % back
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,\body,\height) -- (\body,-\body,\height) -- (\body,-\body,-\height) -- cycle; % front
+			\fill[opacity=0.2] (\body,-\body,-\height) -- (\body,-\body,\height) -- (-\body,-\body,\height) -- (-\body,-\body,-\height) -- cycle; % left
+			\fill[opacity=0.2] (\body,\body,-\height) -- (\body,\body,\height) -- (-\body,\body,\height) -- (-\body,\body,-\height) -- cycle; % right
+			% ring
+			\draw[tdplot_rotated_coords, -, line width=3pt, canvas is zy plane at x=0, blue] (\ring, 0, 0) arc (0:360:\ring);
+			% cart
+			\shade[tdplot_rotated_coords, ball color=black] (0, \ring*0.866, \ring*0.5) circle (.08);
+			% dashed lines
+			\draw[dashed] (0, \centers, 0) -- node[below]{$\mathbf{l}_1$} (0.112, 0.112, 0.112);
+			\draw[dashed] (\centers, 0, 0) -- node[above]{$\mathbf{l}_2$} (0.112, 0.112, 0.112);
+			\draw[dashed] (-\centers, 0, 0) -- node[above]{$\mathbf{l}_4$} (0.112, 0.112, 0.112);
+			\draw[dashed] (0, -\centers, 0) -- node[below]{$\mathbf{l}_3$} (0.112, 0.112, 0.112);
+			\shade[tdplot_rotated_coords, ball color=orange] (0, 0.2*0.866, 0.2*0.5) circle (.04cm) node[anchor=south west]{\thinspace \thinspace \thinspace CoG};
+			\shade[ball color=red] (0, 0, 0) circle (0.04cm);
+		\end{tikzpicture}	
+\end{document}		

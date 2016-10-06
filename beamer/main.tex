@@ -60,11 +60,13 @@
 				\end{block}
 			\end{column}
 		\end{columns}
-		\begin{block}{Progetto diviso in 3 parti:}
+		\centering
+		\begin{block}{Contributo di questa tesi:}
 			\begin{itemize}
-				\item[1] Design e costruzione della parte meccanica
-				\item[2] \textcolor{red}{Modello matematico, system identification, traiettorie e controllo} 
-				\item[3] Algoritmi di navigazione e mapping
+				\item[1] Modello matematico
+				\item[2] Identificazione di sistema 
+				\item[3] Generatore di traiettorie
+				\item[4] Algoritmo di controllo
 			\end{itemize}
 		\end{block}
 	\end{frame}
@@ -124,11 +126,23 @@
 			\end{column}
 			\begin{column}{.55\textwidth}
 				\centering
+				\small
 				\begin{align*}
 					\mathbf{f}_i(t) &= a_{f,i}\Omega_i^2\mathbf{n}_i = a_{f,i}\Omega_{max, i}^2 u_i(t)^2\mathbf{n}_i \\
 					\boldsymbol{\tau}_i(t) &= -\sgn(\Omega_i)b_{f,i}\Omega_{max,i}^2u_i(t)^2\mathbf{n}_i \\
 					u_i(t) &\approx \frac{1}{\tau_i s+1}u_{in,i}(t)
 				\end{align*}
+				\begin{equation*}
+					\begin{bmatrix}
+						\mathbf{f}_{total} \\
+						\boldsymbol{\tau}_{total}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\sum\limits_{i=1}^{4} \mathbf{f}_i(u_i^2) \\
+						\sum\limits_{i=1}^{4} \mathbf{l}_i \times \mathbf{f}_i(u_i^2) + \boldsymbol{\tau}_i(u_i^2)
+					\end{bmatrix}
+				\end{equation*}
 			\end{column}
 		\end{columns}
 	\end{frame}
@@ -138,17 +152,9 @@
 		\begin{columns}
 			\begin{column}{.4\textwidth}
 				\centering
-				\begin{equation*}
-				\begin{bmatrix}
-					\mathbf{f}_{total} \\
-					\boldsymbol{\tau}_{total}
-				\end{bmatrix}
-				=
-				\begin{bmatrix}
-					\sum\limits_{i=1}^{4} \mathbf{f}_i(u_i^2) \\
-					\sum\limits_{i=1}^{4} \mathbf{l}_i \times \mathbf{f}_i(u_i^2) + \boldsymbol{\tau}_i(u_i^2)
-				\end{bmatrix}
-				\end{equation*}
+				\begin{figure}
+					\includestandalone[scale=0.5]{standalone/quadrotor_cart2}
+				\end{figure}					
 			\end{column}
 			\begin{column}{.4\textwidth}
 				\centering
@@ -197,7 +203,7 @@
 
 	\section{System identification}
 	
-	\begin{frame}{System identification}
+	\begin{frame}{Identificazione del sistema con filtrto di Kalman esteso}
 		\centering
 		\begin{columns}
 			\begin{column}{.4\textwidth}
@@ -235,11 +241,11 @@
 			\end{bmatrix}^T
 		\end{equation*}
 		\normalsize
+		e aggiungo dinamica dei parametri
 		\begin{gather*}
+			\boldsymbol{\omega}_{k+1} = \boldsymbol{\omega}_k \qquad \tau_{k+1} = \tau_{k} \\
 			\Downarrow \\
-			\text{Discretizzazione} \\
-			\Downarrow \\
-			\text{Filtro di Kalman}
+			\text{Filtro di Kalman esteso}
 		\end{gather*}
 	\end{frame}
 	
@@ -265,47 +271,13 @@
 	
 	\section{Generatore di traiettorie}
 	
-	\begin{frame}{Generatore di traiettorie}
-		\centering
-		\begin{columns}
-			\begin{column}{.5\textwidth}
-				\centering
-				\begin{block}{Definizione traiettorie}
-					Polinomi di grado $n$ su $m$ waypoints.
-					\footnotesize
-					\begin{equation*}
-						\sigma_d(t)=
-						\begin{cases}
-							\sum\limits_{i=0}^{n}\sigma_{d,i,1}t^i & t_0 \le t < t_1 \\
-							\sum\limits_{i=0}^{n}\sigma_{d,i,2}t^i & t_1 \le t < t_2 \\
-							\vdots \\
-							\sum\limits_{i=0}^{n}\sigma_{d,i,m}t^i & t_{m-1} \le t < t_m \\
-						\end{cases}
-					\end{equation*}
-				\end{block}
-			\end{column}
-			\begin{column}{.5\textwidth}
-				\centering
-				Minimizzare funzione costo
-				\tiny
-				\begin{alignat}{3}
-					\min\qquad & \int_{t_0}^{t_m}\mu_{\mathbf{x}} \Bigg|\Bigg|\frac{d^{k_{\mathbf{x}}}\mathbf{x}_d}{dt^{k_{\mathbf{x}}}} \Bigg|\Bigg|^2 + \mu_{\psi}\Bigg(\frac{d^{k_{\psi}}\psi_d}{dt^{k_{\psi}}}\Bigg)^2dt \nonumber \\
-					\subjectto\qquad & \boldsymbol{\sigma}_d(t_i) = \boldsymbol{\sigma}_{d,i}, \quad i=0,\dots ,m \nonumber \\
-					& \frac{d^px_d}{dt^p}\Big|_{t=t_j}=0, \quad j=0,m; \quad p=1,\dots ,k_r \nonumber \\
-					& \frac{d^py_d}{dt^p}\Big|_{t=t_j}=0, \quad j=0,m; \quad p=1,\dots ,k_r \nonumber \\
-					& \frac{d^pz_d}{dt^p}\Big|_{t=t_j}=0, \quad j=0,m; \quad p=1,\dots ,k_r \nonumber \\
-					& \frac{d^p\psi_d}{dt^p}\Big|_{t=tj}=0, \quad j=0,m; \quad p=1,\dots ,k_{\psi} \nonumber
-				\end{alignat}
-			\end{column}
-		\end{columns} 		
-	\end{frame}
 	
-	\begin{frame}
+	\begin{frame}{Generatore di traiettorie}
 		\centering 
 		\begin{columns}
 			\begin{column}{.45\textwidth}
 				\centering
-				Riscrittura della funzione costo
+				Minimizzare funzione costo
 				\begin{alignat}{2}
 					\min\qquad & \mathbf{c}^TH\mathbf{c} + f^T\mathbf{c} \nonumber \\
 					\subjectto \qquad & A\mathbf{c} \le \mathbf{b} \nonumber \\
@@ -320,11 +292,11 @@
 			\end{column}
 			\begin{column}{.45\textwidth}
 				\centering
-				Problema quadratico di programmazione matematica, veloce
+				Problema quadratico di programmazione matematica
 			\end{column}
 		\end{columns}
 		\begin{figure}
-			\includestandalone[scale=0.5]{plots/trajectory}
+			\includestandalone[scale=0.45]{plots/trajectory}
 		\end{figure}
 	\end{frame}
 
@@ -382,14 +354,14 @@
 		\centering
 		\begin{block}{Conclusioni}
 			\begin{itemize}
-				\item System identification del modello semplificato
-				\item Generatore di traiettorie
+				\item Identificazione del modello semplificato con filtro di Kalman 
+				\item Generatore di traiettorie lisce
 				\item Controllo con compensazione del movimento del sensore
 			\end{itemize}
 		\end{block}
 		\begin{block}{Sviluppi futuri}
 			\begin{itemize}
-				\item System identification per il modello non lineare
+				\item Identificazione per il modello non lineare
 				\item Imporre vincoli basati sulla dinamica dell'UAV nelle traiettorie
 				\item Controllo in grado di prevedere la dinamica, come MPC
 			\end{itemize}
