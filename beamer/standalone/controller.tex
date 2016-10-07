@@ -23,10 +23,10 @@
 		\coordinate (outfit2) at (4.5,    0.5);
 		\coordinate (outfit3) at (4.55,    0.45);
 
-		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (TRA) at (traj) {Trajectory\\generator};
-		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (CON) at (control) {Position\\controller};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (TRA) at (traj) {Generatore di\\traiettorie};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (CON) at (control) {Controllore};
 		\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (MIX) at (mixing) {$\textcolor{blue}{T^{-1}(\boldsymbol{\beta})}$\\\textcolor{blue}{Compensazione}\\\textcolor{blue}{sensore}};
-		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic};
+		\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Dinamica\\quadricottero};
 
 		\draw[->] ($(TRA.0)+(0, 1)$) -- node[above]{$\mathbf{x}_d$, $\dot{\mathbf{x}}_d$, $\ddot{\mathbf{x}}_d$} ($(CON.180)+(0, 1)$);
 		\draw[->] ($(TRA.0)-(0, 1)$) - ++(0.75, 0) -- ++(0.75, 0) |- node[above]{\hspace{15pt}$\psi_d$, $\dot{\psi}_d$, $\ddot{\psi}_d$} ($(CON.180)$);

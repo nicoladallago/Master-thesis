@@ -24,8 +24,8 @@
 	\node[anchor=south west, align=center] (DOTS) at (dots) {$\vdots$};
 	\node[draw, minimum width=2.5cm, minimum height=1.5cm, anchor=south west, align=center] (MPC2) at (mpc2) {MPC $n$};
 	\node[draw, minimum width=1.5cm, minimum height=1.5cm, anchor=south west, align=center] (SWI) at (switch) {Switch};
-	\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Quadrotor\\dynamic};
-	\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (TRA) at (traj) {Trajectory\\generator};
+	\node[draw, minimum width=2.5cm, minimum height=3cm, anchor=south west, align=center] (DYN) at (dynamic) {Dinamica\\quadricottero};
+	\node[draw, minimum width=2.5cm, minimum height=2cm, anchor=south west, align=center] (TRA) at (traj) {Generatore di\\traiettorie};
 	
 	\draw[->] ($(DYN.0)$) -- node[above]{$\mathbf{y}$} ($(DYN.0)+(5,0)$);
 	\draw[->] ($(DYN.0)+(3.5,0)$) |- ($(MPC1.0)+(0,0.3)$);
