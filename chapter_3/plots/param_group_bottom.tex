@@ -1,0 +1,28 @@
+\documentclass[11pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat = 1.9}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+	\begin{tikzpicture}
+	\begin{axis}[
+	grid=major,
+	xmin=0, 
+	xmax=33, 
+	title = {$\Delta l_x \hspace{10pt} [m]$},
+	xlabel = {$t \hspace{10pt} [s]$},
+	grid = major,              
+	width = 7.5cm,
+	height = 4cm
+	]
+	\addplot[blue, ultra thick] table {../data/beta_6.dat};
+	\end{axis}
+	\end{tikzpicture}
+\end{document}	

@@ -13,7 +13,7 @@
 		\begin{groupplot}[
     	group style={
         	group name = left,
-        	group size = 1 by 4,
+        	group size = 1 by 3,
         	xlabels at = edge bottom,
         	xticklabels at = edge bottom,
         	ylabels at = edge left, 
@@ -26,12 +26,12 @@
 		height = 4cm] 
 			\nextgroupplot[title = {$\frac{a_f}{I_{xx}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
 			\addplot[blue, ultra thick] table {../data/beta_2.dat};
-			\nextgroupplot[title = {$\frac{a_f}{I_{zz}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
-			\addplot[blue, ultra thick] table {../data/beta_4.dat};
-      \nextgroupplot[title = {$\tau \hspace{10pt} [s]$}, grid=major]
-      \addplot[blue, ultra thick] table {../data/tau.dat};
-      \nextgroupplot[title = {$\Delta l_y \hspace{10pt} [m]$}, grid=major, ytick={-0.1,-0.05,0}, yticklabels={$-0.1$, $-0.05$, $0$}]
-      \addplot[blue, ultra thick] table {../data/beta_7.dat};
+			%\nextgroupplot[title = {$\frac{a_f}{I_{zz}} \hspace{10pt} [N/Kg\cdot m^2]$}, grid=major]
+			%\addplot[blue, ultra thick] table {../data/beta_4.dat};
+		    \nextgroupplot[title = {$\tau \hspace{10pt} [s]$}, grid=major]
+	        \addplot[blue, ultra thick] table {../data/tau.dat};
+	        \nextgroupplot[title = {$\Delta l_y \hspace{10pt} [m]$}, grid=major, ytick={-0.1,-0.05,0}, yticklabels={$-0.1$, $-0.05$, $0$}]
+            \addplot[blue, ultra thick] table {../data/beta_7.dat};
 		\end{groupplot}
 	\end{tikzpicture}
 \end{document}

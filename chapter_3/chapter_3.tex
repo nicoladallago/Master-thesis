@@ -92,7 +92,7 @@ From the simplified model of equations \eqref{eq:linearModel1} and \eqref{eq:lin
 \begin{equation}
 	\boldsymbol{\beta} =
 	\begin{bmatrix}
-		\frac{a_f}{m} & \frac{a_f}{I_{xx}} & \frac{a_f}{I_{yy}} & \frac{a_f}{I_{zz}} & \frac{b_f}{I_{zz}} & \Delta l_x & \Delta l_y 
+		\frac{a_f}{m} & \frac{a_f}{I_{xx}} & \frac{a_f}{I_{yy}} & \frac{b_f}{I_{zz}} & \Delta l_x & \Delta l_y 
 	\end{bmatrix}^T, \hspace{10pt} \tau
 	\label{eq:parameters}
 \end{equation}
@@ -256,7 +256,8 @@ A Kalman filter approach is chose for this project since it has good result in t
 	\centering
 	\includestandalone[]{./chapter_3/plots/param_group_left}
 	\includestandalone[]{./chapter_3/plots/param_group_right}
-	\caption{Estimated parameers $\boldsymbol{\beta}$ and $\tau$.}
+	\includestandalone[]{./chapter_3/plots/param_group_bottom}
+	\caption{Estimated parameters $\boldsymbol{\beta}$ and $\tau$.}
 	\label{fig:betaTauKalman}
 \end{figure}
 
